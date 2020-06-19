@@ -102,7 +102,7 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 ### `Rhum.testPlan`
 
-Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests and suites for a single file.
+Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file.
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
