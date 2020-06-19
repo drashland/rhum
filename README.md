@@ -185,7 +185,6 @@ An object of functions to help you mock objects.
     Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
 
     ```typescript
-
     const encodedBody = new TextEncoder().encode(JSON.stringify({
       body_param: "hello",
     }));
