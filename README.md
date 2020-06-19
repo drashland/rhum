@@ -178,7 +178,7 @@ Rhum.testPlan("app_test.ts", () => {
 
 ### `Rhum.mocks`
 
-An object of to help you create mock objects for Deno.
+An object of functions to help you mock objects.
 
 * `Rhum.mocks.ServerRequest`
 
