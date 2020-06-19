@@ -114,7 +114,7 @@ Rhum.testPlan("app_test.ts", () => {
 
 ### `Rhum.testSuite`
 
-A test suite usually describes a method or property name, and groups up all test cases for that method or property. There can be as many test suites under a test plan as you want.
+A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan.
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
@@ -133,7 +133,7 @@ Rhum.testPlan("app_test.ts", () => {
 
 ### `Rhum.testCase`
 
-A test case is grouped by a test suite and it is what makes the assertions - it is the test. A suite can have as many test cases as you want. Test cases can also be asynchronous.
+A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous.
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
@@ -179,8 +179,6 @@ Rhum.testPlan("app_test.ts", () => {
 ### `Rhum.mocks`
 
 An object of to help you create mock objects for Deno.
-
-### `Rhum.mocks.ServerRequest`
 
 * `Rhum.mocks.ServerRequest`
 
