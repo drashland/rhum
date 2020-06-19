@@ -164,7 +164,7 @@ export class RhumRunner {
    *
    * @param string name
    *     The name of the test suite.
-   * @param Function testSuites
+   * @param Function testCases
    *     The test cases to execute.
    *
    * @return void
