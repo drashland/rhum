@@ -106,10 +106,10 @@ Groups up test suites to describe a test plan. Usually, a test plan is per file 
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
-  Rhum.testSuite("run()", () => {
     ...
-  })
-})
+    ...
+    ...
+});
 ```
 
 ### `Rhum.testSuite`
@@ -122,13 +122,13 @@ Rhum.testPlan("app_test.ts", () => {
     ...
     ...
     ...
-  })
+  });
   Rhum.testSuite("close()", () => {
     ...
     ...
     ...
-  })
-})
+  });
+});
 ```
 
 ### `Rhum.testCase`
@@ -139,25 +139,25 @@ A test case is grouped by a test suite and it is what makes the assertions - it 
 Rhum.testPlan("app_test.ts", () => {
   Rhum.testSuite("run()", () => {
     Rhum.testCase("should return true", () => {
-      Rhum.assertEquals(run(), true);
-    })
+      Rhum.assert.assertEquals(run(), true);
+    });
     Rhum.testCase("should return false", () => {
-      Rhum.assertEquals(run(), false);
-    })
-  })
-})
+      Rhum.assert.assertEquals(run(), false);
+    });
+  });
+});
 ```
 
-### `Rhum.Asserts`
+### `Rhum.asserts`
 
 The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to `Rhum`.
 
 ```typescript
-Rhum.Asserts.assertEquals(true, true) // pass
-Rhum.Asserts.assertEquals(true, false) // fail
+Rhum.asserts.assertEquals(true, true) // pass
+Rhum.asserts.assertEquals(true, false) // fail
 ```
 
-### `Rhum.Skip`
+### `Rhum.skip`
 
 Allows a test case, suite or plan to be skipped when the tests are ran.
 
@@ -176,18 +176,27 @@ Rhum.testPlan("app_test.ts", () => {
 })
 ```
 
-### `Rhum.Mocks.ServerRequest`
+### `Rhum.mocks`
 
-Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts)
+An object of to help you create mock objects for Deno.
 
-```typescript
-const mockRequest = Rhum.Mocks.ServerRequest("/api/users/1", "GET", {
-  headers: {
-    "Token": "Rhum"
-  }
-})
-const res = mockRequest.respond(...);
-```
+### `Rhum.mocks.ServerRequest`
+
+* `Rhum.mocks.ServerRequest`
+
+    Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
+
+    ```typescript
+    const mockRequest = Rhum.mocks.ServerRequest("/api/users/1", "GET", {
+      headers: {
+        "Content-Type": "application/json",
+        "Token": "Rhum"
+      },
+      body: JSON.stringify({
+        hello: "world"
+      }),
+    });
+    ```
 
 ## Why Use Rhum?
 
