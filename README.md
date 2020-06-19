@@ -100,12 +100,12 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 ## Documentation
 
-### `Rhum.TestPlan`
+### `Rhum.testPlan`
 
 Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests and suites for a single file.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
+Rhum.testPlan("app_test.ts", () => {
   Rhum.testSuite("run()", () => {
     ...
   })
@@ -117,7 +117,7 @@ Rhum.TestPlan("app_test.ts", () => {
 A test suite usually describes a method or property name, and groups up all test cases for that method or property. There can be as many test suites under a test plan as you want.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
+Rhum.testPlan("app_test.ts", () => {
   Rhum.testSuite("run()", () => {
     ...
     ...
@@ -131,17 +131,17 @@ Rhum.TestPlan("app_test.ts", () => {
 })
 ```
 
-### `Rhum.TestCase`
+### `Rhum.testCase`
 
 A test case is grouped by a test suite and it is what makes the assertions - it is the test. A suite can have as many test cases as you want. Test cases can also be asynchronous.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
+Rhum.testPlan("app_test.ts", () => {
   Rhum.testSuite("run()", () => {
-    Rhum.TestCase("should return true", () => {
+    Rhum.testCase("should return true", () => {
       Rhum.assertEquals(run(), true);
     })
-    Rhum.TestCase("should return false", () => {
+    Rhum.testCase("should return false", () => {
       Rhum.assertEquals(run(), false);
     })
   })
@@ -162,14 +162,14 @@ Rhum.Asserts.assertEquals(true, false) // fail
 Allows a test case, suite or plan to be skipped when the tests are ran.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
+Rhum.testPlan("app_test.ts", () => {
   Rhum.Skip("run()", () => { // Will not run this block
-    Rhum.TestCase("Returns true", () => {
+    Rhum.testCase("Returns true", () => {
       ...
     })
   })
-  Rhum.TestSuite("close()", () => {
-    Rhum.TestCase("Returns true", () => {
+  Rhum.testSuite("close()", () => {
+    Rhum.testCase("Returns true", () => {
       ...
     })
   })
