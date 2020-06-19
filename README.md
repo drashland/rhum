@@ -34,49 +34,71 @@
 
 import { Rhum } from "https://deno.land/x/rhum@v1.0.0/mod.ts";
 
-let value = false
+let value = false;
 
-function run () {
-    console.log("Running!");
-    return true
+function run() {
+  return true;
 }
 
-async function close () {
-    console.log("Closing")
-    return value
+async function close() {
+  return value;
 }
 
 Rhum.TestPlan("app_test.ts", () => {
-    
-    Rhum.TestSuite("run()", () => {
-
-        Rhum.TestCase("Returns true", () => {
-            const result = run();
-            Rhum.assertEquals(true, result);
-        })
-    })
-
-    // TODO CORRECT IMPLEMENTATION
-    before(() => {
-        value = true
-    })
-
-    Rhum.TestSuite("close()", () => {
-
-        Rhum.TestCase("Returns true", async () => {
-            const result = await close();
-            Rhum.assertEquals(true, result);
-        })
-
-    })
-
-})
-
+  // Run the first test suite
+  Rhum.TestSuite("run()", () => {
+    Rhum.TestCase("Returns true", () => {
+      const result = run();
+      Rhum.Asserts.assertEquals(true, result);
+    });
+  });
+  // Run the second test suite
+  Rhum.TestSuite("close()", () => {
+    Rhum.TestCase("Returns true", async () => {
+      const result = await close();
+      Rhum.Asserts.assertEquals(true, result);
+    });
+  });
+});
 ```
 
 ```
-$ deno test --allow-run app_test.ts
-// TODO SHOW OUTPUT
+$ deno test app_test.ts
+Compile file:///.deno.test.ts
+running 2 tests
+
+app_test.ts
+    run()
+        Returns true ... ok (3ms)
+    close()
+        Returns true ... FAILED (1ms)
+
+failures:
+
+Returns true
+AssertionError: Values are not equal:
+
+
+    [Diff] Actual / Expected
+
+
+-   true
++   false
+
+    at Module.assertEquals (https://deno.land/std@v0.57.0/testing/asserts.ts:170:9)
+    at TestCase.test_fn (file:///app_test.ts:25:20)
+    at async file:///test_case.ts:24:7
+    at async asyncOpSanitizer ($deno$/testing.ts:36:5)
+    at async Object.resourceSanitizer [as fn] ($deno$/testing.ts:70:5)
+    at async TestRunner.[Symbol.asyncIterator] ($deno$/testing.ts:275:11)
+    at async Object.runTests ($deno$/testing.ts:358:20)
+
+failures:
+
+        Returns true
+
+test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
+
 ```
 
 ## Features
@@ -98,7 +120,7 @@ ADD DOCUMENTATION ABOUT: HOOKS, IGNORING
 
 ### `Rhum.TestPlan`
 
-Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests and suites for a single file
+Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests and suites for a single file.
 
 ```typescript
 Rhum.TestPlan("app_test.ts", () => {
@@ -116,8 +138,12 @@ A test suite usually describes a method or property name, and groups up all test
 Rhum.TestPlan("app_test.ts", () => {
   Rhum.TestSuite("run()", () => {
     ...
+    ...
+    ...
   })
   Rhum.TestSuite("close()", () => {
+    ...
+    ...
     ...
   })
 })
@@ -130,23 +156,23 @@ A test case is grouped by a test suite and it is what makes the assertions - it 
 ```typescript
 Rhum.TestPlan("app_test.ts", () => {
   Rhum.TestSuite("run()", () => {
-    Rhum.TestCase("Returns true", () => {
+    Rhum.TestCase("should return true", () => {
       Rhum.assertEquals(run(), true);
     })
-    Rhum.TestCase("Returns false", () => {
+    Rhum.TestCase("should return false", () => {
       Rhum.assertEquals(run(), false);
     })
   })
 })
 ```
 
-### `Rhum.assertEquals`
+### `Rhum.Asserts`
 
-A same implementation [assertEquals](https://deno.land/std/testing/asserts.ts) has, but attached to `Rhum`.
+The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to `Rhum`.
 
 ```typescript
-Rhum.assertEquals(true, true) // pass
-Rhum.assertEquals(true, false) // fail
+Rhum.Asserts.assertEquals(true, true) // pass
+Rhum.Asserts.assertEquals(true, false) // fail
 ```
 
 ## Why Use Rhum?
