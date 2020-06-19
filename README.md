@@ -198,7 +198,7 @@ An object of functions to help you mock objects.
         "Token": "Rhum"
       },
       body: body,
-    };
+    });
     ```
 
 ## Why Use Rhum?
