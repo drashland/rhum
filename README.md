@@ -185,15 +185,20 @@ An object of functions to help you mock objects.
     Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
 
     ```typescript
+
+    const encodedBody = new TextEncoder().encode(JSON.stringify({
+      body_param: "hello",
+    }));
+
+    const body = new Deno.Buffer(encodedBody as ArrayBuffer);
+
     const mockRequest = Rhum.mocks.ServerRequest("/api/users/1", "GET", {
       headers: {
         "Content-Type": "application/json",
         "Token": "Rhum"
       },
-      body: JSON.stringify({
-        hello: "world"
-      }),
-    });
+      body: body,
+    };
     ```
 
 ## Why Use Rhum?
