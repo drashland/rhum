@@ -17,4 +17,3 @@ export interface IRhum {
   TestPlan: Function;
   TestSuite: Function;
 }
-

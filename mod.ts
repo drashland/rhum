@@ -49,14 +49,13 @@ const extraChars = 10;
  *     @ebebbington (https://github.com/ebebbington)
  */
 export class RhumRunner {
-
   public Asserts: any;
   public Mocks: any = {};
 
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
-  protected set_up_hook: Function|null = null;
-  protected tear_down_hook: Function|null = null;
+  protected set_up_hook: Function | null = null;
+  protected tear_down_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
 
@@ -123,7 +122,7 @@ export class RhumRunner {
     const tc = new TestCase(
       name,
       this.formatTestCaseName(name),
-      testFn
+      testFn,
     );
     tc.run();
   }
@@ -193,6 +192,6 @@ export class RhumRunner {
 
     return newName;
   }
-};
+}
 
 export const Rhum = new RhumRunner();

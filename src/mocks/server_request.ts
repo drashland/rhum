@@ -3,7 +3,7 @@ import { BufReader, ServerRequest } from "../../deps.ts";
 export const MockServerRequest = function (
   url = "/",
   method = "get",
-  options?: any
+  options?: any,
 ): any {
   let request: any = new ServerRequest();
   request.url = url;
@@ -32,8 +32,8 @@ export const MockServerRequest = function (
   request.respond = function respond(output: any) {
     output.send = function () {
       if (
-          output.status === 301 ||
-          output.status === 302
+        output.status === 301 ||
+        output.status === 302
       ) {
         return output;
       }
@@ -42,4 +42,4 @@ export const MockServerRequest = function (
   };
 
   return request;
-}
+};

@@ -1,4 +1,4 @@
-import { asserts } from "../../deps.ts"
+import { asserts } from "../../deps.ts";
 import { Rhum } from "../../mod.ts";
 
 Deno.test({
@@ -6,17 +6,17 @@ Deno.test({
   async fn(): Promise<void> {
     const mockReq = Rhum.Mocks.ServerRequest("https://google.com", "get", {
       headers: {
-        a: "Hi"
-      }
-    })
-    asserts.assertEquals(mockReq.url === "https://google.com", true)
-    asserts.assertEquals(mockReq.method === "get", true)
-    asserts.assertEquals(mockReq.headers.get("a"), "Hi")
-    const res = mockReq.respond({ status: 200 })
-    asserts.assertEquals(res.status, 200)
-    asserts.assertEquals(typeof res.send === "function", true)
-  }
-})
+        a: "Hi",
+      },
+    });
+    asserts.assertEquals(mockReq.url === "https://google.com", true);
+    asserts.assertEquals(mockReq.method === "get", true);
+    asserts.assertEquals(mockReq.headers.get("a"), "Hi");
+    const res = mockReq.respond({ status: 200 });
+    asserts.assertEquals(res.status, 200);
+    asserts.assertEquals(typeof res.send === "function", true);
+  },
+});
 
 // TODO(any) When this feature is properly implemented
 // Deno.test({
@@ -55,35 +55,35 @@ Deno.test({
   name: "Unit | Rhum | TestCase() | Runs a test without failing",
   async fn(): Promise<void> {
     Rhum.TestCase("Testing TestCase", () => {
-      console.log("Running!")
-    })
-  }
-})
+      console.log("Running!");
+    });
+  },
+});
 
 Deno.test({
   name: "Unit | Rhum | TestPlan() | Registers the test plan name",
   async fn(): Promise<void> {
-    let functionWasCalled = false
-    function testFn () {
-      functionWasCalled = true
-      return "Hello world!"
+    let functionWasCalled = false;
+    function testFn() {
+      functionWasCalled = true;
+      return "Hello world!";
     }
-    const copyTestFn = testFn
-    Rhum.TestPlan("Testing TestCase", copyTestFn)
-    asserts.assertEquals(functionWasCalled, true)
-  }
-})
+    const copyTestFn = testFn;
+    Rhum.TestPlan("Testing TestCase", copyTestFn);
+    asserts.assertEquals(functionWasCalled, true);
+  },
+});
 
 Deno.test({
   name: "Unit | Rhum | TestSuite() | Registers the test suite name",
   async fn(): Promise<void> {
-    let functionWasCalled = false
-    function testFn () {
-      functionWasCalled = true
-      return "Hello world!"
+    let functionWasCalled = false;
+    function testFn() {
+      functionWasCalled = true;
+      return "Hello world!";
     }
-    const copyTestFn = testFn
-    Rhum.TestSuite("Testing TestCase", copyTestFn)
-    asserts.assertEquals(functionWasCalled, true)
-  }
-})
+    const copyTestFn = testFn;
+    Rhum.TestSuite("Testing TestCase", copyTestFn);
+    asserts.assertEquals(functionWasCalled, true);
+  },
+});
