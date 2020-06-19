@@ -7,6 +7,7 @@ function run() {
 }
 
 async function close() {
+  value = true;
   return value;
 }
 

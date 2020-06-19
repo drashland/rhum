@@ -48,19 +48,19 @@ async function close() {
   return value;
 }
 
-Rhum.TestPlan("app_test.ts", () => {
+Rhum.testPlan("app_test.ts", () => {
   // Run the first test suite
   Rhum.testSuite("run()", () => {
-    Rhum.TestCase("Returns true", () => {
+    Rhum.testCase("Returns true", () => {
       const result = run();
-      Rhum.Asserts.assertEquals(true, result);
+      Rhum.asserts.assertEquals(true, result);
     });
   });
   // Run the second test suite
   Rhum.testSuite("close()", () => {
-    Rhum.TestCase("Returns true", async () => {
+    Rhum.testCase("Returns true", async () => {
       const result = await close();
-      Rhum.Asserts.assertEquals(value, result);
+      Rhum.asserts.assertEquals(true, result);
     });
   });
 });
@@ -82,34 +82,9 @@ app_test.ts
     run()
         Returns true ... ok (3ms)
     close()
-        Returns true ... FAILED (1ms)
+        Returns true ... ok (1ms)
 
-failures:
-
-Returns true
-AssertionError: Values are not equal:
-
-
-    [Diff] Actual / Expected
-
-
--   true
-+   false
-
-    at Module.assertEquals (https://deno.land/std@v0.57.0/testing/asserts.ts:170:9)
-    at TestCase.test_fn (file:///app_test.ts:25:20)
-    at async file:///test_case.ts:24:7
-    at async asyncOpSanitizer ($deno$/testing.ts:36:5)
-    at async Object.resourceSanitizer [as fn] ($deno$/testing.ts:70:5)
-    at async TestRunner.[Symbol.asyncIterator] ($deno$/testing.ts:275:11)
-    at async Object.runTests ($deno$/testing.ts:358:20)
-
-failures:
-
-        Returns true
-
-test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
-
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 ```
 
 ## Features
