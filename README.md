@@ -166,14 +166,14 @@ Rhum.testPlan("app_test.ts", () => {
   Rhum.Skip("run()", () => { // Will not run this block
     Rhum.testCase("Returns true", () => {
       ...
-    })
-  })
+    });
+  });
   Rhum.testSuite("close()", () => {
     Rhum.testCase("Returns true", () => {
       ...
-    })
-  })
-})
+    });
+  });
+});
 ```
 
 ### `Rhum.mocks`
