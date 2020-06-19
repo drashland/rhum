@@ -44,6 +44,7 @@ function run() {
 }
 
 async function close() {
+  value = true;
   return value;
 }
 
@@ -59,7 +60,7 @@ Rhum.TestPlan("app_test.ts", () => {
   Rhum.testSuite("close()", () => {
     Rhum.TestCase("Returns true", async () => {
       const result = await close();
-      Rhum.Asserts.assertEquals(true, result);
+      Rhum.Asserts.assertEquals(value, result);
     });
   });
 });
@@ -113,20 +114,16 @@ test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out (
 
 ## Features
 
-- Hooks
-  - `beforeEach`
-  - `beforeAll`
-  - `afterEach`
-  - `afterAll`
 - Descriptive naming for your tests
 - Lightweight
 - Zero dependencies
 - Simple and easy to use
 - Asynchronous support
 - Still uses `Deno.test` under the hood
+- Skip functionality
+- Mock requests
 
 ## Documentation
-ADD DOCUMENTATION ABOUT: HOOKS, IGNORING
 
 ### `Rhum.TestPlan`
 
@@ -183,6 +180,38 @@ The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to 
 ```typescript
 Rhum.Asserts.assertEquals(true, true) // pass
 Rhum.Asserts.assertEquals(true, false) // fail
+```
+
+### `Rhum.Skip`
+
+Allows a test case, suite or plan to be skipped when the tests are ran.
+
+```typescript
+Rhum.TestPlan("app_test.ts", () => {
+  Rhum.Skip("run()", () => { // Will not run this block
+    Rhum.TestCase("Returns true", () => {
+      ...
+    })
+  })
+  Rhum.TestSuite("close()", () => {
+    Rhum.TestCase("Returns true", () => {
+      ...
+    })
+  })
+})
+```
+
+### `Rhum.Mocks.ServerRequest`
+
+Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts)
+
+```typescript
+const mockRequest = Rhum.Mocks.ServerRequest("/api/users/1", "GET", {
+  headers: {
+    "Token": "Rhum"
+  }
+})
+const res = mockRequest.respond(...);
 ```
 
 ## Why Use Rhum?
