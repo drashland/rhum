@@ -3,10 +3,11 @@ import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 
 /**
- * Deno's test runner outputs "test ", which has a length of 5. This module
- * erases the "test " string by backspacing the test plan line and test suite
- * line by that number. For safety, it substracts twice that number. This is how
- * we get the number 10 here.
+ * @description
+ *     Deno's test runner outputs "test ", which has a length of 5. This module
+ *     erases the "test " string by backspacing the test plan line and test
+ *     suite line by that number. For safety, it substracts twice that number.
+ *     This is how we get the number 10 here.
  */
 const extraChars = 10;
 
