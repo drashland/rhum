@@ -29,6 +29,9 @@
 - [License](#license)
 
 ## Quick Start
+
+Create your test plan:
+
 ```typescript
 // File: app_test.ts
 
@@ -63,8 +66,15 @@ Rhum.TestPlan("app_test.ts", () => {
 });
 ```
 
+Run your test plan:
+
 ```
 $ deno test app_test.ts
+```
+
+Read the output:
+
+```
 Compile file:///.deno.test.ts
 running 2 tests
 
