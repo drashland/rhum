@@ -1,5 +1,4 @@
 import { asserts } from "./deps.ts";
-import { IRhum } from "./src/interfaces/rhum.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 
@@ -54,8 +53,8 @@ export class RhumRunner {
 
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
-  protected set_up_hook: Function | null = null;
-  protected tear_down_hook: Function | null = null;
+  protected before_all_hook: Function | null = null;
+  protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
 
@@ -72,31 +71,8 @@ export class RhumRunner {
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   /**
-   * Set up the test plan.
-   *
-   * @param Function cb
-   *     The callback to invoke. The callback should contain all of the
-   *     necessary procedures for setting up a test plan.
-   *
-   * @return void
-   */
-  public SetUp(cb: Function): void {
-    this.set_up_hook = cb;
-  }
-
-  /**
-   * Skip a test plan, suite, or case.
-   *
-   * @param Function cb
-   *
-   * @return void
-   */
-  public Skip(cb: Function): void {
-    // Haaaaaa... you got skipped.
-  }
-
-  /**
-   * Tear down a test plan.
+   * @description
+   *     Tear down a test plan.
    *
    * @param Function cb
    *    The callback to invoke. The callback should contain all of the necessary
@@ -104,12 +80,49 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TearDown(cb: Function): void {
-    this.tear_down_hook = cb;
+  public afterAll(cb: Function): void {
+    this.after_all_hook = cb;
   }
 
   /**
-   * Define a test case and execute the test function.
+   * @description
+   *     Set up the test plan.
+   *
+   * @param Function cb
+   *     The callback to invoke. The callback should contain all of the
+   *     necessary procedures for setting up a test plan.
+   *
+   * @return void
+   */
+  public beforeAll(cb: Function): void {
+    this.before_all_hook = cb;
+  }
+
+  /**
+   * @description
+   * @param Function cb
+   *
+   * @return void
+   */
+  public only(cb: Function): void {
+    // Do something
+  }
+
+  /**
+   * @description
+   *     Skip a test plan, suite, or case.
+   *
+   * @param Function cb
+   *
+   * @return void
+   */
+  public skip(cb: Function): void {
+    // Haaaaaa... you got skipped.
+  }
+
+  /**
+   * @description
+   *     Define a test case and execute the test function.
    *
    * @param string name
    *     The name of the test case.
@@ -128,7 +141,8 @@ export class RhumRunner {
   }
 
   /**
-   * Define a test plan and execute the test plan's test suites.
+   * @description
+   *     Define a test plan and execute the test plan's test suites.
    *
    * @param string name
    *     The name of the test plan.
@@ -143,7 +157,8 @@ export class RhumRunner {
   }
 
   /**
-   * Define a test suite and execute the test suite's test cases.
+   * @description
+   *     Define a test suite and execute the test suite's test cases.
    *
    * @param string name
    *     The name of the test suite.
@@ -160,7 +175,8 @@ export class RhumRunner {
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
 
   /**
-   * Figure out the name of the test case for output purposes.
+   * @description
+   *     Figure out the name of the test case for output purposes.
    *
    * @param string name
    *     The name of the test case.
