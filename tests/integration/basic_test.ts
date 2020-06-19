@@ -1,4 +1,4 @@
-import { asserts } from "../../deps.ts"
+import { asserts } from "../../deps.ts";
 
 /**
  * To be clear, we are making sure that when a user runs their tests using Bourbon, that everything works correctly,
@@ -6,33 +6,35 @@ import { asserts } from "../../deps.ts"
  */
 
 Deno.test({
-  name: "Integration | basic_test.ts | Tests correctly pass and display the correct output",
+  name:
+    "Integration | basic_test.ts | Tests correctly pass and display the correct output",
   async fn(): Promise<void> {
     const p = await Deno.run({
       cmd: ["deno", "test", "--allow-run", "example_tests/basic/tests_pass.ts"],
       stdout: "piped",
       stderr: "piped",
-    })
+    });
     const status = await p.status();
-    p.close()
-    const stdout = new TextDecoder("utf-8").decode(await p.output())
-    const stderr = new TextDecoder().decode(await p.stderrOutput())
-    asserts.assertEquals(status.success, true)
-    asserts.assertEquals(status.code, 0)
+    p.close();
+    const stdout = new TextDecoder("utf-8").decode(await p.output());
+    const stderr = new TextDecoder().decode(await p.stderrOutput());
+    asserts.assertEquals(status.success, true);
+    asserts.assertEquals(status.code, 0);
     /**
      * Due to the nature of this testing (running tests that run tests), the stderr is showing "Compiling .../.deno.ts.ts" -
      * there doesn't seem be a way around it (yet), so what we are doing is just asserting it only contains that line,
      * that way we can get these tests to work, and make sure no errors are thrown
      */
     const splitStderr = stderr.split("\n"); // ["compiling ...", ""]
-    asserts.assertEquals(splitStderr.length, 2)
-    asserts.assertEquals(splitStderr[1], "")
+    asserts.assertEquals(splitStderr.length, 2);
+    asserts.assertEquals(splitStderr[1], "");
     /**
      * Because the timing each for test is dynamic, we can't really test it ("... ok (3ms)"), so strip all that out
      */
-    const newStdout = stdout.replace(/\(\d+ms\)/g, "")
-    asserts.assertEquals(newStdout,
-        "running 22 tests\n" +
+    const newStdout = stdout.replace(/\(\d+ms\)/g, "");
+    asserts.assertEquals(
+      newStdout,
+      "running 22 tests\n" +
         "\ntest_plan_1" +
         "\n    test_suite_1a" +
         "\n        test_case_1a1 ... ok " +
@@ -69,36 +71,35 @@ Deno.test({
         "    test_suite_3c\n" +
         "        test_case_3c1 ... ok \n" +
         "        test_case_3c2 ... ok \n" +
-        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out \n"
-        )
-  }
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out \n",
+    );
+  },
 });
 
 Deno.test({
-  name: "Integration | basic_test.ts | Tests correctly fail and display the correct output",
+  name:
+    "Integration | basic_test.ts | Tests correctly fail and display the correct output",
   async fn(): Promise<void> {
     const p = await Deno.run({
       cmd: ["deno", "test", "--allow-run", "example_tests/basic/tests_fail.ts"],
       stdout: "piped",
-      stderr: "piped"
-    })
+      stderr: "piped",
+    });
     const status = await p.status();
-    p.close()
-    const stdout = new TextDecoder().decode(await p.output())
-    const stderr = new TextDecoder().decode(await p.stderrOutput())
-    asserts.assertEquals(status.success, false)
-    asserts.assertEquals(status.code, 1)
+    p.close();
+    const stdout = new TextDecoder().decode(await p.output());
+    const stderr = new TextDecoder().decode(await p.stderrOutput());
+    asserts.assertEquals(status.success, false);
+    asserts.assertEquals(status.code, 1);
     /**
      * Due to the nature of this testing (running tests that run tests), the stderr is showing "Compiling .../.deno.ts.ts" -
      * there doesn't seem be a way around it (yet), so what we are doing is just asserting it only contains that line,
      * that way we can get these tests to work, and make sure no errors are thrown
      */
     const splitStderr = stderr.split("\n"); // ["compiling ...", ""]
-    asserts.assertEquals(splitStderr.length, 2)
-    asserts.assertEquals(splitStderr[1], "")
+    asserts.assertEquals(splitStderr.length, 2);
+    asserts.assertEquals(splitStderr[1], "");
     // TODO(any) The same expectation as the above test but should account for failing
-    asserts.assertEquals(stdout,
-        ""
-    )
-  }
-})
+    asserts.assertEquals(stdout, "");
+  },
+});
