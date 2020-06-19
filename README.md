@@ -159,7 +159,7 @@ Rhum.asserts.assertEquals(true, false) // fail
 
 ### `Rhum.skip`
 
-Allows a test case, suite or plan to be skipped when the tests are ran.
+Allows a test plan, suite, or case to be skipped when the tests run.
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
