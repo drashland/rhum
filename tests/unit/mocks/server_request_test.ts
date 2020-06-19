@@ -2,7 +2,7 @@ import { asserts } from "../../../deps.ts";
 import { MockServerRequest } from "../../../src/mocks/server_request.ts";
 
 Deno.test({
-  name: "Unit | Mocks | ServerRequest | Returns a valid request object",
+  name: "Unit | mocks | ServerRequest | Returns a valid request object",
   async fn(): Promise<void> {
     const mockReq = MockServerRequest("https://google.com", "get", {
       headers: {

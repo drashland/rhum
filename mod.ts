@@ -1,61 +1,62 @@
 import { asserts } from "./deps.ts";
-import { IRhum } from "./src/interfaces/rhum.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 
 /**
- * Deno's test runner outputs "test ", which has a length of 5. This module
- * erases the "test " string by backspacing the test plan line and test suite
- * line by that number. For safety, it substracts twice that number. This is how
- * we get the number 10 here.
+ * @description
+ *     Deno's test runner outputs "test ", which has a length of 5. This module
+ *     erases the "test " string by backspacing the test plan line and test
+ *     suite line by that number. For safety, it substracts twice that number.
+ *     This is how we get the number 10 here.
  */
 const extraChars = 10;
 
 /**
- * This testing framework allows the following syntax:
+ * @description
+ *     This testing framework allows the following syntax:
  *
- *     import { Rhum } from "/path/to/rhum/mod.ts";
+ *         import { Rhum } from "/path/to/rhum/mod.ts";
  *
- *     Rhum.TestPlan("test_plan_1", () => {
+ *         Rhum.testPlan("test_plan_1", () => {
  *
- *       Rhum.TestSuite("test_suite_1a", () => {
- *         Rhum.TestCase("test_case_1a1", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *         Rhum.TestCase("test_case_1a2", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *         Rhum.TestCase("test_case_1a3", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *       });
+ *           Rhum.testSuite("test_suite_1a", () => {
+ *             Rhum.testCase("test_case_1a1", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *             Rhum.testCase("test_case_1a2", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *             Rhum.testCase("test_case_1a3", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *           });
  *
- *       Rhum.TestSuite("test_suite_1b", () => {
- *         Rhum.TestCase("test_case_1b1", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *         Rhum.TestCase("test_case_1b2", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *         Rhum.TestCase("test_case_1b3", () => {
- *           Rhum.Asserts.assertEquals(true, true);
- *         });
- *       });
+ *           Rhum.testSuite("test_suite_1b", () => {
+ *             Rhum.testCase("test_case_1b1", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *             Rhum.testCase("test_case_1b2", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *             Rhum.testCase("test_case_1b3", () => {
+ *               Rhum.asserts.assertEquals(true, true);
+ *             });
+ *           });
  *
- *     });
+ *         });
  *
  * Special thanks to
  *     @crookse (https://github.com/crookse)
  *     @ebebbington (https://github.com/ebebbington)
  */
 export class RhumRunner {
-  public Asserts: any;
-  public Mocks: any = {};
+  public asserts: any;
+  public mocks: any = {};
 
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
-  protected set_up_hook: Function | null = null;
-  protected tear_down_hook: Function | null = null;
+  protected before_all_hook: Function | null = null;
+  protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
 
@@ -65,38 +66,15 @@ export class RhumRunner {
    * Construct an object of this class.
    */
   constructor() {
-    this.Asserts = asserts;
-    this.Mocks.ServerRequest = MockServerRequest;
+    this.asserts = asserts;
+    this.mocks.ServerRequest = MockServerRequest;
   }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   /**
-   * Set up the test plan.
-   *
-   * @param Function cb
-   *     The callback to invoke. The callback should contain all of the
-   *     necessary procedures for setting up a test plan.
-   *
-   * @return void
-   */
-  public SetUp(cb: Function): void {
-    this.set_up_hook = cb;
-  }
-
-  /**
-   * Skip a test plan, suite, or case.
-   *
-   * @param Function cb
-   *
-   * @return void
-   */
-  public Skip(cb: Function): void {
-    // Haaaaaa... you got skipped.
-  }
-
-  /**
-   * Tear down a test plan.
+   * @description
+   *     Tear down a test plan.
    *
    * @param Function cb
    *    The callback to invoke. The callback should contain all of the necessary
@@ -104,12 +82,49 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TearDown(cb: Function): void {
-    this.tear_down_hook = cb;
+  public afterAll(cb: Function): void {
+    this.after_all_hook = cb;
   }
 
   /**
-   * Define a test case and execute the test function.
+   * @description
+   *     Set up the test plan.
+   *
+   * @param Function cb
+   *     The callback to invoke. The callback should contain all of the
+   *     necessary procedures for setting up a test plan.
+   *
+   * @return void
+   */
+  public beforeAll(cb: Function): void {
+    this.before_all_hook = cb;
+  }
+
+  /**
+   * @description
+   * @param Function cb
+   *
+   * @return void
+   */
+  public only(cb: Function): void {
+    // Do something
+  }
+
+  /**
+   * @description
+   *     Skip a test plan, suite, or case.
+   *
+   * @param Function cb
+   *
+   * @return void
+   */
+  public skip(name: string, cb: Function): void {
+    // Haaaaaa... you got skipped.
+  }
+
+  /**
+   * @description
+   *     Define a test case and execute the test function.
    *
    * @param string name
    *     The name of the test case.
@@ -118,7 +133,7 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TestCase(name: string, testFn: Function): void {
+  public testCase(name: string, testFn: Function): void {
     const tc = new TestCase(
       name,
       this.formatTestCaseName(name),
@@ -128,7 +143,8 @@ export class RhumRunner {
   }
 
   /**
-   * Define a test plan and execute the test plan's test suites.
+   * @description
+   *     Define a test plan and execute the test plan's test suites.
    *
    * @param string name
    *     The name of the test plan.
@@ -137,22 +153,23 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TestPlan(name: string, testSuites: Function): void {
+  public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_plan = name;
     testSuites();
   }
 
   /**
-   * Define a test suite and execute the test suite's test cases.
+   * @description
+   *     Define a test suite and execute the test suite's test cases.
    *
    * @param string name
    *     The name of the test suite.
-   * @param Function testSuites
+   * @param Function testCases
    *     The test cases to execute.
    *
    * @return void
    */
-  public TestSuite(name: string, testCases: Function): void {
+  public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
     testCases();
   }
@@ -160,7 +177,8 @@ export class RhumRunner {
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
 
   /**
-   * Figure out the name of the test case for output purposes.
+   * @description
+   *     Figure out the name of the test case for output purposes.
    *
    * @param string name
    *     The name of the test case.

@@ -29,125 +29,176 @@
 - [License](#license)
 
 ## Quick Start
+
+Create your test plan:
+
 ```typescript
 // File: app_test.ts
 
 import { Rhum } from "https://deno.land/x/rhum@v1.0.0/mod.ts";
 
-let value = false
+let value = false;
 
-function run () {
-    console.log("Running!");
-    return true
+function run() {
+  return true;
 }
 
-async function close () {
-    console.log("Closing")
-    return value
+async function close() {
+  value = true;
+  return value;
 }
 
-Rhum.TestPlan("app_test.ts", () => {
-    
-    Rhum.TestSuite("run()", () => {
-
-        Rhum.TestCase("Returns true", () => {
-            const result = run();
-            Rhum.assertEquals(true, result);
-        })
-    })
-
-    // TODO CORRECT IMPLEMENTATION
-    before(() => {
-        value = true
-    })
-
-    Rhum.TestSuite("close()", () => {
-
-        Rhum.TestCase("Returns true", async () => {
-            const result = await close();
-            Rhum.assertEquals(true, result);
-        })
-
-    })
-
-})
-
+Rhum.testPlan("app_test.ts", () => {
+  // Run the first test suite
+  Rhum.testSuite("run()", () => {
+    Rhum.testCase("Returns true", () => {
+      const result = run();
+      Rhum.asserts.assertEquals(true, result);
+    });
+  });
+  // Run the second test suite
+  Rhum.testSuite("close()", () => {
+    Rhum.testCase("Returns true", async () => {
+      const result = await close();
+      Rhum.asserts.assertEquals(true, result);
+    });
+  });
+});
 ```
 
+Run your test plan:
+
 ```
-$ deno test --allow-run app_test.ts
-// TODO SHOW OUTPUT
+$ deno test app_test.ts
+```
+
+Read the output:
+
+```
+Compile file:///.deno.test.ts
+running 2 tests
+
+app_test.ts
+    run()
+        Returns true ... ok (3ms)
+    close()
+        Returns true ... ok (1ms)
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 ```
 
 ## Features
 
-- Hooks
-  - `beforeEach`
-  - `beforeAll`
-  - `afterEach`
-  - `afterAll`
 - Descriptive naming for your tests
 - Lightweight
 - Zero dependencies
 - Simple and easy to use
 - Asynchronous support
 - Still uses `Deno.test` under the hood
+- Skip functionality
+- Mock requests
 
 ## Documentation
-ADD DOCUMENTATION ABOUT: HOOKS, IGNORING
 
-### `Rhum.TestPlan`
+### `Rhum.testPlan`
 
-Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests and suites for a single file
+Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
+Rhum.testPlan("app_test.ts", () => {
     ...
-  })
-})
-```
-
-### `Rhum.TestSuite`
-
-A test suite usually describes a method or property name, and groups up all test cases for that method or property. There can be as many test suites under a test plan as you want.
-
-```typescript
-Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
     ...
-  })
-  Rhum.TestSuite("close()", () => {
     ...
-  })
-})
+});
 ```
 
-### `Rhum.TestCase`
+### `Rhum.testSuite`
 
-A test case is grouped by a test suite and it is what makes the assertions - it is the test. A suite can have as many test cases as you want. Test cases can also be asynchronous.
+A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan.
 
 ```typescript
-Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
-    Rhum.TestCase("Returns true", () => {
-      Rhum.assertEquals(run(), true);
-    })
-    Rhum.TestCase("Returns false", () => {
-      Rhum.assertEquals(run(), false);
-    })
-  })
-})
+Rhum.testPlan("app_test.ts", () => {
+  Rhum.testSuite("run()", () => {
+    ...
+    ...
+    ...
+  });
+  Rhum.testSuite("close()", () => {
+    ...
+    ...
+    ...
+  });
+});
 ```
 
-### `Rhum.assertEquals`
+### `Rhum.testCase`
 
-A same implementation [assertEquals](https://deno.land/std/testing/asserts.ts) has, but attached to `Rhum`.
+A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous.
 
 ```typescript
-Rhum.assertEquals(true, true) // pass
-Rhum.assertEquals(true, false) // fail
+Rhum.testPlan("app_test.ts", () => {
+  Rhum.testSuite("run()", () => {
+    Rhum.testCase("should return true", () => {
+      Rhum.assert.assertEquals(run(), true);
+    });
+    Rhum.testCase("should return false", () => {
+      Rhum.assert.assertEquals(run(), false);
+    });
+  });
+});
 ```
+
+### `Rhum.asserts`
+
+The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to `Rhum`.
+
+```typescript
+Rhum.asserts.assertEquals(true, true) // pass
+Rhum.asserts.assertEquals(true, false) // fail
+```
+
+### `Rhum.skip`
+
+Allows a test plan, suite, or case to be skipped when the tests run.
+
+```typescript
+Rhum.testPlan("app_test.ts", () => {
+  Rhum.skip("run()", () => { // Will not run this block
+    Rhum.testCase("Returns true", () => {
+      ...
+    });
+  });
+  Rhum.testSuite("close()", () => {
+    Rhum.testCase("Returns true", () => {
+      ...
+    });
+  });
+});
+```
+
+### `Rhum.mocks`
+
+An object of functions to help you mock objects.
+
+* `Rhum.mocks.ServerRequest`
+
+    Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
+
+    ```typescript
+    const encodedBody = new TextEncoder().encode(JSON.stringify({
+      body_param: "hello",
+    }));
+
+    const body = new Deno.Buffer(encodedBody as ArrayBuffer);
+
+    const mockRequest = Rhum.mocks.ServerRequest("/api/users/1", "GET", {
+      headers: {
+        "Content-Type": "application/json",
+        "Token": "Rhum"
+      },
+      body: body,
+    });
+    ```
 
 ## Why Use Rhum?
 
