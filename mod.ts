@@ -16,28 +16,28 @@ const extraChars = 10;
  *
  *     import { Rhum } from "/path/to/rhum/mod.ts";
  *
- *     Rhum.TestPlan("test_plan_1", () => {
+ *     Rhum.testPlan("test_plan_1", () => {
  *
- *       Rhum.TestSuite("test_suite_1a", () => {
- *         Rhum.TestCase("test_case_1a1", () => {
+ *       Rhum.testSuite("test_suite_1a", () => {
+ *         Rhum.testCase("test_case_1a1", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
- *         Rhum.TestCase("test_case_1a2", () => {
+ *         Rhum.testCase("test_case_1a2", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
- *         Rhum.TestCase("test_case_1a3", () => {
+ *         Rhum.testCase("test_case_1a3", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
  *       });
  *
- *       Rhum.TestSuite("test_suite_1b", () => {
- *         Rhum.TestCase("test_case_1b1", () => {
+ *       Rhum.testSuite("test_suite_1b", () => {
+ *         Rhum.testCase("test_case_1b1", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
- *         Rhum.TestCase("test_case_1b2", () => {
+ *         Rhum.testCase("test_case_1b2", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
- *         Rhum.TestCase("test_case_1b3", () => {
+ *         Rhum.testCase("test_case_1b3", () => {
  *           Rhum.Asserts.assertEquals(true, true);
  *         });
  *       });
@@ -49,8 +49,8 @@ const extraChars = 10;
  *     @ebebbington (https://github.com/ebebbington)
  */
 export class RhumRunner {
-  public Asserts: any;
-  public Mocks: any = {};
+  public asserts: any;
+  public mocks: any = {};
 
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
@@ -65,8 +65,8 @@ export class RhumRunner {
    * Construct an object of this class.
    */
   constructor() {
-    this.Asserts = asserts;
-    this.Mocks.ServerRequest = MockServerRequest;
+    this.asserts = asserts;
+    this.mocks.ServerRequest = MockServerRequest;
   }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
@@ -118,7 +118,7 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TestCase(name: string, testFn: Function): void {
+  public testCase(name: string, testFn: Function): void {
     const tc = new TestCase(
       name,
       this.formatTestCaseName(name),
@@ -137,7 +137,7 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TestPlan(name: string, testSuites: Function): void {
+  public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_plan = name;
     testSuites();
   }
@@ -152,7 +152,7 @@ export class RhumRunner {
    *
    * @return void
    */
-  public TestSuite(name: string, testCases: Function): void {
+  public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
     testCases();
   }

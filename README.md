@@ -49,14 +49,14 @@ async function close() {
 
 Rhum.TestPlan("app_test.ts", () => {
   // Run the first test suite
-  Rhum.TestSuite("run()", () => {
+  Rhum.testSuite("run()", () => {
     Rhum.TestCase("Returns true", () => {
       const result = run();
       Rhum.Asserts.assertEquals(true, result);
     });
   });
   // Run the second test suite
-  Rhum.TestSuite("close()", () => {
+  Rhum.testSuite("close()", () => {
     Rhum.TestCase("Returns true", async () => {
       const result = await close();
       Rhum.Asserts.assertEquals(true, result);
@@ -134,24 +134,24 @@ Groups up test suites to describe a test plan. Usually, a test plan is per file 
 
 ```typescript
 Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
+  Rhum.testSuite("run()", () => {
     ...
   })
 })
 ```
 
-### `Rhum.TestSuite`
+### `Rhum.testSuite`
 
 A test suite usually describes a method or property name, and groups up all test cases for that method or property. There can be as many test suites under a test plan as you want.
 
 ```typescript
 Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
+  Rhum.testSuite("run()", () => {
     ...
     ...
     ...
   })
-  Rhum.TestSuite("close()", () => {
+  Rhum.testSuite("close()", () => {
     ...
     ...
     ...
@@ -165,7 +165,7 @@ A test case is grouped by a test suite and it is what makes the assertions - it 
 
 ```typescript
 Rhum.TestPlan("app_test.ts", () => {
-  Rhum.TestSuite("run()", () => {
+  Rhum.testSuite("run()", () => {
     Rhum.TestCase("should return true", () => {
       Rhum.assertEquals(run(), true);
     })

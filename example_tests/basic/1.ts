@@ -1,27 +1,27 @@
 import { Rhum } from "../../mod.ts";
 
-Rhum.TestPlan("test_plan_1", () => {
-  Rhum.TestSuite("test_suite_1a", () => {
-    Rhum.TestCase("test_case_1a1", () => {
-      Rhum.Asserts.assertEquals(true, true);
+Rhum.testPlan("test_plan_1", () => {
+  Rhum.testSuite("test_suite_1a", () => {
+    Rhum.testCase("test_case_1a1", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
-    Rhum.TestCase("test_case_1a2", () => {
-      Rhum.Asserts.assertEquals(true, true);
+    Rhum.testCase("test_case_1a2", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
-    Rhum.TestCase("test_case_1a3", () => {
-      Rhum.Asserts.assertEquals(true, true);
+    Rhum.testCase("test_case_1a3", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
   });
 
-  Rhum.TestSuite("test_suite_1b", () => {
-    Rhum.TestCase("test_case_1b1", () => {
-      Rhum.Asserts.assertEquals(true, true);
+  Rhum.testSuite("test_suite_1b", () => {
+    Rhum.testCase("test_case_1b1", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
-    Rhum.TestCase("test_case_1b2", () => {
-      Rhum.Asserts.assertEquals(true, true);
+    Rhum.testCase("test_case_1b2", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
-    Rhum.TestCase("test_case_1b3", () => {
-      Rhum.Asserts.assertEquals(true, true);
+    Rhum.testCase("test_case_1b3", () => {
+      Rhum.asserts.assertEquals(true, true);
     });
   });
 });

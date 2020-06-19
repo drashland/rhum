@@ -2,9 +2,9 @@ import { asserts } from "../../deps.ts";
 import { Rhum } from "../../mod.ts";
 
 Deno.test({
-  name: "Unit | Rhum | Mocks | Assigns the correct callback",
+  name: "Unit | Rhum | mocks | Assigns the correct callback",
   async fn(): Promise<void> {
-    const mockReq = Rhum.Mocks.ServerRequest("https://google.com", "get", {
+    const mockReq = Rhum.mocks.ServerRequest("https://google.com", "get", {
       headers: {
         a: "Hi",
       },
@@ -52,16 +52,16 @@ Deno.test({
 // })
 
 Deno.test({
-  name: "Unit | Rhum | TestCase() | Runs a test without failing",
+  name: "Unit | Rhum | testCase() | Runs a test without failing",
   async fn(): Promise<void> {
-    Rhum.TestCase("Testing TestCase", () => {
+    Rhum.testCase("Testing testCase", () => {
       console.log("Running!");
     });
   },
 });
 
 Deno.test({
-  name: "Unit | Rhum | TestPlan() | Registers the test plan name",
+  name: "Unit | Rhum | testPlan() | Registers the test plan name",
   async fn(): Promise<void> {
     let functionWasCalled = false;
     function testFn() {
@@ -69,13 +69,13 @@ Deno.test({
       return "Hello world!";
     }
     const copyTestFn = testFn;
-    Rhum.TestPlan("Testing TestCase", copyTestFn);
+    Rhum.testPlan("Testing testCase", copyTestFn);
     asserts.assertEquals(functionWasCalled, true);
   },
 });
 
 Deno.test({
-  name: "Unit | Rhum | TestSuite() | Registers the test suite name",
+  name: "Unit | Rhum | testSuite() | Registers the test suite name",
   async fn(): Promise<void> {
     let functionWasCalled = false;
     function testFn() {
@@ -83,7 +83,7 @@ Deno.test({
       return "Hello world!";
     }
     const copyTestFn = testFn;
-    Rhum.TestSuite("Testing TestCase", copyTestFn);
+    Rhum.testSuite("Testing testCase", copyTestFn);
     asserts.assertEquals(functionWasCalled, true);
   },
 });
