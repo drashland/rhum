@@ -118,7 +118,7 @@ export class RhumRunner {
    *
    * @return void
    */
-  public skip(cb: Function): void {
+  public skip(name: string, cb: Function): void {
     // Haaaaaa... you got skipped.
   }
 
