@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./logo.svg" height="200" alt="Rhum - A lightweight testing framework for Deno.">
+  <img src="./logo.svg" height="250" alt="Rhum - A lightweight testing framework for Deno.">
   <h1 align="center">Rhum</h1>
 </p>
 <p align="center">A lightweight testing framework for Deno.</p>
