@@ -1,5 +1,5 @@
 <p align="center">
-  [Insert new logo here]
+  <img src="./logo.svg">
   <h1 align="center">Rhum</h1>
 </p>
 <p align="center">A Lightweight Testing Framework for Deno</p>
