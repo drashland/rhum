@@ -13,7 +13,7 @@ Deno.test({
       cmd: ["deno", "test", "--allow-run", "example_tests/basic/tests_pass.ts"],
       stdout: "piped",
       stderr: "piped",
-      env: { "NO_COLOR": "false" },
+      env: { "NO_COLOR": "true" },
     });
     const status = await p.status();
     p.close();
@@ -39,15 +39,16 @@ Deno.test({
      */
     stdout = stdout.substring(0, stdout.indexOf("filtered out") + 12);
     const expectedResult = "running 22 tests\n" +
+      "\n" +
       "test_plan_1\n" +
       "    test_suite_1a\n" +
-      "        test_case_1a1 ... ok \n" +
-      "        test_case_1a2 ... ok \n" +
-      "        test_case_1a3 ... ok \n" +
-      "    test_suite_1b                       \n" +
-      "        test_case_1b1 ... ok \n" +
-      "        test_case_1b2 ... ok \n" +
-      "        test_case_1b3 ... ok \n" +
+      "        test_case_1a1 ... ok\n" +
+      "        test_case_1a2 ... ok\n" +
+      "        test_case_1a3 ... ok\n" +
+      "    test_suite_1b\n" +
+      "        test_case_1b1 ... ok\n" +
+      "        test_case_1b2 ... ok\n" +
+      "        test_case_1b3 ... ok\n" +
       "test_plan_2\n" +
       "    test_suite_2a\n" +
       "        test_case_2a1 ... ok \n" +
