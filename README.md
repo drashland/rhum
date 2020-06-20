@@ -212,7 +212,7 @@ Rhum is designed to aid in testing your projects, providing many utilities as wr
 Rhum takes concepts from the following:
 
 * <a href="https://mochajs.org/" target="_BLANK">Mocha</a> &mdash; For how you write tests in Rhum, and the use of <a href="https://mochajs.org/#hooks" target="_BLANK">hooks</a>
-* <a href="https://volument.com/baretest/" target="_BLANK">Baretest</a> &mdash; Being minimalistic
+* <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
 
 Rhum can be added directly into any project. All you need to do is import Rhum and you are ready to either start writing tests, and bring your existing tests under Rhum.
 
