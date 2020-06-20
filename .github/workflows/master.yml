@@ -28,7 +28,9 @@ jobs:
         run: deno test tests/unit
 
       - name: Integration
-        run: deno test --allow-run tests/integration
+        run: |
+          export NO_COLOR=true
+          deno test --allow-run tests/integration
 
   linter:
     strategy:
