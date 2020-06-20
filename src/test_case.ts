@@ -19,9 +19,13 @@ export class TestCase {
   }
 
   public async run() {
-    await Deno.test(this.name, async () => {
-      Deno.stdout.writeSync(encoder.encode(this.new_name));
-      await this.test_fn();
-    });
+    const testFn = this.test_fn
+    const name = this.new_name
+    await Deno.test({
+      name: name,
+      async fn(): Promise<void> {
+        await testFn()
+      }
+    })
   }
 }
