@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        deno: ["1.1.0"]
+        deno: ["1.1.1"]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -28,9 +28,7 @@ jobs:
         run: deno test tests/unit
 
       - name: Integration
-        run: |
-          export NO_COLOR=true
-          deno test --allow-run tests/integration
+        run: deno test --allow-run tests/integration
 
   linter:
     strategy:
