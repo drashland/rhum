@@ -27,6 +27,9 @@ jobs:
       - name: Unit
         run: deno test tests/unit
 
+      - name: Integration
+        run: deno test --allow-run tests/integration
+
   linter:
     strategy:
       matrix:
