@@ -53,10 +53,12 @@ export class RhumRunner {
   public asserts: any;
   public mocks: any = {};
 
+  protected hook_after: Function | null = null;
+  protected hook_after_each: Function | null = null;
+  protected hook_before: Function | null = null;
+  protected hook_before_each: Function | null = null;
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
-  protected before_all_hook: Function | null = null;
-  protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
 
@@ -82,8 +84,12 @@ export class RhumRunner {
    *
    * @return void
    */
-  public afterAll(cb: Function): void {
-    this.after_all_hook = cb;
+  public after(cb: Function): void {
+    this.hook_after = cb;
+  }
+
+  public afterEach(cb: Function): void {
+    this.hook_after_each = cb;
   }
 
   /**
@@ -96,8 +102,12 @@ export class RhumRunner {
    *
    * @return void
    */
-  public beforeAll(cb: Function): void {
-    this.before_all_hook = cb;
+  public before(cb: Function): void {
+    this.hook_before = cb;
+  }
+
+  public beforeEach(cb: Function): void {
+    this.hook_before_each = cb;
   }
 
   /**
@@ -134,12 +144,25 @@ export class RhumRunner {
    * @return void
    */
   public testCase(name: string, testFn: Function): void {
+    // Create a new test case which includes the Deno.test() call.
     const tc = new TestCase(
       name,
       this.formatTestCaseName(name),
       testFn,
     );
+
+    // Execute the beforeEach hook
+    if (this.hook_before_each) {
+      this.hook_before_each();
+    }
+
+    // Run the test
     tc.run();
+
+    // Execute the afterEach hook
+    if (this.hook_before_each) {
+      this.hook_before_each();
+    }
   }
 
   /**
@@ -155,7 +178,19 @@ export class RhumRunner {
    */
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_plan = name;
+
+    // Execute the before hook
+    if (this.hook_before) {
+      this.hook_before();
+    }
+
+    // Run the test suites
     testSuites();
+
+    // Execute the after hook
+    if (this.hook_after) {
+      this.hook_after();
+    }
   }
 
   /**
