@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="./logo.svg" height="200">
+  <img src="./logo.svg" height="200" alt="Rhum - A lightweight testing framework for Deno.">
   <h1 align="center">Rhum</h1>
 </p>
-<p align="center">A Lightweight Testing Framework for Deno</p>
+<p align="center">A lightweight testing framework for Deno.</p>
 <p align="center">
   <a href="https://github.com/drashland/rhum/releases">
     <img src="https://img.shields.io/github/release/drashland/rhum.svg?color=bright_green&label=latest">
