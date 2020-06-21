@@ -11,6 +11,7 @@ import { TestCase } from "./src/test_case.ts";
  *       cases: [
  *         {
  *           name: "My Case",
+ *           new_name: this.formatTestCaseName(name),
  *           testFn: Function
  *         },
  *         ...
@@ -58,10 +59,11 @@ import { TestCase } from "./src/test_case.ts";
 interface Plan {
   [key: string]: { // Plan name
     suites?: {[key: string]: { // suite names
-      cases?: [{
-        name?: string,
-        testFn?: Function
-      }];
+      cases?: Array<{
+        name: string,
+        new_name: string
+        testFn: Function
+      }>;
       after_all_case_hook?: Function;
       after_each_case_hook?: Function;
       before_all_case_hook?: Function;
@@ -131,7 +133,7 @@ export class RhumRunner {
   protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
-  protected plan: Plan = {};
+  protected plan: any = {};
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -198,7 +200,7 @@ export class RhumRunner {
    * @return void
    */
   public afterAll(cb: Function): void {
-    this.after_all_hook = cb;
+    this.after_all_hook = cb; // TODO(ebebbington) This might not be needed anymore
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
@@ -220,7 +222,7 @@ export class RhumRunner {
    * @return void
    */
   public beforeAll(cb: Function): void {
-    this.before_all_hook = cb;
+    this.before_all_hook = cb; // TODO(ebebbington) This might not be needed anymore
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
@@ -251,6 +253,8 @@ export class RhumRunner {
    * @param Function cb
    *
    * @return void
+   *
+   * TODO(ebebbington|crookse) Maybe we could still call run, but pass in { ignore: true } which the Deno.Test will use? just so it displays ignored in the console
    */
   public skip(name: string, cb: Function): void {
     // Haaaaaa... you got skipped.
@@ -270,6 +274,7 @@ export class RhumRunner {
   public testCase(name: string, testFn: Function): void {
     this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].cases.push({
       name,
+      new_name: this.formatTestCaseName(name),
       testFn
     })
     const tc = new TestCase(
@@ -312,7 +317,7 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
-    this.plan[this.passed_in_test_plan].suites[name] = {cases: []};
+    this.plan[this.passed_in_test_plan].suites[name] = { cases: [] };
     testCases();
   }
 
