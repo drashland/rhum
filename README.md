@@ -64,6 +64,8 @@ Rhum.testPlan("app_test.ts", () => {
     });
   });
 });
+
+Rhum.run();
 ```
 
 Run your test plan:
@@ -97,8 +99,20 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 - Still uses `Deno.test` under the hood
 - Skip functionality
 - Mock requests
+- Hooks
 
 ## Documentation
+
+### `Rhum.run`
+
+Runs your test plan.
+
+```typescript
+Rhum.testPlan(..., () => {
+
+})
+Rhum.run();
+```
 
 ### `Rhum.testPlan`
 
@@ -198,6 +212,102 @@ An object of functions to help you mock objects.
       },
       body: body,
     });
+    ```
+  
+### Hooks
+
+A variety of hooks that can be run before or after test suites and cases.
+
+* `Rhum.beforeEach`
+
+    If within a plan that contains test suites, the hook will be ran before each test suite.
+    If within a suite that contains test cases, the hook will be ran before each test case
+    
+    ```typescript
+    Rhum.testPlan("My Plan", () => {
+      // Run the hook before each test suite
+      Rhum.beforeEach(() => {
+        ...
+      })
+      Rhum.testSuite("My Suite 1", () => {
+        // Run the hook before each test case
+        Rhum.beforeEach(() => {
+          ...
+        })
+        Rhum.testCase("My Test Case 1", () => {
+          ...
+        })
+      })
+    })
+    ```
+  
+* `Rhum.beforeAll`
+
+    If within a plan that contains test suites, the hook will be ran before all test suites, and only once.
+    If within a suite that contains test cases, the hook will be ran before all test cases, and only once
+    
+    ```typescript
+    Rhum.testPlan("My Plan", () => {
+      // Run the hook before all test suites
+      Rhum.beforeAll(() => {
+        ...
+      })
+      Rhum.testSuite("My Suite 1", () => {
+        // Run the hook before all test cases
+        Rhum.beforeAll(() => {
+          ...
+        })
+        Rhum.testCase("My Test Case 1", () => {
+          ...
+        })
+      })
+    })
+    ```
+  
+* `Rhum.afterEach`
+
+    If within a plan that contains test suites, the hook will be ran after each test suite.
+    If within a suite that contains test cases, the hook will be ran after each test case
+    
+    ```typescript
+    Rhum.testPlan("My Plan", () => {
+      // Run the hook after each test suite
+      Rhum.afterEach(() => {
+        ...
+      })
+      Rhum.testSuite("My Suite 1", () => {
+        // Run the hook after each test case
+        Rhum.afterEach(() => {
+          ...
+        })
+        Rhum.testCase("My Test Case 1", () => {
+          ...
+        })
+      })
+    })
+    ```
+  
+* `Rhum.afterAll`
+
+    If within a plan that contains test suites, the hook will be ran after all test suites, and only once.
+    If within a suite that contains test cases, the hook will be ran after all test cases, and only once
+    
+    ```typescript
+    Rhum.testPlan("My Plan", () => {
+      // Run the hook after all test suites
+      Rhum.afterAll(() => {
+        ...
+      })
+      Rhum.testSuite("My Suite 1", () => {
+        // Run the hook after all test cases
+        Rhum.afterAll(() => {
+          ...
+        })
+        Rhum.testCase("My Test Case 1", () => {
+          ...
+        })
+      })
+    })
     ```
 
 ## Why Use Rhum?
