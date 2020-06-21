@@ -190,7 +190,7 @@ export class RhumRunner {
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
       this.test_suite_in_progress = this.passed_in_test_suite;
-      newName = `${"\u0008".repeat(name.length + extraChars)}` +
+      newName = `${"\u0008".repeat(name.length + extraChars)}` + // strip "test "
         `${" ".repeat(name.length + extraChars)}` +
         `\n${this.passed_in_test_plan}` +
         `\n    ${this.passed_in_test_suite}` +
