@@ -287,6 +287,7 @@ export class RhumRunner {
    * @return void
    */
   public testPlan(name: string, testSuites: Function): void {
+    this.passed_in_test_suite = ""; // New plan
     this.passed_in_test_plan = name;
     this.plan = {
       suites: {},

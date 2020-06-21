@@ -11,6 +11,9 @@ export class TestCase {
   }
 
   public async run() {
+    if (this.plan.hasOwnProperty("suites") === false) {
+      return
+    }
     Object.keys(this.plan.suites).forEach((suiteName) => {
       // Run cases
       this.plan.suites[suiteName].cases.forEach(async (c: any) => {
