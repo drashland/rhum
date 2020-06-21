@@ -10,11 +10,11 @@ Deno.test({
           name: "case_1",
           new_name: "123 case_1",
           testFn: function () {
-            asserts.assertEquals(true, true)
-          }
-        }]
-      }
-    }
+            asserts.assertEquals(true, true);
+          },
+        }],
+      },
+    };
     const testCase = new TestCase(plan);
     await testCase.run();
   },

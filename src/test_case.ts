@@ -12,7 +12,7 @@ export class TestCase {
 
   public async run() {
     if (this.plan.hasOwnProperty("suites") === false) {
-      return
+      return;
     }
     Object.keys(this.plan.suites).forEach((suiteName) => {
       // Run cases
@@ -33,7 +33,7 @@ export class TestCase {
           if (this.plan.suites[suiteName].before_each_case_hook) {
             this.plan.suites[suiteName].before_each_case_hook();
           }
-          await c.testFn()
+          await c.testFn();
           if (this.plan.suites[suiteName].after_each_case_hook) {
             this.plan.suites[suiteName].after_each_case_hook();
           }
@@ -46,10 +46,10 @@ export class TestCase {
           if (this.plan.after_all_suite_hook) {
             this.plan.after_all_suite_hook();
           }
-        }
+        };
         await Deno.test(c.name, async () => {
           Deno.stdout.writeSync(encoder.encode(c.new_name));
-          await hookAttachedTestFn()
+          await hookAttachedTestFn();
         });
       });
     });
