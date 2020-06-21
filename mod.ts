@@ -56,22 +56,24 @@ import { TestCase } from "./src/test_case.ts";
  */
 interface Plan {
   [key: string]: { // Plan name
-    suites?: {[key: string]: { // suite names
-      cases?: Array<{
-        name: string,
-        new_name: string
-        testFn: Function
-      }>;
-      after_all_case_hook?: Function;
-      after_each_case_hook?: Function;
-      before_all_case_hook?: Function;
-      before_each_case_hook?: Function;
-    }};
+    suites?: {
+      [key: string]: { // suite names
+        cases?: Array<{
+          name: string;
+          new_name: string;
+          testFn: Function;
+        }>;
+        after_all_case_hook?: Function;
+        after_each_case_hook?: Function;
+        before_all_case_hook?: Function;
+        before_each_case_hook?: Function;
+      };
+    };
     after_all_suite_hook?: Function;
     after_each_suite_hook?: Function;
     before_all_suite_hook?: Function;
     before_each_suite_hook?: Function;
-  }
+  };
 }
 
 /**
@@ -159,10 +161,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before each inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].before_each_case_hook = cb
+      this.plan.suites[this.passed_in_test_suite].before_each_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before each hooks for the suites
-      this.plan.before_each_suite_hook = cb
+      this.plan.before_each_suite_hook = cb;
     }
   }
 
@@ -180,10 +182,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a after each inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].after_each_case_hook = cb
+      this.plan.suites[this.passed_in_test_suite].after_each_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // after each hooks for the suites
-      this.plan.after_each_suite_hook = cb
+      this.plan.after_each_suite_hook = cb;
     }
   }
 
@@ -202,10 +204,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].after_all_case_hook = cb
+      this.plan.suites[this.passed_in_test_suite].after_all_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before all hooks for the suites
-      this.plan.after_all_suite_hook = cb
+      this.plan.after_all_suite_hook = cb;
     }
   }
 
@@ -224,10 +226,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].before_all_case_hook = cb
+      this.plan.suites[this.passed_in_test_suite].before_all_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before all hooks for the suites
-      this.plan.before_all_suite_hook = cb
+      this.plan.before_all_suite_hook = cb;
     }
   }
 
@@ -273,8 +275,8 @@ export class RhumRunner {
     this.plan.suites[this.passed_in_test_suite].cases.push({
       name,
       new_name: this.formatTestCaseName(name),
-      testFn
-    })
+      testFn,
+    });
     // const tc = new TestCase(
     //   name,
     //   this.formatTestCaseName(name),
@@ -297,8 +299,8 @@ export class RhumRunner {
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_plan = name;
     this.plan = {
-      suites: {}
-    }
+      suites: {},
+    };
     testSuites();
   }
 
@@ -322,7 +324,7 @@ export class RhumRunner {
   /**
    * Run the test plan
    */
-  public run (): void {
+  public run(): void {
     const tc = new TestCase(this.plan);
     tc.run();
   }
