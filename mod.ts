@@ -156,7 +156,7 @@ export class RhumRunner {
    * @return void
    */
   public beforeEach(cb: Function): void {
-    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before each inside a suite for every test case
       this.plan.suites[this.passed_in_test_suite].before_each_case_hook = cb;
@@ -177,7 +177,7 @@ export class RhumRunner {
    * @return void
    */
   public afterEach(cb: Function): void {
-    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a after each inside a suite for every test case
       this.plan.suites[this.passed_in_test_suite].after_each_case_hook = cb;
@@ -198,7 +198,7 @@ export class RhumRunner {
    * @return void
    */
   public afterAll(cb: Function): void {
-    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
       this.plan.suites[this.passed_in_test_suite].after_all_case_hook = cb;
@@ -219,7 +219,7 @@ export class RhumRunner {
    * @return void
    */
   public beforeAll(cb: Function): void {
-    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
       this.plan.suites[this.passed_in_test_suite].before_all_case_hook = cb;
@@ -273,12 +273,6 @@ export class RhumRunner {
       new_name: this.formatTestCaseName(name),
       testFn,
     });
-    // const tc = new TestCase(
-    //   name,
-    //   this.formatTestCaseName(name),
-    //   testFn,
-    // );
-    // tc.run();
   }
 
   /**
