@@ -129,8 +129,6 @@ export class RhumRunner {
 
   protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
-  protected before_all_hook: Function | null = null;
-  protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
   protected plan: any = {}; // TODO(ebebbington) Needs a type, use Plan interface but fix the TS errors it gives
@@ -200,7 +198,6 @@ export class RhumRunner {
    * @return void
    */
   public afterAll(cb: Function): void {
-    this.after_all_hook = cb; // TODO(ebebbington) This might not be needed anymore
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
@@ -222,7 +219,6 @@ export class RhumRunner {
    * @return void
    */
   public beforeAll(cb: Function): void {
-    this.before_all_hook = cb; // TODO(ebebbington) This might not be needed anymore
     // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
