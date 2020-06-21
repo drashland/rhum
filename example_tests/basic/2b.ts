@@ -22,3 +22,5 @@ Rhum.testPlan("test_plan_2", () => {
     });
   });
 });
+
+Rhum.run();

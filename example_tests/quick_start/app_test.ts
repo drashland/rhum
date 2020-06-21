@@ -27,3 +27,5 @@ Rhum.testPlan("app_test.ts", () => {
     });
   });
 });
+
+Rhum.run();

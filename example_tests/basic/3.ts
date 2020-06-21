@@ -28,3 +28,5 @@ Rhum.testPlan("test_plan_3", () => {
     });
   });
 });
+
+Rhum.run();
