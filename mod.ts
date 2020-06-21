@@ -3,6 +3,78 @@ import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 
 /**
+ * Example:
+ *
+ * "My Plan": {
+ *   suites: {
+ *     "My Suite": {
+ *       cases: [
+ *         {
+ *           name: "My Case",
+ *           testFn: Function
+ *         },
+ *         ...
+ *       ],
+ *       after_all_case_hook: Function,
+ *       after_each_case_hook: Function,
+ *       before_all_case_hook: Function,
+ *       before_each_case_hook: Function
+ *     },
+ *     ... // More suites allowed
+ *   },
+ *   after_all_suite_hook: Function;
+ *   after_each_suite_hook: Function;
+ *   before_all_suite_hook: Function;
+ *   before_each_suite_hook: Function;
+ * }
+ *
+ * or:
+ *
+ * {
+     app_test.ts: {
+       suites: {
+         run(): {
+           cases: [Array],
+           after_all_case_hook: [Function],
+           before_all_case_hook: [Function],
+           before_each_case_hook: [Function],
+           after_each_case_hook: [Function]
+         },
+         close(): {
+           cases: [Array],
+           after_all_case_hook: [Function],
+           before_all_case_hook: [Function],
+           before_each_case_hook: [Function],
+           after_each_case_hook: [Function]
+         }
+       },
+       before_each_suite_hook: [Function],
+       after_each_suite_hook: [Function],
+       after_all_suite_hook: [Function],
+       before_all_suite_hook: [Function]
+     }
+ * }
+ */
+interface Plan {
+  [key: string]: { // Plan name
+    suites?: {[key: string]: { // suite names
+      cases?: [{
+        name?: string,
+        testFn?: Function
+      }];
+      after_all_case_hook?: Function;
+      after_each_case_hook?: Function;
+      before_all_case_hook?: Function;
+      before_each_case_hook?: Function;
+    }};
+    after_all_suite_hook?: Function;
+    after_each_suite_hook?: Function;
+    before_all_suite_hook?: Function;
+    before_each_suite_hook?: Function;
+  }
+}
+
+/**
  * @description
  *     Deno's test runner outputs "test ", which has a length of 5. This module
  *     erases the "test " string by backspacing the test plan line and test
@@ -59,6 +131,7 @@ export class RhumRunner {
   protected after_all_hook: Function | null = null;
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
+  protected plan: Plan = {};
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -74,30 +147,88 @@ export class RhumRunner {
 
   /**
    * @description
-   *     Tear down a test plan.
+   *     Register an before each hook.
    *
    * @param Function cb
-   *    The callback to invoke. The callback should contain all of the necessary
-   *    procedures for tearing down a test plan.
+   *    The callback to invoke. Would contain the required logic you need
+   *    to do what you want, before each test suite or case.
+   *
+   * @return void
+   */
+  public beforeEach(cb: Function): void {
+    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+      // is a before each inside a suite for every test case
+      this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].before_each_case_hook = cb
+    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      // before each hooks for the suites
+      this.plan[this.passed_in_test_plan].before_each_suite_hook = cb
+    }
+  }
+
+  /**
+   * @description
+   *     Register an after each hook.
+   *
+   * @param Function cb
+   *    The callback to invoke. Would contain the required logic you need
+   *    to do what you want, after each test suite or case.
+   *
+   * @return void
+   */
+  public afterEach(cb: Function): void {
+    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+      // is a after each inside a suite for every test case
+      this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].after_each_case_hook = cb
+    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      // after each hooks for the suites
+      this.plan[this.passed_in_test_plan].after_each_suite_hook = cb
+    }
+  }
+
+  /**
+   * @description
+   *     Register an after all hook.
+   *
+   * @param Function cb
+   *    The callback to invoke. Would contain the required logic you need
+   *    to do what you want, after all test suites or cases.
    *
    * @return void
    */
   public afterAll(cb: Function): void {
     this.after_all_hook = cb;
+    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+      // is a before all inside a suite for every test case
+      this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].after_all_case_hook = cb
+    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      // before all hooks for the suites
+      this.plan[this.passed_in_test_plan].after_all_suite_hook = cb
+    }
   }
 
   /**
    * @description
-   *     Set up the test plan.
+   *     Register an before all hook.
    *
    * @param Function cb
-   *     The callback to invoke. The callback should contain all of the
-   *     necessary procedures for setting up a test plan.
+   *    The callback to invoke. Would contain the required logic you need
+   *    to do what you want, before all test suites or cases.
    *
    * @return void
    */
   public beforeAll(cb: Function): void {
     this.before_all_hook = cb;
+    // Check if the hook is for test cases inside of a suite TODO Might need to set this.passed_in_test_suite = "" on plan being registered
+    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+      // is a before all inside a suite for every test case
+      this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].before_all_case_hook = cb
+    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      // before all hooks for the suites
+      this.plan[this.passed_in_test_plan].before_all_suite_hook = cb
+    }
   }
 
   /**
@@ -105,6 +236,8 @@ export class RhumRunner {
    * @param Function cb
    *
    * @return void
+   *
+   * TODO(#5)
    */
   public only(cb: Function): void {
     // Do something
@@ -114,6 +247,7 @@ export class RhumRunner {
    * @description
    *     Skip a test plan, suite, or case.
    *
+   * @param string name
    * @param Function cb
    *
    * @return void
@@ -134,6 +268,10 @@ export class RhumRunner {
    * @return void
    */
   public testCase(name: string, testFn: Function): void {
+    this.plan[this.passed_in_test_plan].suites[this.passed_in_test_suite].cases.push({
+      name,
+      testFn
+    })
     const tc = new TestCase(
       name,
       this.formatTestCaseName(name),
@@ -155,6 +293,9 @@ export class RhumRunner {
    */
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_plan = name;
+    this.plan[name] = {
+      suites: {}
+    }
     testSuites();
   }
 
@@ -171,6 +312,7 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
+    this.plan[this.passed_in_test_plan].suites[name] = {cases: []};
     testCases();
   }
 
