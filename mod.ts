@@ -195,10 +195,7 @@ export class RhumRunner {
    * @return void
    */
   public testCase(name: string, testFn: Function): void {
-    // @ts-ignore
-    // TODO(crookse) figure out why this still give sthe "Object is possibly
-    // undefined" error even though we check if the object exists
-    this.plan.suites![this.passed_in_test_suite].cases.push({
+    this.plan.suites[this.passed_in_test_suite].cases!.push({
       name,
       new_name: this.formatTestCaseName(name),
       testFn,
