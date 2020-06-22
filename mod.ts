@@ -242,6 +242,7 @@ export class RhumRunner {
   public run(): void {
     const tc = new TestCase(this.plan);
     tc.run();
+    this.deconstruct()
   }
 
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
@@ -279,6 +280,17 @@ export class RhumRunner {
     }
 
     return newName;
+  }
+
+  /**
+   * 'Empty' this object. After calling this, Rhum should be ready for another Plan
+   */
+  protected deconstruct (): void {
+    this.passed_in_test_suite = ""
+    this.passed_in_test_plan = ""
+    this.test_plan_in_progress = ""
+    this.test_suite_in_progress = ""
+    this.plan = { suites: {} }
   }
 }
 

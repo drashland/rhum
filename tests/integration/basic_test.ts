@@ -11,7 +11,7 @@ Deno.test({
   async fn(): Promise<void> {
     const p = await Deno.run({
       cmd: [
-        "deno cache example_tests/basic/tests_pass.ts && deno test --allow-run example_tests/basic/tests_pass.ts",
+        "deno test --allow-run example_tests/basic/tests_pass.ts",
       ],
       stdout: "piped",
       stderr: "piped",
