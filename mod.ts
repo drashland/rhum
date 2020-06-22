@@ -54,26 +54,24 @@ import { TestCase } from "./src/test_case.ts";
      before_all_suite_hook: [Function]
  * }
  */
-interface Plan {
-  [key: string]: { // Plan name
-    suites?: {
-      [key: string]: { // suite names
-        cases?: Array<{
-          name: string;
-          new_name: string;
-          testFn: Function;
-        }>;
-        after_all_case_hook?: Function;
-        after_each_case_hook?: Function;
-        before_all_case_hook?: Function;
-        before_each_case_hook?: Function;
-      };
+interface IPlan {
+  suites: {
+    [key: string]: { // suite names
+      cases?: Array<{
+        name: string;
+        new_name: string;
+        testFn: Function;
+      }>;
+      after_all_case_hook: Function | null;
+      after_each_case_hook: Function | null;
+      before_all_case_hook: Function | null;
+      before_each_case_hook: Function | null;
     };
-    after_all_suite_hook?: Function;
-    after_each_suite_hook?: Function;
-    before_all_suite_hook?: Function;
-    before_each_suite_hook?: Function;
   };
+  after_all_suite_hook: Function | null;
+  after_each_suite_hook: Function | null;
+  before_all_suite_hook: Function | null;
+  before_each_suite_hook: Function | null;
 }
 
 /**
@@ -131,7 +129,13 @@ export class RhumRunner {
   protected passed_in_test_suite: string = "";
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
-  protected plan: any = {}; // TODO(ebebbington) Needs a type, use Plan interface but fix the TS errors it gives
+  protected plan: IPlan = {
+    suites: {},
+    after_all_suite_hook: null,
+    after_each_suite_hook: null,
+    before_all_suite_hook: null,
+    before_each_suite_hook: null,
+  };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -268,6 +272,9 @@ export class RhumRunner {
    * @return void
    */
   public testCase(name: string, testFn: Function): void {
+    // @ts-ignore
+    // TODO(crookse) figure out why this still give sthe "Object is possibly
+    // undefined" error even though we check if the object exists
     this.plan.suites[this.passed_in_test_suite].cases.push({
       name,
       new_name: this.formatTestCaseName(name),
@@ -289,9 +296,6 @@ export class RhumRunner {
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_suite = ""; // New plan
     this.passed_in_test_plan = name;
-    this.plan = {
-      suites: {},
-    };
     testSuites();
   }
 
@@ -308,7 +312,13 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
-    this.plan.suites[name] = { cases: [] };
+    this.plan.suites[name] = {
+      cases: [],
+      after_all_case_hook: null,
+      after_each_case_hook: null,
+      before_all_case_hook: null,
+      before_each_case_hook: null,
+    };
     testCases();
   }
 
