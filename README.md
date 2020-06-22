@@ -163,13 +163,16 @@ Allows a test plan, suite, or case to be skipped when the tests run.
 
 ```typescript
 Rhum.testPlan("app_test.ts", () => {
-  Rhum.skip("run()", () => { // Will not run this block
+  Rhum.skip("run()", () => { // will not run this block
     Rhum.testCase("Returns true", () => {
       ...
     });
   });
   Rhum.testSuite("close()", () => {
     Rhum.testCase("Returns true", () => {
+      ...
+    });
+    Rhum.skip("Returns true", () => { // will not run this block
       ...
     });
   });
