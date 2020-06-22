@@ -16,7 +16,7 @@ Deno.test({
             },
           }],
         },
-      }
+      },
     };
     const testCase = new TestCase(plan);
     await testCase.run();

@@ -123,4 +123,3 @@ export interface ITestCase {
   new_name: string;
   testFn: Function;
 }
-

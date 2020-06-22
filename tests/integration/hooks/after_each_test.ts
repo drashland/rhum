@@ -8,7 +8,6 @@ let suite_val = "Ed";
 let case_val = 22;
 
 Rhum.testPlan("after_each_test.ts", () => {
-
   Rhum.afterEach(() => {
     suite_val = "Eric";
   });
