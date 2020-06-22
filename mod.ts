@@ -1,78 +1,7 @@
 import { asserts } from "./deps.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
-
-/**
- * Example:
- *
- * {
- *   suites: {
- *     "My Suite": {
- *       cases: [
- *         {
- *           name: "My Case",
- *           new_name: this.formatTestCaseName(name),
- *           testFn: Function
- *         },
- *         ...
- *       ],
- *       after_all_case_hook: Function,
- *       after_each_case_hook: Function,
- *       before_all_case_hook: Function,
- *       before_each_case_hook: Function
- *     },
- *     ... // More suites allowed
- *   },
- *   after_all_suite_hook: Function;
- *   after_each_suite_hook: Function;
- *   before_all_suite_hook: Function;
- *   before_each_suite_hook: Function;
- * }
- *
- * or:
- *
- * {
-     suites: {
-       run(): {
-         cases: [Array],
-         after_all_case_hook: [Function],
-         before_all_case_hook: [Function],
-         before_each_case_hook: [Function],
-         after_each_case_hook: [Function]
-       },
-       close(): {
-         cases: [Array],
-         after_all_case_hook: [Function],
-         before_all_case_hook: [Function],
-         before_each_case_hook: [Function],
-         after_each_case_hook: [Function]
-       }
-     },
-      before_each_suite_hook: [Function],
-      after_each_suite_hook: [Function],
-     after_all_suite_hook: [Function],
-     before_all_suite_hook: [Function]
- * }
- */
-interface IPlan {
-  suites: {
-    [key: string]: { // suite names
-      cases?: Array<{
-        name: string;
-        new_name: string;
-        testFn: Function;
-      }>;
-      after_all_case_hook?: Function;
-      after_each_case_hook?: Function;
-      before_all_case_hook?: Function;
-      before_each_case_hook?: Function;
-    };
-  };
-  after_all_suite_hook?: Function;
-  after_each_suite_hook?: Function;
-  before_all_suite_hook?: Function;
-  before_each_suite_hook?: Function;
-}
+import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
 
 /**
  * @description
@@ -129,7 +58,7 @@ export class RhumRunner {
   protected passed_in_test_suite: string = "";
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
-  protected plan: IPlan = { suites: {} };
+  protected plan: ITestPlan = { suites: {} };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
