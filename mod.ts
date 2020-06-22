@@ -62,16 +62,16 @@ interface IPlan {
         new_name: string;
         testFn: Function;
       }>;
-      after_all_case_hook: Function | null;
-      after_each_case_hook: Function | null;
-      before_all_case_hook: Function | null;
-      before_each_case_hook: Function | null;
+      after_all_case_hook?: Function;
+      after_each_case_hook?: Function;
+      before_all_case_hook?: Function;
+      before_each_case_hook?: Function;
     };
   };
-  after_all_suite_hook: Function | null;
-  after_each_suite_hook: Function | null;
-  before_all_suite_hook: Function | null;
-  before_each_suite_hook: Function | null;
+  after_all_suite_hook?: Function;
+  after_each_suite_hook?: Function;
+  before_all_suite_hook?: Function;
+  before_each_suite_hook?: Function;
 }
 
 /**
@@ -129,13 +129,7 @@ export class RhumRunner {
   protected passed_in_test_suite: string = "";
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
-  protected plan: IPlan = {
-    suites: {},
-    after_all_suite_hook: null,
-    after_each_suite_hook: null,
-    before_all_suite_hook: null,
-    before_each_suite_hook: null,
-  };
+  protected plan: IPlan = { suites: {} };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -163,7 +157,7 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before each inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].before_each_case_hook = cb;
+      this.plan.suites![this.passed_in_test_suite].before_each_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before each hooks for the suites
       this.plan.before_each_suite_hook = cb;
@@ -184,7 +178,7 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a after each inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].after_each_case_hook = cb;
+      this.plan.suites![this.passed_in_test_suite].after_each_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // after each hooks for the suites
       this.plan.after_each_suite_hook = cb;
@@ -205,7 +199,7 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].after_all_case_hook = cb;
+      this.plan.suites![this.passed_in_test_suite].after_all_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before all hooks for the suites
       this.plan.after_all_suite_hook = cb;
@@ -226,7 +220,7 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.passed_in_test_suite].before_all_case_hook = cb;
+      this.plan.suites![this.passed_in_test_suite].before_all_case_hook = cb;
     } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
       // before all hooks for the suites
       this.plan.before_all_suite_hook = cb;
@@ -275,7 +269,7 @@ export class RhumRunner {
     // @ts-ignore
     // TODO(crookse) figure out why this still give sthe "Object is possibly
     // undefined" error even though we check if the object exists
-    this.plan.suites[this.passed_in_test_suite].cases.push({
+    this.plan.suites![this.passed_in_test_suite].cases.push({
       name,
       new_name: this.formatTestCaseName(name),
       testFn,
@@ -312,13 +306,7 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
-    this.plan.suites[name] = {
-      cases: [],
-      after_all_case_hook: null,
-      after_each_case_hook: null,
-      before_all_case_hook: null,
-      before_each_case_hook: null,
-    };
+    this.plan.suites![name] = { cases: [] };
     testCases();
   }
 

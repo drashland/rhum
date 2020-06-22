@@ -26,8 +26,8 @@ Rhum.testPlan("app_test.ts", () => {
     });
     Rhum.testCase("Returns false", () => {
       // Assert the value has changes as the hook should have ran
-      Rhum.asserts.assertEquals(case_val, 2)
-    })
+      Rhum.asserts.assertEquals(case_val, 2);
+    });
   });
 
   // Run the second test suite

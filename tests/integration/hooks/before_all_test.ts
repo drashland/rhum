@@ -23,12 +23,12 @@ Rhum.testPlan("app_test.ts", () => {
       suite_val = "Ed";
       // Assert the value has changed from 22 to 2
       Rhum.asserts.assertEquals(case_val, 2);
-      case_val = 22
+      case_val = 22;
     });
     Rhum.testCase("Returns false", () => {
       // Assert the value has changed from 22 to 2 (after setting it to 22 in the above case)
-      Rhum.asserts.assertEquals(case_val, 2)
-    })
+      Rhum.asserts.assertEquals(case_val, 2);
+    });
   });
 
   // Run the second test suite

@@ -20,11 +20,11 @@ Rhum.testPlan("app_test.ts", () => {
       Rhum.asserts.assertEquals(suite_val, "Eric");
       suite_val = "Ed";
       Rhum.asserts.assertEquals(case_val, 2);
-      case_val = 22
+      case_val = 22;
     });
     Rhum.testCase("Returns false", () => {
-      Rhum.asserts.assertEquals(case_val, 2)
-    })
+      Rhum.asserts.assertEquals(case_val, 2);
+    });
   });
 
   // Run the second test suite
