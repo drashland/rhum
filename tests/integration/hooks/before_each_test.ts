@@ -7,7 +7,8 @@ import { Rhum } from "../../../mod.ts";
 let suite_val = "Ed";
 let case_val = 22;
 
-Rhum.testPlan("before_each_test.", () => {
+Rhum.testPlan("before_each_test.ts", () => {
+
   Rhum.beforeEach(() => {
     suite_val = "Eric";
   });

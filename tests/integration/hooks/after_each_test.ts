@@ -7,16 +7,17 @@ import { Rhum } from "../../../mod.ts";
 let suite_val = "Ed";
 let case_val = 22;
 
-Rhum.testPlan("app_test.ts", () => {
+Rhum.testPlan("after_each_test.ts", () => {
+
   Rhum.afterEach(() => {
     suite_val = "Eric";
   });
   // Run the first test suite
-  Rhum.testSuite("run()", () => {
+  Rhum.testSuite("test suite 1", () => {
     Rhum.afterEach(() => {
       case_val = 2;
     });
-    Rhum.testCase("Returns true", () => {
+    Rhum.testCase("hooks properly set suite_val and case_val", () => {
       // Asserting that the suite val should not have been changed by the hook (yet)
       Rhum.asserts.assertEquals(suite_val, "Ed");
       // Revert it back for the next test that uses it
@@ -31,11 +32,11 @@ Rhum.testPlan("app_test.ts", () => {
   });
 
   // Run the second test suite
-  Rhum.testSuite("close()", () => {
+  Rhum.testSuite("test suite 2", () => {
     Rhum.afterEach(() => {
       case_val = 0;
     });
-    Rhum.testCase("Returns true", async () => {
+    Rhum.testCase("hooks properly set suite_val and case_val", async () => {
       // Asserting the hook should have replaced the name
       Rhum.asserts.assertEquals(suite_val, "Eric");
       suite_val = "Ed";
