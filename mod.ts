@@ -2,7 +2,7 @@ import { asserts } from "./deps.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
-import { Mock } from "./src/mock.ts";
+import { MockBuilder } from "./src/mock_builder.ts";
 
 /**
  * @description
@@ -189,8 +189,8 @@ export class RhumRunner {
     return this;
   }
 
-  public mock(obj: any): Mock {
-    return new Mock(obj);
+  public mock(obj: any): MockBuilder {
+    return new MockBuilder(obj);
   }
 
   /**
