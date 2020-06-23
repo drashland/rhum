@@ -189,6 +189,10 @@ export class RhumRunner {
     return this;
   }
 
+  public mock(obj: any): Mock {
+    return new Mock(obj);
+  }
+
   /**
    * @description
    *     Define a test case and execute the test function.
