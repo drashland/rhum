@@ -266,8 +266,8 @@ Rhum.testPlan("My Plan", () => {
   Rhum.testSuite("My Suite", () => {
     Rhum.testCase("My Test Case", () => {
       const mock = Rhum
-        .mock(Server);
-        .withConstructorArgs(arg1, arg2, arg3) // this call optional
+        .mock(Server)
+        .withConstructorArgs("arg1", "arg2", "arg3") // this call optional
         .create();
       Rhum.asserts.assertEquals(mock.protected_property, "a protected property"); // does not run the console.log()
       Rhum.asserts.assertEquals(mock.protectedMethod(), "a protected method"); // does not run the console.log()
