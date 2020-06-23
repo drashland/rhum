@@ -184,6 +184,19 @@ export class RhumRunner {
     // Haaaaaa... you got skipped.
   }
 
+  /**
+   * Stub a member of an object.
+   *
+   * @param any obj
+   *     The object containing the member to stub.
+   * @param string member
+   *     The member to stub.
+   * @param any value
+   *     The return value of the stubbed member.
+   *
+   * @return this
+   *     Return this so that stub() calls can be chained.
+   */
   public stub(obj: any, member: string, value: any): this {
     if (!obj.calls) {
       obj.calls = {};
@@ -203,8 +216,16 @@ export class RhumRunner {
     return this;
   }
 
-  public mock(obj: any): MockBuilder {
-    return new MockBuilder(obj);
+  /**
+   * Get the mock builder to mock classes.
+   *
+   * @param any constructorFunction
+   *     The constrcutor function.
+   *
+   * @return MockBuilder
+   */
+  public mock(constructorFunction: any): MockBuilder {
+    return new MockBuilder(constructorFunction);
   }
 
   /**
