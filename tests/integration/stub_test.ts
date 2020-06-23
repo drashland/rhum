@@ -1,6 +1,7 @@
 import { Rhum } from "../../mod.ts";
 
 class Server {
+  public property = "hello";
   public methodThatLogs() {
     console.log("Server running.");
   }
@@ -12,7 +13,14 @@ Rhum.testPlan("stub_test.ts", () => {
 
   Rhum.testSuite("stub()", () => {
 
-    Rhum.testCase("can stub", () => {
+    Rhum.testCase("can stub a property", () => {
+      const server = new Server();
+      Rhum
+        .stub(server, "property", "you got changed");
+      Rhum.asserts.assertEquals(server.property, "you got changed");
+    });
+
+    Rhum.testCase("can stub a method", () => {
       const server = new Server();
       Rhum
         .stub(server, "methodThatLogs", () => {
@@ -24,7 +32,7 @@ Rhum.testPlan("stub_test.ts", () => {
       );
     });
 
-    Rhum.testCase("can chain multiple stubs", () => {
+    Rhum.testCase("can be chained with more stub() calls", () => {
       const server = new Server();
       Rhum
         .stub(server, "methodThatLogs", () => {
@@ -33,6 +41,7 @@ Rhum.testPlan("stub_test.ts", () => {
         .stub(server, "methodThatThrows", () => {
           throw new Error("poop");
         })
+        .stub(server, "property", "you got changed")
       Rhum.asserts.assertEquals(
         server.methodThatLogs(),
         "don't run the console.log()"
@@ -40,6 +49,7 @@ Rhum.testPlan("stub_test.ts", () => {
       Rhum.asserts.assertThrows((): void => {
         server.methodThatThrows()
       });
+      Rhum.asserts.assertEquals(server.property, "you got changed");
     });
   });
 });

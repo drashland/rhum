@@ -184,8 +184,8 @@ export class RhumRunner {
     // Haaaaaa... you got skipped.
   }
 
-  public stub(obj: any, member: string, fn: Function): Stub {
-    obj[member] = fn;
+  public stub(obj: any, member: string, value: any): this {
+    obj[member] = value;
     return this;
   }
 
