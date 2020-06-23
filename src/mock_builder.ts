@@ -4,15 +4,22 @@ export class MockBuilder {
   protected constructor_fn: any;
   protected constructor_args: any[] = [];
 
+  // FILE MARKER - CONSTRCUTOR /////////////////////////////////////////////////
+
+  /**
+   * Construct an object of this class.
+   */
   constructor(constructorFn: any) {
     this.constructor_fn = constructorFn;
   }
 
-  public withConstructorArgs(...args: any[]): this {
-    this.constructor_args = args;
-    return this;
-  }
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
+  /**
+   * Create the mock object.
+   *
+   * @return any
+   */
   public create(): any {
     let mock: any = {
       calls: {},
@@ -65,27 +72,68 @@ export class MockBuilder {
     return mock;
   }
 
-  protected getAllProperties(inputObj: any): string[] {
+  /**
+   * @description
+   *     Before constructing the mock object, track any constructur function args
+   *     that need to be passed in when constructing the mock object.
+   *
+   * @param any[] ...args
+   *     A rest parameter of arguments that will get passed in to the
+   *     constructor function of the class being mocked.
+   *
+   * @return this
+   *     Return this so that methods in this class can be chained.
+   */
+  public withConstructorArgs(...args: any[]): this {
+    this.constructor_args = args;
+    return this;
+  }
+
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+
+  /**
+   * @description
+   *     Get all properties--public, protected, private--from the object that
+   *     will be mocked.
+   *
+   * @param any constructorFunction
+   *     The object that will be mocked.
+   *
+   * @return string[]
+   *     Returns an array of the object's properties.
+   */
+  protected getAllProperties(constructorFunction: any): string[] {
     let functions: string[] = [];
-    let clone = inputObj;
+    let clone = constructorFunction;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
     } while (clone = Object.getPrototypeOf(clone));
 
     return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (e != arr[i + 1] && typeof inputObj[e] != "function") return true;
+      if (e != arr[i + 1] && typeof constructorFunction[e] != "function") return true;
     });
   }
 
-  protected getAllFunctions(inputObj: any): string[] {
+  /**
+   * @description
+   *     Get all functions--public, protected, private--from the object that
+   *     will be mocked.
+   *
+   * @param any constructorFunction
+   *     The object that will be mocked.
+   *
+   * @return string[]
+   *     Returns an array of the object's functions.
+   */
+  protected getAllFunctions(constructorFunction: any): string[] {
     let functions: string[] = [];
-    let clone = inputObj;
+    let clone = constructorFunction;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
     } while (clone = Object.getPrototypeOf(clone));
 
     return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (e != arr[i + 1] && typeof inputObj[e] == "function") return true;
+      if (e != arr[i + 1] && typeof constructorFunction[e] == "function") return true;
     });
   }
 }
