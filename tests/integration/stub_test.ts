@@ -1,10 +1,13 @@
 import { Rhum } from "../../mod.ts";
 
 class Server {
+
   public property = "hello";
+
   public methodThatLogs() {
     console.log("Server running.");
   }
+
   public methodThatThrows() {
   }
 }
