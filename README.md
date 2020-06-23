@@ -103,79 +103,23 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 ## Documentation
 
-* Rhum.afterAll
-* Rhum.afterEach
-* Rhum.asserts
-* Rhum.beforeAll
-* Rhum.beforeEach
-* Rhum.mocks
-* Rhum.run
-* Rhum.skip
-* Rhum.testCase
-* Rhum.testPlan
-* Rhum.testSuite
-
-
-### `Rhum.run`
-
-Runs your test plan.
-
-```typescript
-Rhum.testPlan(..., () => {
-
-})
-Rhum.run();
-```
-
-### `Rhum.testPlan`
-
-Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file.
-
-```typescript
-Rhum.testPlan("app_test.ts", () => {
-    ...
-    ...
-    ...
-});
-```
-
-### `Rhum.testSuite`
-
-A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan.
-
-```typescript
-Rhum.testPlan("app_test.ts", () => {
-  Rhum.testSuite("run()", () => {
-    ...
-    ...
-    ...
-  });
-  Rhum.testSuite("close()", () => {
-    ...
-    ...
-    ...
-  });
-});
-```
-
-### `Rhum.testCase`
-
-A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous.
-
-```typescript
-Rhum.testPlan("app_test.ts", () => {
-  Rhum.testSuite("run()", () => {
-    Rhum.testCase("should return true", () => {
-      Rhum.assert.assertEquals(run(), true);
-    });
-    Rhum.testCase("should return false", () => {
-      Rhum.assert.assertEquals(run(), false);
-    });
-  });
-});
-```
-
-### `Rhum.asserts`
+* Properties
+    * [Rhum.asserts](#rhumasserts)
+    * [Rhum.mocks](#rhummocks)
+* Methods
+    * [Rhum.afterAll](#rhumafterall)
+    * [Rhum.afterEach](#rhumaftereach)
+    * [Rhum.beforeAll](#rhumbeforeall)
+    * [Rhum.beforeEach](#rhumbeforeeach)
+    * [Rhum.run](#rhumrun)
+    * [Rhum.skip](#rhumskip)
+    * [Rhum.testCase](#rhumtestcase)
+    * [Rhum.testPlan](#rhumtestplan)
+    * [Rhum.testSuite](#rhumtestsuite)
+    
+### Properties
+    
+#### `Rhum.asserts`
 
 The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to `Rhum`.
 
@@ -184,29 +128,7 @@ Rhum.asserts.assertEquals(true, true) // pass
 Rhum.asserts.assertEquals(true, false) // fail
 ```
 
-### `Rhum.skip`
-
-Allows a test plan, suite, or case to be skipped when the tests run.
-
-```typescript
-Rhum.testPlan("app_test.ts", () => {
-  Rhum.skip("run()", () => { // will not run this block
-    Rhum.testCase("Returns true", () => {
-      ...
-    });
-  });
-  Rhum.testSuite("close()", () => {
-    Rhum.testCase("Returns true", () => {
-      ...
-    });
-    Rhum.skip("Returns true", () => { // will not run this block
-      ...
-    });
-  });
-});
-```
-
-### `Rhum.mocks`
+#### `Rhum.mocks`
 
 An object of functions to help you mock objects.
 
@@ -229,102 +151,163 @@ An object of functions to help you mock objects.
       body: body,
     });
     ```
-  
-### Hooks
 
-A variety of hooks that can be run before or after test suites and cases.
+### Methods
 
-* `Rhum.beforeEach`
+#### `Rhum.afterAll`
 
-    If within a plan that contains test suites, the hook will be ran before each test suite.
-    If within a suite that contains test cases, the hook will be ran before each test case
-    
-    ```typescript
-    Rhum.testPlan("My Plan", () => {
-      // Run the hook before each test suite
-      Rhum.beforeEach(() => {
-        ...
-      })
-      Rhum.testSuite("My Suite 1", () => {
-        // Run the hook before each test case
-        Rhum.beforeEach(() => {
-          ...
-        })
-        Rhum.testCase("My Test Case 1", () => {
-          ...
-        })
-      })
-    })
-    ```
-  
-* `Rhum.beforeAll`
+Used to define a hook that will execute after all test suites or test cases. If this is used inside of a test plan, then it will execute after all test suites. If this is used inside of a test suite, then it will execute after all test cases.
 
-    If within a plan that contains test suites, the hook will be ran before all test suites, and only once.
-    If within a suite that contains test cases, the hook will be ran before all test cases, and only once
-    
-    ```typescript
-    Rhum.testPlan("My Plan", () => {
-      // Run the hook before all test suites
-      Rhum.beforeAll(() => {
-        ...
-      })
-      Rhum.testSuite("My Suite 1", () => {
-        // Run the hook before all test cases
-        Rhum.beforeAll(() => {
-          ...
-        })
-        Rhum.testCase("My Test Case 1", () => {
-          ...
-        })
-      })
-    })
-    ```
-  
-* `Rhum.afterEach`
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.afterAll(() => {
+    // Runs once after all test suites in this test plan
+  });
+  Rhum.testSuite("My Suite 1", () => {
+    Rhum.afterAll(() => {
+      // Runs once after all test cases in this test suite
+    });
+    Rhum.testCase("My Test Case 1", () => {
+      ...
+    });
+  });
+});
+```
 
-    If within a plan that contains test suites, the hook will be ran after each test suite.
-    If within a suite that contains test cases, the hook will be ran after each test case
-    
-    ```typescript
-    Rhum.testPlan("My Plan", () => {
-      // Run the hook after each test suite
-      Rhum.afterEach(() => {
-        ...
-      })
-      Rhum.testSuite("My Suite 1", () => {
-        // Run the hook after each test case
-        Rhum.afterEach(() => {
-          ...
-        })
-        Rhum.testCase("My Test Case 1", () => {
-          ...
-        })
-      })
-    })
-    ```
-  
-* `Rhum.afterAll`
+#### `Rhum.afterEach`
 
-    If within a plan that contains test suites, the hook will be ran after all test suites, and only once.
-    If within a suite that contains test cases, the hook will be ran after all test cases, and only once
-    
-    ```typescript
-    Rhum.testPlan("My Plan", () => {
-      // Run the hook after all test suites
-      Rhum.afterAll(() => {
-        ...
-      })
-      Rhum.testSuite("My Suite 1", () => {
-        // Run the hook after all test cases
-        Rhum.afterAll(() => {
-          ...
-        })
-        Rhum.testCase("My Test Case 1", () => {
-          ...
-        })
-      })
-    })
-    ```
+Used to define a hook that will execute after each test suite or test case. If this is used inside of a test plan, then it will execute after each test suite. If this is used inside of a test suite, then it will execute after each test case.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.afterEach(() => {
+    // Runs after each test suite in this test plan
+  });
+  Rhum.testSuite("My Suite 1", () => {
+    Rhum.afterEach(() => {
+      // Runs after each test case in this test suite
+    });
+    Rhum.testCase("My Test Case 1", () => {
+      ...
+    });
+  });
+});
+```
+
+#### `Rhum.beforeAll`
+
+Used to define a hook that will execute before all test suites or test cases. If this is used inside of a test plan, then it will execute before all test suites. If this is used inside of a test suite, then it will execute before all test cases.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.beforeAll(() => {
+    // Runs once before all test suites in this test plan
+  });
+  Rhum.testSuite("My Suite 1", () => {
+    Rhum.beforeAll(() => {
+      // Runs once before all test cases in this test suite
+    });
+    Rhum.testCase("My Test Case 1", () => {
+      ...
+    });
+  });
+});
+```
+
+#### `Rhum.beforeEach`
+
+Used to define a hook that will execute before each test suite or test case. If this is used inside of a test plan, then it will execute before each test suite. If this is used inside of a test suite, then it will execute before each test case.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.beforeEach(() => {
+    // Runs before each test suite in this test plan
+  });
+  Rhum.testSuite("My Suite 1", () => {
+    Rhum.beforeEach(() => {
+      // Runs before each test case in this test suite
+    });
+    Rhum.testCase("My Test Case 1", () => {
+      ...
+    });
+  });
+});
+```
+
+### `Rhum.run`
+
+Runs your test plan.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  ...
+});
+Rhum.run();
+```
+
+### `Rhum.skip`
+
+Allows a test plan, suite, or case to be skipped when the tests run.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.skip("My Suite 1", () => { // will not run this block
+    Rhum.testCase("My Test Case In Suite 1", () => {
+      ...
+    });
+  });
+  Rhum.testSuite("My Suite 2", () => {
+    Rhum.testCase("My Test Case In Suite 2", () => {
+      ...
+    });
+    Rhum.skip("My Other Test Case In Suite 2", () => { // will not run this block
+      ...
+    });
+  });
+});
+```
+
+### `Rhum.testCase`
+
+A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.testSuite("My Suite 1", () => {
+    Rhum.testCase("My Test Case 1", () => {
+      Rhum.assert.assertEquals(something, true);
+    });
+    Rhum.testCase("My Test Case 2", () => {
+      Rhum.assert.assertEquals(something, false);
+    });
+  });
+});
+```
+
+### `Rhum.testPlan`
+
+Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file. Test plans are required in order to define a test suite with test cases.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+    ...
+});
+```
+
+### `Rhum.testSuite`
+
+A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan. Test suites can only be defined inside of a test plan.
+
+```typescript
+Rhum.testPlan("My Plan", () => {
+  Rhum.testSuite("My Suite 1", () => {
+    ...
+  });
+  Rhum.testSuite("My Suite 2", () => {
+    ...
+  });
+});
+```
 
 ## Why Use Rhum?
 
