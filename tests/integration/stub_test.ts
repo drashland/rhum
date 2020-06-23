@@ -31,7 +31,7 @@ Rhum.testPlan("stub_test.ts", () => {
     });
 
     Rhum.testCase("can be chained with more stub() calls", () => {
-      const server = new Server();
+      const server: any = new Server();
       Rhum
         .stub(server, "methodThatLogs", () => {
           return "don't run the console.log()";
@@ -44,10 +44,12 @@ Rhum.testPlan("stub_test.ts", () => {
         server.methodThatLogs(),
         "don't run the console.log()",
       );
+      Rhum.asserts.assertEquals(server.calls.methodThatThrows, 0);
       Rhum.asserts.assertThrows((): void => {
         server.methodThatThrows();
       });
       Rhum.asserts.assertEquals(server.property, "you got changed");
+      Rhum.asserts.assertEquals(server.calls.methodThatThrows, 1);
     });
   });
 });

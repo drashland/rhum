@@ -71,6 +71,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .withConstructorArgs("has mocked math service", mockMathService)
         .create();
+      Rhum.asserts.assertEquals(mockMathService.calls.add, 0);
       mockTestObject.sum(1, 1);
       Rhum.asserts.assertEquals(mockMathService.calls.add, 1);
     });

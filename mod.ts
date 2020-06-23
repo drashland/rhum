@@ -185,7 +185,21 @@ export class RhumRunner {
   }
 
   public stub(obj: any, member: string, value: any): this {
-    obj[member] = value;
+    if (!obj.calls) {
+      obj.calls = {};
+    }
+    if (!obj.calls[member]) {
+      obj.calls[member] = 0;
+    }
+
+    if (typeof value === "function") {
+      obj[member] = function() {
+        obj.calls[member]++;
+        return value();
+      };
+    } else {
+      obj[member] = value;
+    }
     return this;
   }
 

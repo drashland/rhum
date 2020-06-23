@@ -30,9 +30,7 @@ export class MockBuilder {
     // Attach all of the original's properties to the mock
     this.getAllProperties(original).forEach((property: string) => {
       const desc = Object.getOwnPropertyDescriptor(original, property);
-      Object.defineProperty(mock, property, {
-        value: desc!.value,
-      });
+      mock[property] = desc!.value;
     });
 
     // Attach all of the original's functions to the mock
@@ -52,19 +50,15 @@ export class MockBuilder {
       ];
 
       if (nativeMethods.indexOf(method) == -1) {
-        Object.defineProperty(mock, method, {
-          value: function() {
-            if (!mock.calls[method]) {
-              mock.calls[method] = 0;
-            }
-            mock.calls[method]++
-            return original[method]();
-          }
-        });
+        if (!mock.calls[method]) {
+          mock.calls[method] = 0;
+        }
+        mock[method] = function() {
+          mock.calls[method]++;
+          return original[method]();
+        };
       } else {
-        Object.defineProperty(mock, method, {
-          value: original[method],
-        });
+        mock[method] = original[method];
       }
 
     });
