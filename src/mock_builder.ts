@@ -110,7 +110,11 @@ export class MockBuilder {
     } while (clone = Object.getPrototypeOf(clone));
 
     return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (e != arr[i + 1] && typeof constructorFunction[e] != "function") return true;
+      if (
+        e != arr[i + 1] && typeof constructorFunction[e] != "function"
+      ) {
+        return true;
+      }
     });
   }
 
@@ -133,7 +137,11 @@ export class MockBuilder {
     } while (clone = Object.getPrototypeOf(clone));
 
     return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (e != arr[i + 1] && typeof constructorFunction[e] == "function") return true;
+      if (
+        e != arr[i + 1] && typeof constructorFunction[e] == "function"
+      ) {
+        return true;
+      }
     });
   }
 }
