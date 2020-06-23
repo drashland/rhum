@@ -2,6 +2,7 @@ import { asserts } from "./deps.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
+import { Stub } from "./src/stub.ts";
 
 /**
  * @description
@@ -181,6 +182,10 @@ export class RhumRunner {
    */
   public skip(name: string, cb: Function): void {
     // Haaaaaa... you got skipped.
+  }
+
+  public stub(): Stub {
+    return new Stub();
   }
 
   /**
