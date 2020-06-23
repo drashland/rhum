@@ -103,6 +103,8 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 ## Documentation
 
+Rhum can also be used with [SuperDeno](https://github.com/asos-craigmorten/superdeno). You can also read [Craig Morten's](https://github.com/asos-craigmorten) tutorial on strengthening your testing process using both Rhum and SuperDeno, [here](https://dev.to/craigmorten/how-to-write-spec-tests-in-deno-55e8).
+
 * Properties
     * [Rhum.asserts](#rhumasserts)
     * [Rhum.mocks](#rhummocks)
@@ -117,6 +119,18 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
     * [Rhum.testCase](#rhumtestcase)
     * [Rhum.testPlan](#rhumtestplan)
     * [Rhum.testSuite](#rhumtestsuite)
+    
+Alongside using `Rhum`, the `RhumRunner` is also exposed allowing you to extend it, which `Rhum` is an instance of. It has been exposed to allow you to extend it, should you have any reason or use case to do so. An example can be seen below:
+
+```typescript
+import { RhumRunner } from "https://deno.land/x/rhum@v1.0.0/mod.ts";
+
+class MyRunner extends RhumRunner {
+  ...
+}
+const Runner = new MyRunner();
+Runner.testPlan(...); // Same as "Rhum.testPlan(...)"
+```
     
 ### Properties
     
