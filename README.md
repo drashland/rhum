@@ -269,7 +269,7 @@ Rhum.testPlan("My Plan", () => {
 
 ### `Rhum.testCase`
 
-A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous.
+A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous. Test cases can only be defined inside of a test suite.
 
 ```typescript
 Rhum.testPlan("My Plan", () => {
