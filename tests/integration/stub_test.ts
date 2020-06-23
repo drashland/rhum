@@ -1,7 +1,6 @@
 import { Rhum } from "../../mod.ts";
 
 class Server {
-
   public property = "hello";
 
   public methodThatLogs() {
