@@ -54,8 +54,12 @@ Deno.test({
 Deno.test({
   name: "Unit | Rhum | testCase() | Runs a test without failing",
   async fn(): Promise<void> {
-    Rhum.testCase("Testing testCase", () => {
-      console.log("Running!");
+    Rhum.testPlan("test plan", () => {
+      Rhum.testSuite("test suite", () => {
+        Rhum.testCase("Testing testCase", () => {
+          console.log("Running!");
+        });
+      });
     });
   },
 });
