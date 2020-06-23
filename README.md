@@ -106,6 +106,7 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 * Properties
     * [Rhum.asserts](#rhumasserts)
     * [Rhum.mocks](#rhummocks)
+        * [Rhum.mocks.ServerRequest](#rhummocksserverrequest)
 * Methods
     * [Rhum.afterAll](#rhumafterall)
     * [Rhum.afterEach](#rhumaftereach)
@@ -121,36 +122,36 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
     
 #### `Rhum.asserts`
 
-The [asserts](https://deno.land/std/testing/asserts.ts) module, but attached to `Rhum`.
+The [asserts](https://deno.land/std/testing/asserts.ts) module from the [testing](https://deno.land/std/testing) module, but attached to `Rhum`.
 
 ```typescript
-Rhum.asserts.assertEquals(true, true) // pass
-Rhum.asserts.assertEquals(true, false) // fail
+Rhum.asserts.assertEquals(true, true); // pass
+Rhum.asserts.assertEquals(true, false); // fail
 ```
 
 #### `Rhum.mocks`
 
 An object of functions to help you mock objects.
 
-* `Rhum.mocks.ServerRequest`
+##### `Rhum.mocks.ServerRequest`
 
-    Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
+Creates a mock object of a [ServerRequest](https://deno.land/std/http/server.ts).
 
-    ```typescript
-    const encodedBody = new TextEncoder().encode(JSON.stringify({
-      body_param: "hello",
-    }));
+```typescript
+const encodedBody = new TextEncoder().encode(JSON.stringify({
+  body_param: "hello",
+}));
 
-    const body = new Deno.Buffer(encodedBody as ArrayBuffer);
+const body = new Deno.Buffer(encodedBody as ArrayBuffer);
 
-    const mockRequest = Rhum.mocks.ServerRequest("/api/users/1", "GET", {
-      headers: {
-        "Content-Type": "application/json",
-        "Token": "Rhum"
-      },
-      body: body,
-    });
-    ```
+const mockRequest = Rhum.mocks.ServerRequest("/api/users/1", "GET", {
+  headers: {
+    "Content-Type": "application/json",
+    "Token": "Rhum"
+  },
+  body: body,
+});
+```
 
 ### Methods
 
