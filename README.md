@@ -120,6 +120,18 @@ Rhum can also be used with [SuperDeno](https://github.com/asos-craigmorten/super
     * [Rhum.testPlan](#rhumtestplan)
     * [Rhum.testSuite](#rhumtestsuite)
     
+Alongside using `Rhum`, the `RhumRunner` is also exposed allowing you to extend it, which `Rhum` is an instance of. It has been exposed to allow you to extend it, should you have any reason or use case to do so. An example can be seen below:
+
+```typescript
+import { RhumRunner } from "https://deno.land/x/rhum@v1.0.0/mod.ts";
+
+class MyRunner extends RhumRunner {
+  ...
+}
+const Runner = new MyRunner();
+Runner.testPlan(...); // Same as "Rhum.testPlan(...)"
+```
+    
 ### Properties
     
 #### `Rhum.asserts`
