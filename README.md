@@ -103,6 +103,19 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 ## Documentation
 
+* Rhum.afterAll
+* Rhum.afterEach
+* Rhum.asserts
+* Rhum.beforeAll
+* Rhum.beforeEach
+* Rhum.mocks
+* Rhum.run
+* Rhum.skip
+* Rhum.testCase
+* Rhum.testPlan
+* Rhum.testSuite
+
+
 ### `Rhum.run`
 
 Runs your test plan.
