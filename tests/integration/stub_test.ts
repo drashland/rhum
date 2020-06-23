@@ -10,9 +10,7 @@ class Server {
 }
 
 Rhum.testPlan("stub_test.ts", () => {
-
   Rhum.testSuite("stub()", () => {
-
     Rhum.testCase("can stub a property", () => {
       const server = new Server();
       Rhum
@@ -28,7 +26,7 @@ Rhum.testPlan("stub_test.ts", () => {
         });
       Rhum.asserts.assertEquals(
         server.methodThatLogs(),
-        "don't run the console.log()"
+        "don't run the console.log()",
       );
     });
 
@@ -41,13 +39,13 @@ Rhum.testPlan("stub_test.ts", () => {
         .stub(server, "methodThatThrows", () => {
           throw new Error("poop");
         })
-        .stub(server, "property", "you got changed")
+        .stub(server, "property", "you got changed");
       Rhum.asserts.assertEquals(
         server.methodThatLogs(),
-        "don't run the console.log()"
+        "don't run the console.log()",
       );
       Rhum.asserts.assertThrows((): void => {
-        server.methodThatThrows()
+        server.methodThatThrows();
       });
       Rhum.asserts.assertEquals(server.property, "you got changed");
     });
