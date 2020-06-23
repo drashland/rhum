@@ -36,31 +36,30 @@ export class MockBuilder {
     // Attach all of the original's functions to the mock
     this.getAllFunctions(original).forEach((method: string) => {
       const nativeMethods = [
-        '__defineGetter__',
-        '__defineSetter__',
-        '__lookupGetter__',
-        '__lookupSetter__',
-        'constructor',
-        'hasOwnProperty',
-        'isPrototypeOf',
-        'propertyIsEnumerable',
-        'toLocaleString',
-        'toString',
-        'valueOf',
+        "__defineGetter__",
+        "__defineSetter__",
+        "__lookupGetter__",
+        "__lookupSetter__",
+        "constructor",
+        "hasOwnProperty",
+        "isPrototypeOf",
+        "propertyIsEnumerable",
+        "toLocaleString",
+        "toString",
+        "valueOf",
       ];
 
       if (nativeMethods.indexOf(method) == -1) {
         if (!mock.calls[method]) {
           mock.calls[method] = 0;
         }
-        mock[method] = function() {
+        mock[method] = function () {
           mock.calls[method]++;
           return original[method]();
         };
       } else {
         mock[method] = original[method];
       }
-
     });
 
     return mock;

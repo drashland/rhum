@@ -193,7 +193,7 @@ export class RhumRunner {
     }
 
     if (typeof value === "function") {
-      obj[member] = function() {
+      obj[member] = function () {
         obj.calls[member]++;
         return value();
       };
