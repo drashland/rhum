@@ -1,23 +1,47 @@
 import { Rhum } from "../../mod.ts";
 
 class Server {
-  public getConfigs() {
-    return "configs";
-  }
-  public run() {
+  public methodThatLogs() {
     console.log("Server running.");
+  }
+  public methodThatThrows() {
   }
 }
 
 Rhum.testPlan("stub_test.ts", () => {
-  Rhum.testSuite("returns()", () => {
-    Rhum.testCase("string", () => {
+
+  Rhum.testSuite("stub()", () => {
+
+    Rhum.testCase("can stub", () => {
       const server = new Server();
-      server.run = Rhum.stub().returns("running");
-      Rhum.asserts.assertEquals(server.run(), "running");
+      Rhum
+        .stub(server, "methodThatLogs", () => {
+          return "don't run the console.log()";
+        });
+      Rhum.asserts.assertEquals(
+        server.methodThatLogs(),
+        "don't run the console.log()"
+      );
+    });
+
+    Rhum.testCase("can chain multiple stubs", () => {
+      const server = new Server();
+      Rhum
+        .stub(server, "methodThatLogs", () => {
+          return "don't run the console.log()";
+        })
+        .stub(server, "methodThatThrows", () => {
+          throw new Error("poop");
+        })
+      Rhum.asserts.assertEquals(
+        server.methodThatLogs(),
+        "don't run the console.log()"
+      );
+      Rhum.asserts.assertThrows((): void => {
+        server.methodThatThrows()
+      });
     });
   });
 });
 
 Rhum.run();
-
