@@ -254,6 +254,11 @@ Rhum.testPlan("My Plan", () => {
 
 Allows mocking of classes. You can also find out how many times a mock object's members are called. Once a class is mocked, all of its data members are made public. That means any protected property or method can be called without having to do any additional work.
 
+We know this may be different than what you are used to, but in Rhum, a mock:
+
+    * Registers calls they receive
+    * Helps verify behavior (e.g., verify that the e-mail service is called a number of times)
+
 ```typescript
 class Server {
   protected protected_property: string = "a protected property";
@@ -313,6 +318,12 @@ Rhum.testPlan("My Plan", () => {
 ### `Rhum.stub`
 
 Allows stubbing of data members. You can also track how many times a stubbed member is called.
+
+We know this may be different than what you are used to, but in Rhum, a stub:
+
+    * Provides canned answers to calls made during tests
+    * Helps verify state
+    * Does not respond to calls outside the scope of the test
 
 ```typescript
 class Server {
