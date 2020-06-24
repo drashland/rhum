@@ -250,7 +250,7 @@ Rhum.testPlan("My Plan", () => {
   });
 });
 ```
-### `Rhum.mock`
+#### `Rhum.mock`
 
 Allows mocking of classes. You can also find out how many times a mock object's members are called. Once a class is mocked, all of its data members are made public. That means any protected property or method can be called without having to do any additional work.
 
@@ -282,7 +282,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.run`
+#### `Rhum.run`
 
 Runs your test plan.
 
@@ -293,7 +293,7 @@ Rhum.testPlan("My Plan", () => {
 Rhum.run();
 ```
 
-### `Rhum.skip`
+#### `Rhum.skip`
 
 Allows a test plan, suite, or case to be skipped when the tests run.
 
@@ -315,7 +315,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.stub`
+#### `Rhum.stub`
 
 Allows stubbing of data members. You can also track how many times a stubbed member is called.
 
@@ -356,7 +356,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testCase`
+#### `Rhum.testCase`
 
 A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous. Test cases can only be defined inside of a test suite.
 
@@ -373,7 +373,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testPlan`
+#### `Rhum.testPlan`
 
 Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file. Test plans are required in order to define a test suite with test cases.
 
@@ -383,7 +383,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testSuite`
+#### `Rhum.testSuite`
 
 A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan. Test suites can only be defined inside of a test plan.
 
