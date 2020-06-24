@@ -256,8 +256,8 @@ Allows mocking of classes. You can also find out how many times a mock object's 
 
 We know this may be different than what you are used to, but in Rhum, a mock:
 
-    * Registers calls they receive
-    * Helps verify behavior (e.g., verify that the e-mail service is called a number of times)
+* Registers calls they receive
+* Helps verify behavior (e.g., verify that the e-mail service is called a number of times)
 
 ```typescript
 class Server {
@@ -321,9 +321,9 @@ Allows stubbing of data members. You can also track how many times a stubbed mem
 
 We know this may be different than what you are used to, but in Rhum, a stub:
 
-    * Provides canned answers to calls made during tests
-    * Helps verify state
-    * Does not respond to calls outside the scope of the test
+* Provides canned answers to calls made during tests
+* Helps verify state
+* Does not respond to calls outside the scope of the test
 
 ```typescript
 class Server {
