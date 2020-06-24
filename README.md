@@ -114,8 +114,10 @@ Rhum can also be used with [SuperDeno](https://github.com/asos-craigmorten/super
     * [Rhum.afterEach](#rhumaftereach)
     * [Rhum.beforeAll](#rhumbeforeall)
     * [Rhum.beforeEach](#rhumbeforeeach)
+    * [Rhum.mock](#rhummock)
     * [Rhum.run](#rhumrun)
     * [Rhum.skip](#rhumskip)
+    * [Rhum.stub](#rhumstub)
     * [Rhum.testCase](#rhumtestcase)
     * [Rhum.testPlan](#rhumtestplan)
     * [Rhum.testSuite](#rhumtestsuite)
@@ -248,8 +250,39 @@ Rhum.testPlan("My Plan", () => {
   });
 });
 ```
+#### `Rhum.mock`
 
-### `Rhum.run`
+Allows mocking of classes. You can also find out how many times a mock object's members are called. Once a class is mocked, all of its data members are made public. That means any protected property or method can be called without having to do any additional work.
+
+We know this may be different than what you are used to, but in Rhum, a mock:
+
+* Registers calls they receive
+* Helps verify behavior (e.g., verify that the e-mail service is called a number of times)
+
+```typescript
+class Server {
+  protected protected_property: string = "a protected property";
+  protected protectedMethod(): string {
+    return "a protected method";
+  }
+}
+
+Rhum.testPlan("My Plan", () => {
+  Rhum.testSuite("My Suite", () => {
+    Rhum.testCase("My Test Case", () => {
+      const mock = Rhum
+        .mock(Server)
+        .withConstructorArgs("arg1", "arg2", "arg3") // this call optional
+        .create();
+      Rhum.asserts.assertEquals(mock.protected_property, "a protected property");
+      Rhum.asserts.assertEquals(mock.protectedMethod(), "a protected method");
+      Rhum.asserts.assertEquals(mock.calls.protectedMethod, 1); // track how many times the method is called using {object}.calls.{method}
+    });
+  });
+});
+```
+
+#### `Rhum.run`
 
 Runs your test plan.
 
@@ -260,7 +293,7 @@ Rhum.testPlan("My Plan", () => {
 Rhum.run();
 ```
 
-### `Rhum.skip`
+#### `Rhum.skip`
 
 Allows a test plan, suite, or case to be skipped when the tests run.
 
@@ -282,7 +315,48 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testCase`
+#### `Rhum.stub`
+
+Allows stubbing of data members. You can also track how many times a stubbed member is called.
+
+We know this may be different than what you are used to, but in Rhum, a stub:
+
+* Provides canned answers to calls made during tests
+* Helps verify state
+* Does not respond to calls outside the scope of the test
+
+```typescript
+class Server {
+  public run() {
+    console.log("Server running.");
+  }
+  public stop() {
+    console.log("Server stopped.");
+  }
+}
+
+Rhum.testPlan("My Plan", () => {
+  Rhum.testSuite("My Suite", () => {
+    Rhum.testCase("My Test Case", () => {
+      const server: any = new Server(); // note that any is used here
+      // Stub a single method or stub multiple methods by chaining .stub() calls
+      Rhum
+        .stub(server, "run", () => {
+          return "running";
+        })
+        .stub(server, "stop", () => {
+          return "stopped";
+        });
+      Rhum.asserts.assertEquals(server.run(), "running"); // does not run the console.log()
+      Rhum.asserts.assertEquals(server.calls.run, 1); // track how many times the method is called using {object}.calls.{method}
+      Rhum.asserts.assertEquals(server.stop(), "stopped"); // does not run the console.log()
+      Rhum.asserts.assertEquals(server.calls.stop, 1); // track how many times the method is called using {object}.calls.{method}
+    });
+  });
+});
+```
+
+#### `Rhum.testCase`
 
 A test case is grouped by a test suite and it is what makes the assertions - it is the test. You can define multiple test cases under a test suite. Test cases can also be asynchronous. Test cases can only be defined inside of a test suite.
 
@@ -299,7 +373,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testPlan`
+#### `Rhum.testPlan`
 
 Groups up test suites to describe a test plan. Usually, a test plan is per file and contains the tests suites and test cases for a single file. Test plans are required in order to define a test suite with test cases.
 
@@ -309,7 +383,7 @@ Rhum.testPlan("My Plan", () => {
 });
 ```
 
-### `Rhum.testSuite`
+#### `Rhum.testSuite`
 
 A test suite usually describes a method or property name and groups up all test cases for that method or property. You can define multiple test suites under a test plan. Test suites can only be defined inside of a test plan.
 

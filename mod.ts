@@ -2,6 +2,7 @@ import { asserts } from "./deps.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
+import { MockBuilder } from "./src/mock_builder.ts";
 
 /**
  * @description
@@ -181,6 +182,50 @@ export class RhumRunner {
    */
   public skip(name: string, cb: Function): void {
     // Haaaaaa... you got skipped.
+  }
+
+  /**
+   * Stub a member of an object.
+   *
+   * @param any obj
+   *     The object containing the member to stub.
+   * @param string member
+   *     The member to stub.
+   * @param any value
+   *     The return value of the stubbed member.
+   *
+   * @return this
+   *     Return this so that stub() calls can be chained.
+   */
+  public stub(obj: any, member: string, value: any): this {
+    if (!obj.calls) {
+      obj.calls = {};
+    }
+    if (!obj.calls[member]) {
+      obj.calls[member] = 0;
+    }
+
+    if (typeof value === "function") {
+      obj[member] = function () {
+        obj.calls[member]++;
+        return value();
+      };
+    } else {
+      obj[member] = value;
+    }
+    return this;
+  }
+
+  /**
+   * Get the mock builder to mock classes.
+   *
+   * @param any constructorFn
+   *     The constructor function.
+   *
+   * @return MockBuilder
+   */
+  public mock(constructorFn: any): MockBuilder {
+    return new MockBuilder(constructorFn);
   }
 
   /**
