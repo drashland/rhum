@@ -105,7 +105,6 @@ export class MockBuilder {
   protected getAllProperties(constructorFn: any): string[] {
     let functions: string[] = [];
     let clone = constructorFn;
-    console.log(clone);
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
     } while (clone = Object.getPrototypeOf(clone));
