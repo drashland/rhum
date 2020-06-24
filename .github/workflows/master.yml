@@ -33,7 +33,7 @@ jobs:
   linter:
     strategy:
       matrix:
-        deno: ["1.0.5"]
+        deno: ["1.1.1"]
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
 
@@ -44,6 +44,9 @@ jobs:
         uses: denolib/setup-deno@master
         with:
           deno-version: ${{ matrix.deno }}
+
+      - name: Lint
+        run: deno lint --unstable
 
       - name: Formatter
         run: deno fmt --check

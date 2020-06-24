@@ -54,7 +54,7 @@ export class RhumRunner {
   public asserts: any;
   public mocks: any = {};
 
-  protected passed_in_test_plan: string = "";
+  protected passed_in_test_plan: string = ""; // TODO although internal, 'passed' can be misleading when test are in context too.
   protected passed_in_test_suite: string = "";
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";

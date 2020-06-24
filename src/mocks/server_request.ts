@@ -1,11 +1,25 @@
 import { BufReader, ServerRequest } from "../../deps.ts";
 
+export interface MockServerRequestOptions {
+  headers: { [key: string]: string };
+  body?: Deno.Buffer;
+  server?: any; // TODO what is server type
+}
+
+export interface MockServerRequest extends ServerRequest {
+  server?: any; // TODO what is server type
+}
+
+export interface RequestRespondOutput extends Response { // TODO
+  send: () => RequestRespondOutput;
+}
+
 export const MockServerRequest = function (
   url = "/",
   method = "get",
-  options?: any,
-): any {
-  let request: any = new ServerRequest();
+  options?: MockServerRequestOptions,
+): MockServerRequest {
+  let request: MockServerRequest = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
@@ -29,7 +43,7 @@ export const MockServerRequest = function (
   //
   //   TypeError: Cannot read property 'write' of undefined
   //
-  request.respond = function respond(output: any) {
+  request.respond = function respond(output: any) { // TODO RequestRespondOutput & different method signatore than original
     output.send = function () {
       if (
         output.status === 301 ||
