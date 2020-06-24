@@ -219,13 +219,13 @@ export class RhumRunner {
   /**
    * Get the mock builder to mock classes.
    *
-   * @param any constructorFunction
+   * @param any constructorFn
    *     The constructor function.
    *
    * @return MockBuilder
    */
-  public mock(constructorFunction: any): MockBuilder {
-    return new MockBuilder(constructorFunction);
+  public mock(constructorFn: any): MockBuilder {
+    return new MockBuilder(constructorFn);
   }
 
   /**
