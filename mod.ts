@@ -220,7 +220,7 @@ export class RhumRunner {
    * Get the mock builder to mock classes.
    *
    * @param any constructorFunction
-   *     The constrcutor function.
+   *     The constructor function.
    *
    * @return MockBuilder
    */

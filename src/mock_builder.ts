@@ -4,7 +4,7 @@ export class MockBuilder {
   protected constructor_fn: any;
   protected constructor_args: any[] = [];
 
-  // FILE MARKER - CONSTRCUTOR /////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
