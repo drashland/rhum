@@ -310,17 +310,17 @@ export class RhumRunner {
         `${" ".repeat(name.length + extraChars)}` +
         `\n${this.passed_in_test_plan}` +
         `\n    ${this.passed_in_test_suite}` +
-        `\n        ${name} ... `;
+        `\n        ${name} ... \b\b`;
     } else {
       if (this.test_suite_in_progress != this.passed_in_test_suite) {
         this.test_suite_in_progress = this.passed_in_test_suite;
         newName = `${"\b".repeat(name.length + extraChars)}` +
           `    ${this.passed_in_test_suite}` +
           `${" ".repeat(name.length + extraChars)}` +
-          `\n        ${name} ... `;
+          `\n        ${name} ... \b\b`;
       } else {
         newName = `${"\b".repeat(name.length + extraChars)}` +
-          `        ${name} ... `;
+          `        ${name} ...`;
       }
     }
 

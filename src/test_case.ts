@@ -49,11 +49,15 @@ export class TestCase {
           }
         };
         await Deno.test(c.name, async () => {
-          const bytes = encoder.encode(c.new_name);
-          Deno.writeAllSync(Deno.stdout, bytes);
+          await this.writeOutput(c.new_name);
+          Deno.stdout.writeSync(new TextEncoder().encode("\u0008\u0008\u0008\u0008\u0008\u0008"));
           await hookAttachedTestFn();
         });
       });
     });
+  }
+
+  protected async writeOutput(output: string): Promise<void> {
+    await console.log(output);
   }
 }
