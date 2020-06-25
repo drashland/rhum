@@ -49,7 +49,8 @@ export class TestCase {
           }
         };
         await Deno.test(c.name, async () => {
-          Deno.stdout.writeSync(encoder.encode(c.new_name));
+          const bytes = encoder.encode(c.new_name);
+          Deno.writeAllSync(Deno.stdout, bytes);
           await hookAttachedTestFn();
         });
       });
