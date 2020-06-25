@@ -306,7 +306,7 @@ export class RhumRunner {
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
       this.test_suite_in_progress = this.passed_in_test_suite;
-      newName = `${"\u0008\u0008\u0008\u0008\u0008"}` + // strip "test "
+      newName = `${"\b\b\b\b\b"}` + // strip "test "
         //`${" ".repeat(name.length + extraChars)}` +
         `${this.passed_in_test_plan}\n` +
         `    ${this.passed_in_test_suite}\n` +
@@ -314,12 +314,12 @@ export class RhumRunner {
     } else {
       if (this.test_suite_in_progress != this.passed_in_test_suite) {
         this.test_suite_in_progress = this.passed_in_test_suite;
-        newName = `${"\u0008\u0008\u0008\u0008\u0008"}` +
+        newName = `${"\b\b\b\b\b"}` +
           `    ${this.passed_in_test_suite}\n` +
           //`${" ".repeat(name.length + extraChars)}` +
           `        ${name} `;
       } else {
-        newName = `${"\u0008\u0008\u0008\u0008\u0008"}` +
+        newName = `${"\b\b\b\b\b"}` +
           `        ${name} `;
       }
     }
