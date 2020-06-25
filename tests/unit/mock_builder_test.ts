@@ -20,7 +20,7 @@ Deno.test({
 });
 
 Deno.test({
-  name: "Unit | MockBuilder | create() | creates mock with constrcutor args",
+  name: "Unit | MockBuilder | create() | creates mock with constructor args",
   fn(): void {
     const mock = new MockBuilder(TestObjectTwo)
       .withConstructorArgs("some name")
