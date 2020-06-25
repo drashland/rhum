@@ -1,7 +1,13 @@
 import { asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
-import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
+import {
+  ITestPlan,
+  ITestSuite,
+  ITestCase,
+  constructorFn,
+  Stubed,
+} from "./src/interfaces.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
 /**
@@ -53,7 +59,7 @@ const extraChars = 10;
  */
 export class RhumRunner {
   public asserts: asserts;
-  public mocks: any = {};
+  public mocks: any = {}; // TODO What will be in this besides ServerRequest
 
   protected passed_in_test_plan: string = ""; // TODO although internal, 'passed' can be misleading when test are in context too.
   protected passed_in_test_suite: string = "";
@@ -191,27 +197,30 @@ export class RhumRunner {
    *     The object containing the member to stub.
    * @param string member
    *     The member to stub.
-   * @param any value
+   * @param unknown value
    *     The return value of the stubbed member.
    *
    * @return this
    *     Return this so that stub() calls can be chained.
    */
-  public stub(obj: any, member: string, value: any): this {
+  public stub<T>(obj: Stubed<T>, member: keyof T, value: unknown): this {
     if (!obj.calls) {
       obj.calls = {};
     }
     if (!obj.calls[member]) {
-      obj.calls[member] = 0;
+      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
+      (obj.calls[member] as number) = 0;
     }
 
     if (typeof value === "function") {
-      obj[member] = function () {
-        obj.calls[member]++;
+      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
+      (obj[member] as unknown) = function () {
+        (obj.calls[member] as number)++;
         return value();
       };
     } else {
-      obj[member] = value;
+      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
+      (obj[member] as unknown) = value;
     }
     return this;
   }
@@ -224,7 +233,7 @@ export class RhumRunner {
    *
    * @return MockBuilder
    */
-  public mock(constructorFn: any): MockBuilder {
+  public mock<T>(constructorFn: constructorFn<T>): MockBuilder<T> {
     return new MockBuilder(constructorFn);
   }
 

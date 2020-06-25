@@ -123,3 +123,18 @@ export interface ITestCase {
   new_name: string;
   testFn: Function;
 }
+
+// deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
+export type constructorFn<T> = {
+  new (...args: any[]): T;
+  [key: string]: any;
+};
+
+export type Mocked<T> = T & {
+  calls: { [k in keyof T]: T[k] extends Function ? number : never };
+  is_mock: true;
+};
+
+export type Stubed<T> = T & {
+  calls: { [k in keyof T]?: T[k] extends Function ? number : never };
+};
