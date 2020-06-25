@@ -28,7 +28,11 @@ jobs:
         run: deno test tests/unit
 
       - name: Integration
-        run: deno test --allow-run tests/integration
+        run: |
+          export LC_CTYPE=en_US.utf8
+          deno test --allow-run tests/integration
+          deno  test --allow-run tests/integration > int_test_log.txt
+          cat int_test_log.txt
 
   linter:
     strategy:
