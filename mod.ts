@@ -1,4 +1,4 @@
-import { asserts } from "./deps.ts";
+import { asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequest } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
@@ -51,7 +51,7 @@ const extraChars = 10;
  *     @ebebbington (https://github.com/ebebbington)
  */
 export class RhumRunner {
-  public asserts: any;
+  public asserts: asserts;
   public mocks: any = {};
 
   protected passed_in_test_plan: string = ""; // TODO although internal, 'passed' can be misleading when test are in context too.

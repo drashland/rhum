@@ -43,7 +43,7 @@ export const MockServerRequest = function (
   //
   //   TypeError: Cannot read property 'write' of undefined
   //
-  request.respond = function respond(output: any) { // TODO RequestRespondOutput & different method signatore than original
+  request.respond = function respond(output: any) { // TODO RequestRespondOutput & different method signature than original
     output.send = function () {
       if (
         output.status === 301 ||
