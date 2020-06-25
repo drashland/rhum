@@ -48,9 +48,11 @@ export class TestCase {
             this.plan.after_all_suite_hook();
           }
         };
-        await Deno.test(c.name, async () => {
-          Deno.stdout.writeSync(encoder.encode(c.new_name));
-          await hookAttachedTestFn();
+        await Deno.test({
+          name: c.new_name,
+          async fn(): Promise<void> {
+            await hookAttachedTestFn();
+          }
         });
       });
     });
