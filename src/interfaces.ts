@@ -124,9 +124,10 @@ export interface ITestCase {
   testFn: Function;
 }
 
-// deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
 export type constructorFn<T> = {
+  // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
   new (...args: any[]): T;
+  // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
   [key: string]: any;
 };
 
