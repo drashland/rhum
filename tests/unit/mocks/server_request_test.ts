@@ -17,3 +17,32 @@ Deno.test({
     asserts.assertEquals(typeof res.send === "function", true);
   },
 });
+
+Deno.test({
+  name: "Unit | mocks | ServerRequest | Correctly sets content length for strings",
+  async fn(): Promise<void> {
+    const mockReq = MockServerRequest("https://google.com", "get", {
+      body: JSON.stringify({ name: "Edward" })
+    });
+    asserts.assertEquals(mockReq.headers.get("Content-Length"), "17");
+  },
+});
+
+Deno.test({
+  name: "Unit | mocks | ServerRequest | Correctly sets content length for FormData",
+  async fn(): Promise<void> {
+    const formData = new FormData()
+    formData.append("fs", "dd");
+    formData.append(
+        "image",
+        new Blob([
+            new Uint8Array([137,80,78,71,13,10,26,10, 137, 1, 25])
+        ], { type: "image/png" }),
+        "some-image.png"
+    )
+    const mockReq = MockServerRequest("https://google.com", "get", {
+      body: formData
+    });
+    asserts.assertEquals(mockReq.headers.get("Content-Length"), "13");
+  },
+});
