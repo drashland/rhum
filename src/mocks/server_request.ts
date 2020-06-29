@@ -24,13 +24,13 @@ export const MockServerRequest = function (
         options.body.forEach((value: FormDataEntryValue) => {
           if (typeof value === "string") {
             // normal input, eg .append("input", "my username")
-            len += value.length
+            len += value.length;
           } else {
             // file
-            len += value.size
+            len += value.size;
           }
-        })
-        request.headers.set("Content-Length", len)
+        });
+        request.headers.set("Content-Length", len);
       }
       request.r = new BufReader(options.body);
     }
