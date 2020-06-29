@@ -16,7 +16,22 @@ export const MockServerRequest = function (
       }
     }
     if (options.body) {
-      request.headers.set("Content-Length", options.body.length.toString());
+      // Used to see if the body can be stringified, or if its a formdata object
+      if (typeof options.body === "string") {
+        request.headers.set("Content-Length", options.body.length.toString());
+      } else if (options.body instanceof FormData) {
+        let len = 0;
+        options.body.forEach((value: FormDataEntryValue) => {
+          if (typeof value === "string") {
+            // normal input, eg .append("input", "my username")
+            len += value.length
+          } else {
+            // file
+            len += value.size
+          }
+        })
+        request.headers.set("Content-Length", len)
+      }
       request.r = new BufReader(options.body);
     }
     if (options.server) {
