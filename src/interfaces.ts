@@ -1,4 +1,4 @@
-import { MockServerRequest, MockServerRequestFn } from "./mocks/server_request.ts";
+import { MockServerRequestFn } from "./mocks/server_request.ts";
 
 /**
  * @description
