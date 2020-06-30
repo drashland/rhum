@@ -1,6 +1,6 @@
 import { Mocked, constructorFn } from "./interfaces.ts";
 
-export class MockBuilder<T extends Object> {
+export class MockBuilder<T> {
   protected properties: string[] = [];
   protected functions: string[] = [];
   protected constructor_fn: constructorFn<T>;
@@ -23,7 +23,8 @@ export class MockBuilder<T extends Object> {
    * @return Mocked<T>
    */
   public create(): Mocked<T> {
-    let mock: any = {
+    // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
+    let mock: Mocked<any> = {
       calls: {},
       is_mock: true,
     };
@@ -64,7 +65,7 @@ export class MockBuilder<T extends Object> {
         }
         mock[method] = function () {
           mock.calls[method]++;
-          return original[method as keyof T]();
+          return (original[method as keyof T] as unknown as Function)();
         };
       } else {
         // copy nativeMethod directly without mocking

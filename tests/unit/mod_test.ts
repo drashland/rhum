@@ -12,9 +12,7 @@ Deno.test({
     asserts.assertEquals(mockReq.url === "https://google.com", true);
     asserts.assertEquals(mockReq.method === "get", true);
     asserts.assertEquals(mockReq.headers.get("a"), "Hi");
-    const res = mockReq.respond({ status: 200 });
-    asserts.assertEquals(res.status, 200);
-    asserts.assertEquals(typeof res.send === "function", true);
+    await mockReq.respond({ status: 200 });
   },
 });
 

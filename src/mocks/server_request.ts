@@ -5,11 +5,9 @@ export interface MockServerRequestOptions {
   body?: Deno.Buffer;
 }
 
+// TODO remove lint ignore when extended
+// deno-lint-ignore no-empty-interface, eslint-ignore-next-line no-empty-interface
 export interface MockServerRequest extends ServerRequest {
-}
-
-export interface RequestRespondOutput extends Response { // TODO
-  send: () => RequestRespondOutput;
 }
 
 export const MockServerRequestFn = function (
