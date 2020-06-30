@@ -1,12 +1,11 @@
 import { asserts } from "./src/rhum_asserts.ts";
-import { MockServerRequest } from "./src/mocks/server_request.ts";
+import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import {
   ITestPlan,
-  ITestSuite,
-  ITestCase,
   constructorFn,
   Stubed,
+  RhumMocks,
 } from "./src/interfaces.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
@@ -59,9 +58,9 @@ const extraChars = 10;
  */
 export class RhumRunner {
   public asserts: asserts;
-  public mocks: any = {}; // TODO What will be in this besides ServerRequest
+  public mocks: RhumMocks;
 
-  protected passed_in_test_plan: string = ""; // TODO although internal, 'passed' can be misleading when test are in context too.
+  protected passed_in_test_plan: string = "";
   protected passed_in_test_suite: string = "";
   protected test_plan_in_progress: string = "";
   protected test_suite_in_progress: string = "";
@@ -74,7 +73,7 @@ export class RhumRunner {
    */
   constructor() {
     this.asserts = asserts;
-    this.mocks.ServerRequest = MockServerRequest;
+    this.mocks = { ServerRequest: MockServerRequestFn };
   }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////

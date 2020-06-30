@@ -1,3 +1,5 @@
+import { MockServerRequest, MockServerRequestFn } from "./mocks/server_request.ts";
+
 /**
  * @description
  *
@@ -122,6 +124,10 @@ export interface ITestCase {
   name: string;
   new_name: string;
   testFn: Function;
+}
+
+export interface RhumMocks {
+  ServerRequest: typeof MockServerRequestFn;
 }
 
 export type constructorFn<T> = {
