@@ -256,11 +256,27 @@ Deno.test({
         "\n" +
         "-   true\n" +
         "+   false\n" +
-        "\n    "
-    asserts.assertEquals(firstFailureResult, expectedFirstTestCaseFailureWhenRanOnHost);
-    asserts.assertEquals(
-      secondFailureResult,
-      " ($deno$/testing.ts:358:20)\n" +
+        "\n    ";
+    const expectedFirstTestCaseFailureWhenRanInCI =
+        "\n" +
+        "\n" +
+        "test_plan_1 | test_suite_1a | test_case_1a1\n" +
+        "AssertionError: Values are not equal:\n" +
+        "\n" +
+        "\n" +
+        "    [Diff] Actual / Expected\n" +
+        "\n" +
+        "\n" +
+        "-   true\n" +
+        "+   false\n" +
+        "\n    ";
+    if (Deno.env.get("CI") === "true") {
+      asserts.assertEquals(firstFailureResult, expectedFirstTestCaseFailureWhenRanInCI)
+    }  else {
+      asserts.assertEquals(firstFailureResult, expectedFirstTestCaseFailureWhenRanOnHost);
+    }
+    const expectedSecondTestCaseFailureWhenRanOnHost =
+        " ($deno$/testing.ts:358:20)\n" +
         "\n" +
         "test_case_1b3\n" +
         "AssertionError: Values are not equal:\n" +
@@ -271,8 +287,28 @@ Deno.test({
         "\n" +
         "-   true\n" +
         "+   false\n" +
-        "\n    ",
-    );
+        "\n    "
+    const expectedSecondTestCaseFailureWhenRanInCI =
+        " ($deno$/testing.ts:358:20)\n" +
+        "\n" +
+        "test_plan_1 | test_suite_1b | test_case_1b3\n" +
+        "AssertionError: Values are not equal:\n" +
+        "\n" +
+        "\n" +
+        "    [Diff] Actual / Expected\n" +
+        "\n" +
+        "\n" +
+        "-   true\n" +
+        "+   false\n" +
+        "\n    ";
+    if (Deno.env.get("CI") === "true") {
+      asserts.assertEquals(secondFailureResult,  expectedSecondTestCaseFailureWhenRanInCI)
+    } else {
+      asserts.assertEquals(
+          secondFailureResult,
+          expectedSecondTestCaseFailureWhenRanOnHost
+      );
+    }
     asserts.assertEquals(
       stdout.indexOf(
         "test result: FAILED. 20 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out",
