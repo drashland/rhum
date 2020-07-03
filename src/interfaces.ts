@@ -1,3 +1,5 @@
+import { MockServerRequestFn } from "./mocks/server_request.ts";
+
 /**
  * @description
  *
@@ -123,3 +125,23 @@ export interface ITestCase {
   new_name: string;
   testFn: Function;
 }
+
+export interface RhumMocks {
+  ServerRequest: typeof MockServerRequestFn;
+}
+
+export type constructorFn<T> = {
+  // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
+  new (...args: any[]): T;
+  // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
+  [key: string]: any;
+};
+
+export type Mocked<T> = T & {
+  calls: { [k in keyof T]: T[k] extends Function ? number : never };
+  is_mock: true;
+};
+
+export type Stubed<T> = T & {
+  calls: { [k in keyof T]?: T[k] extends Function ? number : never };
+};

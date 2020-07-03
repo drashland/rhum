@@ -137,10 +137,10 @@ Deno.test({
     let splitStdout = stdout.split("failures:"); // [0] = the test case results, [1] = the start of the failures
     const testCaseResults = splitStdout[0];
     const firstFailureResult =
-      splitStdout[1].split("at Module.assertEquals")[0]; // Output of failing on first test
+      splitStdout[1].split("at Object.assertEquals")[0]; // Output of failing on first test
     const secondFailureResult =
       splitStdout[1].split("at Object.runTests")[1].split(
-        "at Module.assertEquals",
+        "at Object.assertEquals",
       )[0];
     const expectedTestCaseResult = "running 22 tests\n" +
       // Test plan 1

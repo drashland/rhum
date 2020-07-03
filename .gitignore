@@ -7,3 +7,5 @@ tmp/*
 # exceptions
 !.gitkeep
 
+.vscode
+
