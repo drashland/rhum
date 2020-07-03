@@ -315,11 +315,8 @@ export class RhumRunner {
     // Even if plans and/or suites are the same. I believe this the best
     // way we can display the output
     if (Deno.env.get("CI") === "true") {
-      console.log("is ci")
       newName = `${this.passed_in_test_plan} | ${this.passed_in_test_suite} | ${name}`;
       return newName
-    } else {
-      console.log("IS not ci")
     }
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
