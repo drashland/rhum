@@ -82,6 +82,7 @@ Deno.test({
       "\n" +
       "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out";
     const expectedResultWhenRanInCI =
+        "running 22 tests\n" +
         "test test_plan_1 | test_suite_1a | test_case_1a1 ... ok \n" +
         "test test_plan_1 | test_suite_1a | test_case_1a2 ... ok \n" +
         "test test_plan_1 | test_suite_1a | test_case_1a3 ... ok \n" +
@@ -212,6 +213,7 @@ Deno.test({
       "test test_case_3c2 ...         test_case_3c2 ... ok \n" +
       "\n";
     const expectedTestCaseResultWhenRanInCI =
+        "running 22 tests\n" +
         "test test_plan_1 | test_suite_1a | test_case_1a1 ... FAILED \n" +
         "test test_plan_1 | test_suite_1a | test_case_1a2 ... ok \n" +
         "test test_plan_1 | test_suite_1a | test_case_1a3 ... ok \n" +
