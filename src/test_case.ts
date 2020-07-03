@@ -49,7 +49,9 @@ export class TestCase {
           }
         };
         await Deno.test(c.name, async () => {
-          Deno.stdout.writeSync(encoder.encode(c.new_name));
+          if (Deno.env.get("CI") !== "true") {
+            Deno.stdout.writeSync(encoder.encode(c.new_name));
+          }
           await hookAttachedTestFn();
         });
       });
