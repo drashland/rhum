@@ -38,7 +38,7 @@ Deno.test({
      * There are also some odd empty lines at the end of the stdout... so we just strip those out
      */
     stdout = stdout.substring(0, stdout.indexOf("filtered out") + 12);
-    const expectedResult = "running 22 tests\n" +
+    const expectedResultWhenRanOnHost = "running 22 tests\n" +
       // Test plan 1
       "test test_case_1a1 ...                        \n" +
       "test_plan_1\n" +
@@ -81,7 +81,34 @@ Deno.test({
       "test test_case_3c2 ...         test_case_3c2 ... ok \n" +
       "\n" +
       "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out";
-    asserts.assertEquals(stdout, expectedResult);
+    const expectedResultWhenRanInCI =
+        "test test_plan_1 | test_suite_1a | test_case_1a1 ... ok \n" +
+        "test test_plan_1 | test_suite_1a | test_case_1a2 ... ok \n" +
+        "test test_plan_1 | test_suite_1a | test_case_1a3 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b1 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b2 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b3 ... ok \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a1 ... ok \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a2 ... ok \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a3 ... ok \n" +
+        "test test_plan_2 | test_suite_2b | test_case_2b1 ... ok \n" +
+        "test test_plan_2 | test_suite_2b | test_case_2b2 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c1 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c2 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c3 ... ok \n" +
+        "test test_plan_2 | test_suite_2d | test_case_2d1 ... ok \n" +
+        "test test_plan_2 | test_suite_2d | test_case_2d2 ... ok \n" +
+        "test test_plan_3 | test_suite_3a | test_case_3a1 ... ok \n" +
+        "test test_plan_3 | test_suite_3a | test_case_3a2 ... ok \n" +
+        "test test_plan_3 | test_suite_3b | test_case_3b1 ... ok \n" +
+        "test test_plan_3 | test_suite_3b | test_case_3b2 ... ok \n" +
+        "test test_plan_3 | test_suite_3c | test_case_3c1 ... ok \n" +
+        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok";
+    if (Deno.env.get("CI") === "true") {
+      asserts.assertEquals(stdout, expectedResultWhenRanInCI)
+    } else {
+      asserts.assertEquals(stdout, expectedResultWhenRanOnHost);
+    }
   },
 });
 
@@ -142,7 +169,7 @@ Deno.test({
       splitStdout[1].split("at Object.runTests")[1].split(
         "at Module.assertEquals",
       )[0];
-    const expectedTestCaseResult = "running 22 tests\n" +
+    const expectedTestCaseResultWhenRanOnHost = "running 22 tests\n" +
       // Test plan 1
       "test test_case_1a1 ...                        \n" +
       "test_plan_1\n" +
@@ -184,10 +211,36 @@ Deno.test({
       "        test_case_3c1 ... ok \n" +
       "test test_case_3c2 ...         test_case_3c2 ... ok \n" +
       "\n";
-    asserts.assertEquals(testCaseResults, expectedTestCaseResult);
-    asserts.assertEquals(
-      firstFailureResult,
-      "\n" +
+    const expectedTestCaseResultWhenRanInCI =
+        "test test_plan_1 | test_suite_1a | test_case_1a1 ... FAILED \n" +
+        "test test_plan_1 | test_suite_1a | test_case_1a2 ... ok \n" +
+        "test test_plan_1 | test_suite_1a | test_case_1a3 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b1 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b2 ... ok \n" +
+        "test test_plan_1 | test_suite_1b | test_case_1b3 ... FAILED \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a1 ... ok \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a2 ... ok \n" +
+        "test test_plan_2 | test_suite_2a | test_case_2a3 ... ok \n" +
+        "test test_plan_2 | test_suite_2b | test_case_2b1 ... ok \n" +
+        "test test_plan_2 | test_suite_2b | test_case_2b2 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c1 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c2 ... ok \n" +
+        "test test_plan_2 | test_suite_2c | test_case_2c3 ... ok \n" +
+        "test test_plan_2 | test_suite_2d | test_case_2d1 ... ok \n" +
+        "test test_plan_2 | test_suite_2d | test_case_2d2 ... ok \n" +
+        "test test_plan_3 | test_suite_3a | test_case_3a1 ... ok \n" +
+        "test test_plan_3 | test_suite_3a | test_case_3a2 ... ok \n" +
+        "test test_plan_3 | test_suite_3b | test_case_3b1 ... ok \n" +
+        "test test_plan_3 | test_suite_3b | test_case_3b2 ... ok \n" +
+        "test test_plan_3 | test_suite_3c | test_case_3c1 ... ok \n" +
+        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok";
+    if (Deno.env.get("CI") === "true") {
+      asserts.assertEquals(testCaseResults, expectedTestCaseResultWhenRanInCI)
+    } else {
+      asserts.assertEquals(testCaseResults, expectedTestCaseResultWhenRanOnHost);
+    }
+    const expectedFirstTestCaseFailureWhenRanOnHost  =
+        "\n" +
         "\n" +
         "test_case_1a1\n" +
         "AssertionError: Values are not equal:\n" +
@@ -198,8 +251,8 @@ Deno.test({
         "\n" +
         "-   true\n" +
         "+   false\n" +
-        "\n    ",
-    );
+        "\n    "
+    asserts.assertEquals(firstFailureResult, expectedFirstTestCaseFailureWhenRanOnHost);
     asserts.assertEquals(
       secondFailureResult,
       " ($deno$/testing.ts:358:20)\n" +
