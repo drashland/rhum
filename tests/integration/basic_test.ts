@@ -10,7 +10,7 @@ Deno.test({
     "Integration | basic_test.ts | Tests correctly pass and display the correct output",
   async fn(): Promise<void> {
     const p = await Deno.run({
-      cmd: ["deno", "test", "--allow-run", "example_tests/basic/tests_pass.ts"],
+      cmd: ["deno", "test", "--allow-run", "--allow-env", "example_tests/basic/tests_pass.ts"],
       stdout: "piped",
       stderr: "piped",
       env: { "NO_COLOR": "false" },
@@ -90,7 +90,7 @@ Deno.test({
     "Integration | basic_test.ts | Tests correctly fail and display the correct output",
   async fn(): Promise<void> {
     const p = await Deno.run({
-      cmd: ["deno", "test", "--allow-run", "example_tests/basic/tests_fail.ts"],
+      cmd: ["deno", "test", "--allow-run", "--allow-env", "example_tests/basic/tests_fail.ts"],
       stdout: "piped",
       stderr: "piped",
       env: { "NO_COLOR": "true" },
