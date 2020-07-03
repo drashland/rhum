@@ -48,12 +48,16 @@ export class TestCase {
             this.plan.after_all_suite_hook();
           }
         };
-        await Deno.test(c.name, async () => {
-          if (Deno.env.get("CI") !== "true") {
+        if (Deno.env.get("CI") === "true") {
+          await Deno.test(c.new_name, async () => {
+            await hookAttachedTestFn()
+          })
+        } else {
+          await Deno.test(c.name, async () => {
             Deno.stdout.writeSync(encoder.encode(c.new_name));
-          }
-          await hookAttachedTestFn();
-        });
+            await hookAttachedTestFn();
+          });
+        }
       });
     });
   }
