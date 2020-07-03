@@ -104,7 +104,7 @@ Deno.test({
         "test test_plan_3 | test_suite_3b | test_case_3b1 ... ok \n" +
         "test test_plan_3 | test_suite_3b | test_case_3b2 ... ok \n" +
         "test test_plan_3 | test_suite_3c | test_case_3c1 ... ok \n" +
-        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok\n" +
+        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok \n" +
         "\n" +
         "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out"
     if (Deno.env.get("CI") === "true") {
@@ -237,7 +237,7 @@ Deno.test({
         "test test_plan_3 | test_suite_3b | test_case_3b1 ... ok \n" +
         "test test_plan_3 | test_suite_3b | test_case_3b2 ... ok \n" +
         "test test_plan_3 | test_suite_3c | test_case_3c1 ... ok \n" +
-        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok" +
+        "test test_plan_3 | test_suite_3c | test_case_3c2 ... ok \n" +
         "\n" +
         "test result: ok. 20 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out";
     if (Deno.env.get("CI") === "true") {
