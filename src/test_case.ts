@@ -55,8 +55,8 @@ export class TestCase {
         // based on if the tests are being ran inside a CI job
         if (Deno.env.get("CI") === "true") {
           await Deno.test(c.new_name, async () => {
-            await hookAttachedTestFn()
-          })
+            await hookAttachedTestFn();
+          });
         } else {
           await Deno.test(c.name, async () => {
             Deno.stdout.writeSync(encoder.encode(c.new_name));
