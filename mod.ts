@@ -207,18 +207,15 @@ export class RhumRunner {
       obj.calls = {};
     }
     if (!obj.calls[member]) {
-      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
       (obj.calls[member] as number) = 0;
     }
 
     if (typeof value === "function") {
-      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
       (obj[member] as unknown) = function () {
         (obj.calls[member] as number)++;
         return value();
       };
     } else {
-      // deno-fmt-ignore TODO https://github.com/denoland/deno/issues/6477
       (obj[member] as unknown) = value;
     }
     return this;
