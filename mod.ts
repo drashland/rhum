@@ -4,7 +4,7 @@ import { TestCase } from "./src/test_case.ts";
 import {
   ITestPlan,
   constructorFn,
-  Stubed,
+  Stubbed,
   RhumMocks,
 } from "./src/interfaces.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
@@ -202,7 +202,7 @@ export class RhumRunner {
    * @return this
    *     Return this so that stub() calls can be chained.
    */
-  public stub<T>(obj: Stubed<T>, member: keyof T, value: unknown): this {
+  public stub<T>(obj: Stubbed<T>, member: keyof T, value: unknown): this {
     if (!obj.calls) {
       obj.calls = {};
     }

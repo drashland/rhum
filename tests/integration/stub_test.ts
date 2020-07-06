@@ -1,5 +1,5 @@
 import { Rhum } from "../../mod.ts";
-import { Stubed } from "../../src/interfaces.ts";
+import { Stubbed } from "../../src/interfaces.ts";
 
 class Server {
   public property = "hello";
@@ -15,14 +15,14 @@ class Server {
 Rhum.testPlan("stub_test.ts", () => {
   Rhum.testSuite("stub()", () => {
     Rhum.testCase("can stub a property", () => {
-      const server = new Server() as Stubed<Server>;
+      const server = new Server() as Stubbed<Server>;
       Rhum
         .stub(server, "property", "you got changed");
       Rhum.asserts.assertEquals(server.property, "you got changed");
     });
 
     Rhum.testCase("can stub a method", () => {
-      const server = new Server() as Stubed<Server>;
+      const server = new Server() as Stubbed<Server>;
       Rhum
         .stub(server, "methodThatLogs", () => {
           return "don't run the console.log()";
@@ -34,7 +34,7 @@ Rhum.testPlan("stub_test.ts", () => {
     });
 
     Rhum.testCase("can be chained with more stub() calls", () => {
-      const server = new Server() as Stubed<Server>;
+      const server = new Server() as Stubbed<Server>;
       Rhum
         .stub(server, "methodThatLogs", () => {
           return "don't run the console.log()";

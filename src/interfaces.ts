@@ -142,6 +142,6 @@ export type Mocked<T> = T & {
   is_mock: true;
 };
 
-export type Stubed<T> = T & {
+export type Stubbed<T> = T & {
   calls: { [k in keyof T]?: T[k] extends Function ? number : never };
 };
