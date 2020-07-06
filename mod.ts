@@ -349,4 +349,4 @@ export class RhumRunner {
 
 export const Rhum = new RhumRunner();
 
-export { Stubbed }
+export { Stubbed };
