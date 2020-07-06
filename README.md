@@ -338,7 +338,7 @@ class Server {
 Rhum.testPlan("My Plan", () => {
   Rhum.testSuite("My Suite", () => {
     Rhum.testCase("My Test Case", () => {
-      const server: any = new Server(); // note that any is used here
+      const server = new Server() as Stubbed<Server>;
       // Stub a single method or stub multiple methods by chaining .stub() calls
       Rhum
         .stub(server, "run", () => {
