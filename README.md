@@ -326,6 +326,7 @@ We know this may be different than what you are used to, but in Rhum, a stub:
 * Does not respond to calls outside the scope of the test
 
 ```typescript
+import { Stubbed } from "https://deno.land/x/rhum@v1.0.0/mod.ts"
 class Server {
   public run() {
     console.log("Server running.");
