@@ -303,6 +303,22 @@ export class RhumRunner {
    */
   protected formatTestCaseName(name: string): string {
     let newName: string;
+    // (ebebbington) Unfortunately, due to the CI not correctly displaying output
+    // (it is  all over the place and just  completely unreadable as
+    // it doesn't play well with  our control characters), we need to
+    // display the test output differently, based on if the tests are
+    // being ran inside a CI or not. Nothing will change for the current
+    // way of doing things, but if the tests are being ran inside a CI,
+    // the format would be:
+    //    test <plan> | <suite> | <case> ... ok (2ms)
+    //    test <plan> | <suite> | <case> ... ok (2ms)
+    // Even if plans and/or suites are the same. I believe this the best
+    // way we can display the output
+    if (Deno.env.get("CI") === "true") {
+      newName =
+        `${this.passed_in_test_plan} | ${this.passed_in_test_suite} | ${name}`;
+      return newName;
+    }
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
       this.test_suite_in_progress = this.passed_in_test_suite;

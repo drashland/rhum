@@ -105,6 +105,8 @@ test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out (4ms)
 
 Rhum can also be used with [SuperDeno](https://github.com/asos-craigmorten/superdeno). You can also read [Craig Morten's](https://github.com/asos-craigmorten) tutorial on strengthening your testing process using both Rhum and SuperDeno, [here](https://dev.to/craigmorten/how-to-write-spec-tests-in-deno-55e8).
 
+Due to the trouble with modifying the output of tests, you will notice the output of your tests in your CI is different than what you see when running tests on your host machine. This is expected, as the CI does not like how we are changing the way Deno.test outputs results so to make the output readable, we have had to adopt a different format approach when tests are ran inside your CI.
+
 * Properties
     * [Rhum.asserts](#rhumasserts)
     * [Rhum.mocks](#rhummocks)
