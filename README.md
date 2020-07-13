@@ -116,10 +116,8 @@ Due to the trouble with modifying the output of tests, you will notice the outpu
     * [Rhum.afterEach](#rhumaftereach)
     * [Rhum.beforeAll](#rhumbeforeall)
     * [Rhum.beforeEach](#rhumbeforeeach)
-    * [Rhum.mock](#rhummock)
     * [Rhum.run](#rhumrun)
     * [Rhum.skip](#rhumskip)
-    * [Rhum.stub](#rhumstub)
     * [Rhum.testCase](#rhumtestcase)
     * [Rhum.testPlan](#rhumtestplan)
     * [Rhum.testSuite](#rhumtestsuite)
@@ -252,37 +250,6 @@ Rhum.testPlan("My Plan", () => {
   });
 });
 ```
-#### `Rhum.mock`
-
-Allows mocking of classes. You can also find out how many times a mock object's members are called. Once a class is mocked, all of its data members are made public. That means any protected property or method can be called without having to do any additional work.
-
-We know this may be different than what you are used to, but in Rhum, a mock:
-
-* Registers calls they receive
-* Helps verify behavior (e.g., verify that the e-mail service is called a number of times)
-
-```typescript
-class Server {
-  protected protected_property: string = "a protected property";
-  protected protectedMethod(): string {
-    return "a protected method";
-  }
-}
-
-Rhum.testPlan("My Plan", () => {
-  Rhum.testSuite("My Suite", () => {
-    Rhum.testCase("My Test Case", () => {
-      const mock = Rhum
-        .mock(Server)
-        .withConstructorArgs("arg1", "arg2", "arg3") // this call optional
-        .create();
-      Rhum.asserts.assertEquals(mock.protected_property, "a protected property");
-      Rhum.asserts.assertEquals(mock.protectedMethod(), "a protected method");
-      Rhum.asserts.assertEquals(mock.calls.protectedMethod, 1); // track how many times the method is called using {object}.calls.{method}
-    });
-  });
-});
-```
 
 #### `Rhum.run`
 
@@ -312,47 +279,6 @@ Rhum.testPlan("My Plan", () => {
     });
     Rhum.skip("My Other Test Case In Suite 2", () => { // will not run this block
       ...
-    });
-  });
-});
-```
-
-#### `Rhum.stub`
-
-Allows stubbing of data members. You can also track how many times a stubbed member is called.
-
-We know this may be different than what you are used to, but in Rhum, a stub:
-
-* Provides canned answers to calls made during tests
-* Helps verify state
-* Does not respond to calls outside the scope of the test
-
-```typescript
-class Server {
-  public run() {
-    console.log("Server running.");
-  }
-  public stop() {
-    console.log("Server stopped.");
-  }
-}
-
-Rhum.testPlan("My Plan", () => {
-  Rhum.testSuite("My Suite", () => {
-    Rhum.testCase("My Test Case", () => {
-      const server: any = new Server(); // note that any is used here
-      // Stub a single method or stub multiple methods by chaining .stub() calls
-      Rhum
-        .stub(server, "run", () => {
-          return "running";
-        })
-        .stub(server, "stop", () => {
-          return "stopped";
-        });
-      Rhum.asserts.assertEquals(server.run(), "running"); // does not run the console.log()
-      Rhum.asserts.assertEquals(server.calls.run, 1); // track how many times the method is called using {object}.calls.{method}
-      Rhum.asserts.assertEquals(server.stop(), "stopped"); // does not run the console.log()
-      Rhum.asserts.assertEquals(server.calls.stop, 1); // track how many times the method is called using {object}.calls.{method}
     });
   });
 });
