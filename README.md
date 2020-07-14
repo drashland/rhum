@@ -69,7 +69,10 @@ Rhum.run(); // <-- make sure to include this so that your tests run via `deno te
 ```
 
 ```
-$ deno test
+$ deno test --allow-env
+
+Compile file:///.deno.test.ts
+running 2 tests
 
 app_test.ts
     run()
