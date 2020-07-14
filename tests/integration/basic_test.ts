@@ -293,7 +293,7 @@ Deno.test({
       );
     }
     const expectedSecondTestCaseFailureWhenRanOnHost =
-      " ($deno$/testing.ts:358:20)\n" +
+      " ($deno$/testing.ts:364:20)\n" +
       "\n" +
       "test_case_1b3\n" +
       "AssertionError: Values are not equal:\n" +
