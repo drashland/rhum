@@ -25,6 +25,7 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Rhum?](#why-use-rhum)
+- [Articles](#articles)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -122,6 +123,10 @@ Rhum takes concepts from the following:
 * <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
 
 Rhum can be added directly into any project. All you need to do is import Rhum and you are ready to start writing tests or bring your existing tests under Rhum.
+
+## Articles
+
+* [Why We Created Rhum For Testing Deno Projects](https://dev.to/crookse_/why-we-created-rhum-for-testing-deno-projects-33mf)
 
 ## Contributing
 
