@@ -1,9 +1,9 @@
-import { Mocked, constructorFn } from "./interfaces.ts";
+import { Mock, Constructor } from "./types.ts";
 
 export class MockBuilder<T> {
   protected properties: string[] = [];
   protected functions: string[] = [];
-  protected constructor_fn: constructorFn<T>;
+  protected constructor_fn: Constructor<T>;
   protected constructor_args: unknown[] = [];
 
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -11,7 +11,7 @@ export class MockBuilder<T> {
   /**
    * Construct an object of this class.
    */
-  constructor(constructorFn: constructorFn<T>) {
+  constructor(constructorFn: Constructor<T>) {
     this.constructor_fn = constructorFn;
   }
 
@@ -20,22 +20,15 @@ export class MockBuilder<T> {
   /**
    * Create the mock object.
    *
-   * @return Mocked<T>
+   * @return Mock<T>
    */
-  public create(): Mocked<T> {
-    // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
-    let mock: Mocked<any> = {
+  public create(): Mock<T> {
+    // deno-lint-ignore no-explicit-any
+    let mock: Mock<any> = {
       calls: {},
       is_mock: true,
     };
-    let original: T;
-
-    // Construct an object of the class to be mocked
-    if (this.constructor_args.length > 0) {
-      original = new this.constructor_fn(...this.constructor_args);
-    } else {
-      original = new this.constructor_fn();
-    }
+    let original = new this.constructor_fn(...this.constructor_args);
 
     // Attach all of the original's properties to the mock
     this.getAllProperties(original).forEach((property: string) => {

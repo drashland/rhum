@@ -48,8 +48,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .create();
       Rhum.asserts.assertEquals(
-        // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
-        (mock as any).protected_property,
+        (mock as unknown as {[key: string]: string}).protected_property,
         "I AM PROTECTED PROPERTY.",
       );
     });

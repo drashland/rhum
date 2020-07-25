@@ -3,10 +3,12 @@ import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import {
   ITestPlan,
-  constructorFn,
-  Stubbed,
   RhumMocks,
 } from "./src/interfaces.ts";
+import {
+  Constructor,
+  Stub,
+} from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
 /**
@@ -202,7 +204,7 @@ export class RhumRunner {
    * @return this
    *     Return this so that stub() calls can be chained.
    */
-  public stub<T>(obj: Stubbed<T>, member: keyof T, value: unknown): this {
+  public stub<T>(obj: Stub<T>, member: keyof T, value: unknown): this {
     if (!obj.calls) {
       obj.calls = {};
     }
@@ -228,7 +230,7 @@ export class RhumRunner {
    *
    * @return MockBuilder
    */
-  public mock<T>(constructorFn: constructorFn<T>): MockBuilder<T> {
+  public mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
     return new MockBuilder(constructorFn);
   }
 
@@ -360,5 +362,3 @@ export class RhumRunner {
 }
 
 export const Rhum = new RhumRunner();
-
-export { Stubbed };
