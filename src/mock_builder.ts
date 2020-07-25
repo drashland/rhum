@@ -111,7 +111,7 @@ export class MockBuilder<T> {
     let clone = obj;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
-    } while (!!(clone = Object.getPrototypeOf(clone)));
+    } while ((clone = Object.getPrototypeOf(clone)));
 
     return functions.sort().filter(
       function (e: string, i: number, arr: unknown[]) {
@@ -140,7 +140,7 @@ export class MockBuilder<T> {
     let clone = obj;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
-    } while (!!(clone = Object.getPrototypeOf(clone)));
+    } while ((clone = Object.getPrototypeOf(clone)));
 
     return functions.sort().filter(
       function (e: string, i: number, arr: unknown[]) {

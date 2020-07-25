@@ -60,10 +60,10 @@ export class RhumRunner {
   public asserts: asserts;
   public mocks: RhumMocks;
 
-  protected passed_in_test_plan: string = "";
-  protected passed_in_test_suite: string = "";
-  protected test_plan_in_progress: string = "";
-  protected test_suite_in_progress: string = "";
+  protected passed_in_test_plan = "";
+  protected passed_in_test_suite = "";
+  protected test_plan_in_progress = "";
+  protected test_suite_in_progress = "";
   protected plan: ITestPlan = { suites: {} };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
