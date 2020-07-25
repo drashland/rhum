@@ -179,10 +179,17 @@ Deno.test({
     const testCaseResults = splitStdout[0];
     const firstFailureResult =
       splitStdout[1].split("at Module.assertEquals")[0]; // Output of failing on first test
-    const secondFailureResult =
+    let secondFailureResult =
       splitStdout[1].split("at Object.runTests")[1].split(
         "at Module.assertEquals",
       )[0];
+
+    // To remove the `($deno/testing...` bit, because it was causing problems on new deno releases
+    let tmpSecondFailureResult = secondFailureResult.split("\n");
+    delete tmpSecondFailureResult[0];
+    delete tmpSecondFailureResult[0];
+
+    secondFailureResult = tmpSecondFailureResult.join("\n");
     const expectedTestCaseResultWhenRanOnHost = "running 22 tests\n" +
       // Test plan 1
       "test test_case_1a1 ...                        \n" +
@@ -292,8 +299,7 @@ Deno.test({
         expectedFirstTestCaseFailureWhenRanOnHost,
       );
     }
-    const expectedSecondTestCaseFailureWhenRanOnHost =
-      " ($deno$/testing.ts:364:20)\n" +
+    const expectedSecondTestCaseFailureWhenRanOnHost = "\n" +
       "\n" +
       "test_case_1b3\n" +
       "AssertionError: Values are not equal:\n" +
@@ -305,8 +311,7 @@ Deno.test({
       "-   true\n" +
       "+   false\n" +
       "\n    ";
-    const expectedSecondTestCaseFailureWhenRanInCI =
-      " ($deno$/testing.ts:364:20)\n" +
+    const expectedSecondTestCaseFailureWhenRanInCI = "\n" +
       "\n" +
       "test_plan_1 | test_suite_1b | test_case_1b3\n" +
       "AssertionError: Values are not equal:\n" +
