@@ -49,10 +49,21 @@ export class TestCase {
             this.plan.after_all_suite_hook();
           }
         };
-        await Deno.test(c.name, async () => {
-          Deno.stdout.writeSync(encoder.encode(c.new_name));
-          await hookAttachedTestFn();
-        });
+        // (ebebbington) To stop the output of test running being horrible
+        // in the CI, we will only display the new name which should be
+        // "plan | suite " case", as opposed to the "super saiyan"
+        // version. This name is generated differently inside `formatTestCaseName`
+        // based on if the tests are being ran inside a CI job
+        if (Deno.env.get("CI") === "true") {
+          await Deno.test(c.new_name, async () => {
+            await hookAttachedTestFn();
+          });
+        } else {
+          await Deno.test(c.name, async () => {
+            Deno.stdout.writeSync(encoder.encode(c.new_name));
+            await hookAttachedTestFn();
+          });
+        }
       });
     });
   }
