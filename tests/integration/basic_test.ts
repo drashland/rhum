@@ -306,7 +306,7 @@ Deno.test({
       "+   false\n" +
       "\n    ";
     const expectedSecondTestCaseFailureWhenRanInCI =
-      " ($deno$/testing.ts:364:20)\n" +
+      " (rt/40_testing.js:317:22)\n" +
       "\n" +
       "test_plan_1 | test_suite_1b | test_case_1b3\n" +
       "AssertionError: Values are not equal:\n" +
