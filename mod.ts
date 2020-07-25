@@ -207,18 +207,14 @@ export class RhumRunner {
       obj.calls = {};
     }
     if (!obj.calls[member]) {
-      // deno-fmt-ignore
       (obj.calls[member] as number) = 0;
     }
-
     if (typeof value === "function") {
-      // deno-fmt-ignore
       (obj[member] as unknown) = function () {
         (obj.calls[member] as number)++;
         return value();
       };
     } else {
-      // deno-fmt-ignore
       (obj[member] as unknown) = value;
     }
     return this;
