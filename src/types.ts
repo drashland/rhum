@@ -14,4 +14,3 @@ export type Mock<T> = T & {
 export type Stub<T> = T & {
   calls: { [k in keyof T]?: T[k] extends Function ? number : never };
 };
-
