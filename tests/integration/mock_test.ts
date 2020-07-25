@@ -58,8 +58,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .create();
       Rhum.asserts.assertEquals(
-        // deno-lint-ignore no-explicit-any, eslint-ignore-next-line no-explicit-any
-        (mock as any).protectedMethod(),
+        (mock as unknown as {[key: string]: Function}).protectedMethod(),
         "I AM A PROTECTED METHOD.",
       );
     });

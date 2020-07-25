@@ -71,8 +71,8 @@ export class MockBuilder<T> {
 
   /**
    * @description
-   *     Before constructing the mock object, track any constructur function args
-   *     that need to be passed in when constructing the mock object.
+   *     Before constructing the mock object, track any constructur function
+   *     args that need to be passed in when constructing the mock object.
    *
    * @param unknown[] ...args
    *     A rest parameter of arguments that will get passed in to the
