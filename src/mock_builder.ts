@@ -1,4 +1,4 @@
-import { Mock, Constructor } from "./types.ts";
+import { Mocked, Constructor } from "./types.ts";
 
 export class MockBuilder<T> {
   protected properties: string[] = [];
@@ -6,25 +6,31 @@ export class MockBuilder<T> {
   protected constructor_fn: Constructor<T>;
   protected constructor_args: unknown[] = [];
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
+   *
+   * @param constructorFn - The object's constructor function to instantiate.
    */
   constructor(constructorFn: Constructor<T>) {
     this.constructor_fn = constructorFn;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Create the mock object.
    *
-   * @return Mock<T>
+   * @returns A mocked object.
    */
-  public create(): Mock<T> {
+  public create(): Mocked<T> {
     // deno-lint-ignore no-explicit-any
-    let mock: Mock<any> = {
+    let mock: Mocked<any> = {
       calls: {},
       is_mock: true,
     };
@@ -70,34 +76,30 @@ export class MockBuilder<T> {
   }
 
   /**
-   * @description
-   *     Before constructing the mock object, track any constructur function
-   *     args that need to be passed in when constructing the mock object.
+   * Before constructing the mock object, track any constructur function args
+   * that need to be passed in when constructing the mock object.
    *
-   * @param unknown[] ...args
-   *     A rest parameter of arguments that will get passed in to the
-   *     constructor function of the class being mocked.
+   * @param ...args - A rest parameter of arguments that will get passed in to
+   * the constructor function of the class being mocked.
    *
-   * @return this
-   *     Return this so that methods in this class can be chained.
+   * @returns this so that methods in this class can be chained.
    */
   public withConstructorArgs(...args: unknown[]): this {
     this.constructor_args = args;
     return this;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Get all properties--public, protected, private--from the object that
-   *     will be mocked.
+   * Get all properties--public, protected, private--from the object that will
+   * be mocked.
    *
-   * @param T obj
-   *     The object that will be mocked.
+   * @param obj - The object that will be mocked.
    *
-   * @return string[]
-   *     Returns an array of the object's properties.
+   * @returns An array of the object's properties.
    */
   protected getAllProperties(obj: T): string[] {
     let functions: string[] = [];
@@ -118,15 +120,12 @@ export class MockBuilder<T> {
   }
 
   /**
-   * @description
-   *     Get all functions--public, protected, private--from the object that
-   *     will be mocked.
+   * Get all functions--public, protected, private--from the object that will be
+   * mocked.
    *
-   * @param T obj
-   *     The object that will be mocked.
+   * @param obj - The object that will be mocked.
    *
-   * @return string[]
-   *     Returns an array of the object's functions.
+   * @returns An array of the object's functions.
    */
   protected getAllFunctions(obj: T): string[] {
     let functions: string[] = [];

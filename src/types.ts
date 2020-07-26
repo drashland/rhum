@@ -6,11 +6,11 @@ export type TConstructorFunction<T> = {
 // deno-lint-ignore no-explicit-any
 export type Constructor<T extends {}> = new (...args: any[]) => T;
 
-export type Mock<T> = T & {
+export type Mocked<T> = T & {
   calls: { [k in keyof T]: T[k] extends Function ? number : never };
   is_mock: true;
 };
 
-export type Stub<T> = T & {
+export type Stubbed<T> = T & {
   calls: { [k in keyof T]?: T[k] extends Function ? number : never };
 };
