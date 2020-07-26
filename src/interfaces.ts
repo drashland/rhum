@@ -1,23 +1,20 @@
 import { MockServerRequestFn } from "./mocks/server_request.ts";
 
 /**
- * @description
+ * suites
+ *     An object of objects matching the ITestSuite interface.
  *
- *     suites
- *         An object of objects matching the ITestSuite interface.
+ * after_all_suite_hook?
+ *     A callback function to execute after all test suites.
  *
- *     after_all_suite_hook?
- *         A callback function to execute after all test suites.
+ * after_each_suite_hook?
+ *     A callback function to execute after each test suite.
  *
- *     after_each_suite_hook?
- *         A callback function to execute after each test suite.
+ * before_all_suite_hook?
+ *     A callback function to execute before all test suites.
  *
- *     before_all_suite_hook?
- *         A callback function to execute before all test suites.
- *
- *     before_each_suite_hook?
- *         A callback function to execute before each test suite.
- *
+ * before_each_suite_hook?
+ *     A callback function to execute before each test suite.
  *
  * Example below ...
  *
@@ -81,21 +78,20 @@ export interface ITestPlan {
 }
 
 /**
- * @description
- *     cases?
- *         An array of objects matching the ITestCase interface.
+ * cases?
+ *     An array of objects matching the ITestCase interface.
  *
- *     after_all_case_hook?
- *         A callback function to execute after all test cases.
+ * after_all_case_hook?
+ *     A callback function to execute after all test cases.
  *
- *     after_each_case_hook?
- *         A callback function to execute after each test case.
+ * after_each_case_hook?
+ *     A callback function to execute after each test case.
  *
- *     before_all_case_hook?
- *         A callback function to execute before all test cases.
+ * before_all_case_hook?
+ *     A callback function to execute before all test cases.
  *
- *     before_each_case_hook?
- *         A callback function to execute before each test case.
+ * before_each_case_hook?
+ *     A callback function to execute before each test case.
  */
 export interface ITestSuite {
   cases?: ITestCase[];
@@ -106,19 +102,18 @@ export interface ITestSuite {
 }
 
 /**
- * @description
- *     name
- *         The name of the test case.
+ * name
+ *     The name of the test case.
  *
- *     new_name
- *         The new name of the test. This is strictly for outputting purposes.
- *         Deno's test runner outputs "test name of test" and we want to
- *         overwrite that text. This new_name string helps us do that. See
- *         formatTestCaseName() in mod.ts for more information.
+ * new_name
+ *     The new name of the test. This is strictly for outputting purposes.
+ *     Deno's test runner outputs "test name of test" and we want to
+ *     overwrite that text. This new_name string helps us do that. See
+ *     formatTestCaseName() in mod.ts for more information.
  *
- *     testFn
- *         The test function. Ultimately, this gets passed as the second
- *         argument of Deno.test().
+ * testFn
+ *     The test function. Ultimately, this gets passed as the second
+ *     argument of Deno.test().
  */
 export interface ITestCase {
   name: string;
