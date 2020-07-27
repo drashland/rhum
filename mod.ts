@@ -22,6 +22,7 @@ const extraChars = 10;
 /**
  * This testing framework allows the following syntax:
  *
+ * ```ts
  * import { Rhum } from "/path/to/rhum/mod.ts";
  *
  * Rhum.testPlan("test_plan_1", () => {
@@ -51,6 +52,7 @@ const extraChars = 10;
  *   });
  *
  * });
+ * ```
  */
 export class RhumRunner {
   public asserts: asserts;
