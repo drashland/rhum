@@ -343,9 +343,9 @@ export class RhumRunner {
    * @param name - The name of the test plan.
    * @param testSuites - The test suites to execute.
    *
-   * Rhum.testPlan("My Plan", () => {
-   *   ...
-   * });
+   *     Rhum.testPlan("My Plan", () => {
+   *       ...
+   *     });
    */
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_suite = ""; // New plan
@@ -378,6 +378,12 @@ export class RhumRunner {
 
   /**
    * Run the test plan.
+   *
+   *     Rhum.testPlan("My Plan", () => {
+   *       ...
+   *     });
+   *
+   *     Rhum.run();
    */
   public run(): void {
     const tc = new TestCase(this.plan);
