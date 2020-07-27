@@ -23,6 +23,7 @@ const extraChars = 10;
  * This testing framework allows the following syntax:
  *
  *     import { Rhum } from "/path/to/rhum/mod.ts";
+ *
  *     Rhum.testPlan("test_plan_1", () => {
  *       Rhum.testSuite("test_suite_1a", () => {
  *         Rhum.testCase("test_case_1a1", () => {
@@ -35,6 +36,7 @@ const extraChars = 10;
  *           Rhum.asserts.assertEquals(true, true);
  *         });
  *       });
+ *
  *       Rhum.testSuite("test_suite_1b", () => {
  *         Rhum.testCase("test_case_1b1", () => {
  *           Rhum.asserts.assertEquals(true, true);
