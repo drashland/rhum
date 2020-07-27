@@ -30,7 +30,7 @@ Rhum.testPlan("stub_test.ts", () => {
       );
       Rhum.asserts.assertEquals(
         server.is_stubbed,
-        true
+        true,
       );
     });
   });

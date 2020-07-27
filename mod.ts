@@ -169,12 +169,15 @@ export class RhumRunner {
    * @returns this so that stub() calls can be chained.
    */
   public stubbed<T>(obj: T): Stubbed<T> {
-    (obj as unknown as {[key: string]: boolean}).is_stubbed = true;
-    (obj as unknown as {[key: string]: Function}).stub = function(property: string, value: unknown): void {
+    (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
+    (obj as unknown as { [key: string]: Function }).stub = function (
+      property: string,
+      value: unknown,
+    ): void {
       Object.defineProperty(obj, property, {
-        value: value
+        value: value,
       });
-    }
+    };
 
     return obj as Stubbed<T>;
   }
