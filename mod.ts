@@ -25,6 +25,7 @@ const extraChars = 10;
  *     import { Rhum } from "/path/to/rhum/mod.ts";
  *
  *     Rhum.testPlan("test_plan_1", () => {
+ *
  *       Rhum.testSuite("test_suite_1a", () => {
  *         Rhum.testCase("test_case_1a1", () => {
  *           Rhum.asserts.assertEquals(true, true);
@@ -48,6 +49,7 @@ const extraChars = 10;
  *           Rhum.asserts.assertEquals(true, true);
  *         });
  *       });
+ *
  *     });
  */
 export class RhumRunner {
