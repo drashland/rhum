@@ -26,7 +26,7 @@ export class MockBuilder<T> {
   /**
    * Create the mock object.
    *
-   * @returns A mocked object.
+   * Returns a mocked object.
    */
   public create(): Mocked<T> {
     // deno-lint-ignore no-explicit-any
@@ -82,7 +82,7 @@ export class MockBuilder<T> {
    * @param ...args - A rest parameter of arguments that will get passed in to
    * the constructor function of the class being mocked.
    *
-   * @returns this so that methods in this class can be chained.
+   * Returns `this` so that methods in this class can be chained.
    */
   public withConstructorArgs(...args: unknown[]): this {
     this.constructor_args = args;
@@ -99,7 +99,7 @@ export class MockBuilder<T> {
    *
    * @param obj - The object that will be mocked.
    *
-   * @returns An array of the object's properties.
+   * Returns an array of the object's properties.
    */
   protected getAllProperties(obj: T): string[] {
     let functions: string[] = [];
@@ -125,7 +125,7 @@ export class MockBuilder<T> {
    *
    * @param obj - The object that will be mocked.
    *
-   * @returns An array of the object's functions.
+   * Returns an array of the object's functions.
    */
   protected getAllFunctions(obj: T): string[] {
     let functions: string[] = [];

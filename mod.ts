@@ -11,6 +11,12 @@ import {
 } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
+export {
+  Constructor,
+  MockBuilder,
+  Stubbed,
+};
+
 /**
  * Deno's test runner outputs "test ", which has a length of 5. This module
  * erases the "test " string by backspacing the test plan line and test suite
