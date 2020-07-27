@@ -56,14 +56,22 @@ export class RhumRunner {
   /**
    * The asserts module from https://deno.land/std/testing, but attached to Rhum
    * for accessibility.
+   *
+   *     Rhum.asserts.assertEquals(true, true); // pass
+   *     Rhum.asserts.assertEquals(true, false); // fail
    */
   public asserts: asserts;
+
   public mocks: RhumMocks;
 
   protected passed_in_test_plan = "";
+
   protected passed_in_test_suite = "";
+
   protected test_plan_in_progress = "";
+
   protected test_suite_in_progress = "";
+
   protected plan: ITestPlan = { suites: {} };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
@@ -79,10 +87,29 @@ export class RhumRunner {
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   /**
-   * Register an before each hook.
+   * Used to define a hook that will execute before each test suite or test
+   * case. If this is used inside of a test plan, then it will execute before
+   * each test suite. If this is used inside of a test suite, then it will
+   * execute before each test case.
    *
    * @param cb - The callback to invoke. Would contain the required logic you
    * need to do what you want, before each test suite or case.
+   *
+   * Example:
+   *
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.beforeEach(() => {
+   *         // Runs before each test suite in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.beforeEach(() => {
+   *           // Runs before each test case in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public beforeEach(cb: Function): void {
     // Check if the hook is for test cases inside of a suite
