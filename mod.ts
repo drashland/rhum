@@ -168,28 +168,20 @@ export class RhumRunner {
    *
    * @returns this so that stub() calls can be chained.
    */
-  public stub<T>(obj: Stubbed<T>, member: keyof T, value: unknown): this {
-    if (!obj.calls) {
-      obj.calls = {};
+  public stubbed<T>(obj: T): Stubbed<T> {
+    (obj as unknown as {[key: string]: Function})["stub"] = function(property: string, value: unknown): void {
+      Object.defineProperty(obj, property, {
+        value: value
+      });
     }
-    if (!obj.calls[member]) {
-      (obj.calls[member] as number) = 0;
-    }
-    if (typeof value === "function") {
-      (obj[member] as unknown) = function () {
-        (obj.calls[member] as number)++;
-        return value();
-      };
-    } else {
-      (obj[member] as unknown) = value;
-    }
-    return this;
+
+    return obj as Stubbed<T>;
   }
 
   /**
    * Get the mock builder to mock classes.
    *
-   * @param constructorFn The constructor function of the object to mock.
+   * @param constructorFn - The constructor function of the object to mock.
    *
    * @returns MockBuilder
    */

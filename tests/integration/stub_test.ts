@@ -1,5 +1,4 @@
 import { Rhum } from "../../mod.ts";
-import { Stubbed } from "../../src/types.ts";
 
 class Server {
   public greeting = "hello";
@@ -15,44 +14,20 @@ class Server {
 Rhum.testPlan("stub_test.ts", () => {
   Rhum.testSuite("stub()", () => {
     Rhum.testCase("can stub a property", () => {
-      const server = new Server() as Stubbed<Server>;
-      Rhum
-        .stub(server, "greeting", "you got changed");
+      const server = Rhum.stubbed(new Server());
+      server.stub("greeting", "you got changed");
       Rhum.asserts.assertEquals(server.greeting, "you got changed");
     });
 
     Rhum.testCase("can stub a method", () => {
-      const server = new Server() as Stubbed<Server>;
-      Rhum
-        .stub(server, "methodThatLogs", () => {
-          return "don't run the console.log()";
-        });
-      Rhum.asserts.assertEquals(
-        server.methodThatLogs(),
-        "don't run the console.log()",
-      );
-    });
-
-    Rhum.testCase("can be chained with more stub() calls", () => {
-      const server = new Server() as Stubbed<Server>;
-      Rhum
-        .stub(server, "methodThatLogs", () => {
-          return "don't run the console.log()";
-        })
-        .stub(server, "methodThatThrows", () => {
-          throw new Error("poop");
-        })
-        .stub(server, "greeting", "you got changed");
-      Rhum.asserts.assertEquals(
-        server.methodThatLogs(),
-        "don't run the console.log()",
-      );
-      Rhum.asserts.assertEquals(server.calls.methodThatThrows, 0);
-      Rhum.asserts.assertThrows((): void => {
-        server.methodThatThrows();
+      const server = Rhum.stubbed(new Server());
+      server.stub("methodThatLogs", () => {
+        return "don't run the console.log()";
       });
-      Rhum.asserts.assertEquals(server.greeting, "you got changed");
-      Rhum.asserts.assertEquals(server.calls.methodThatThrows, 1);
+      Rhum.asserts.assertEquals(
+        server.methodThatLogs(),
+        "don't run the console.log()",
+      );
     });
   });
 });
