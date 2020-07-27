@@ -22,37 +22,35 @@ const extraChars = 10;
 /**
  * This testing framework allows the following syntax:
  *
- * ```ts
- * import { Rhum } from "/path/to/rhum/mod.ts";
+ *   import { Rhum } from "/path/to/rhum/mod.ts";
  *
- * Rhum.testPlan("test_plan_1", () => {
+ *   Rhum.testPlan("test_plan_1", () => {
  *
- *   Rhum.testSuite("test_suite_1a", () => {
- *     Rhum.testCase("test_case_1a1", () => {
- *       Rhum.asserts.assertEquals(true, true);
+ *     Rhum.testSuite("test_suite_1a", () => {
+ *       Rhum.testCase("test_case_1a1", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
+ *       Rhum.testCase("test_case_1a2", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
+ *       Rhum.testCase("test_case_1a3", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
  *     });
- *     Rhum.testCase("test_case_1a2", () => {
- *       Rhum.asserts.assertEquals(true, true);
+ *
+ *     Rhum.testSuite("test_suite_1b", () => {
+ *       Rhum.testCase("test_case_1b1", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
+ *       Rhum.testCase("test_case_1b2", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
+ *       Rhum.testCase("test_case_1b3", () => {
+ *         Rhum.asserts.assertEquals(true, true);
+ *       });
  *     });
- *     Rhum.testCase("test_case_1a3", () => {
- *       Rhum.asserts.assertEquals(true, true);
- *     });
+ *
  *   });
- *
- *   Rhum.testSuite("test_suite_1b", () => {
- *     Rhum.testCase("test_case_1b1", () => {
- *       Rhum.asserts.assertEquals(true, true);
- *     });
- *     Rhum.testCase("test_case_1b2", () => {
- *       Rhum.asserts.assertEquals(true, true);
- *     });
- *     Rhum.testCase("test_case_1b3", () => {
- *       Rhum.asserts.assertEquals(true, true);
- *     });
- *   });
- *
- * });
- * ```
  */
 export class RhumRunner {
   public asserts: asserts;
