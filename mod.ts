@@ -11,11 +11,8 @@ import {
 } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
-export {
-  Constructor,
-  MockBuilder,
-  Stubbed,
-};
+export { Constructor, Stubbed } from "./src/types.ts";
+export { MockBuilder } from "./src/mock_builder.ts";
 
 /**
  * Deno's test runner outputs "test ", which has a length of 5. This module
