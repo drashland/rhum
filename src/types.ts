@@ -14,4 +14,5 @@ export type Mocked<T> = T & {
 export type Stubbed<T> = T & {
   calls: { [k in keyof T]?: T[k] extends Function ? number : never };
   stub: (p: string, v: unknown) => void;
+  is_stubbed: true;
 };

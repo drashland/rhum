@@ -28,6 +28,10 @@ Rhum.testPlan("stub_test.ts", () => {
         server.methodThatLogs(),
         "don't run the console.log()",
       );
+      Rhum.asserts.assertEquals(
+        server.is_stubbed,
+        true
+      );
     });
   });
 });
