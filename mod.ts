@@ -445,7 +445,8 @@ export class RhumRunner {
   }
 
   /**
-   * 'Empty' this object. After calling this, Rhum should be ready for another Plan
+   * 'Empty' this object. After calling this, Rhum should be ready for another
+   * test plan.
    */
   protected deconstruct(): void {
     this.passed_in_test_suite = "";
