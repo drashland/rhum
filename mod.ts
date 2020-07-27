@@ -303,4 +303,7 @@ export class RhumRunner {
   }
 }
 
+/**
+ * An instance of the RhumRunner.
+ */
 export const Rhum = new RhumRunner();
