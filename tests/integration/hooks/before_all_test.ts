@@ -43,6 +43,17 @@ Rhum.testPlan("before_all_test.ts", () => {
       Rhum.asserts.assertEquals(case_val, 0);
     });
   });
+  Rhum.testSuite("test suite 3", () => {
+    let a = 5;
+    Rhum.beforeAll(async () => {
+      await new Promise((resolve) => {
+        setTimeout(() => resolve((a = 15)), 1000);
+      });
+    });
+    Rhum.testCase("Hook can be async", () => {
+      Rhum.asserts.assertEquals(a, 15);
+    });
+  });
 });
 
 Rhum.run();
