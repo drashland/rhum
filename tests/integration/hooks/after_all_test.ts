@@ -6,7 +6,7 @@ import { Rhum } from "../../../mod.ts";
 
 let suite_val = "Ed";
 let case_val = 22;
-
+let async_case_val = 5;
 Rhum.testPlan("after_all_test.ts", () => {
   Rhum.afterAll(() => {
     suite_val = "Eric";
@@ -41,6 +41,21 @@ Rhum.testPlan("after_all_test.ts", () => {
       suite_val = "Ed";
       // Should be kept the same as the after each hook should have updated the value
       Rhum.asserts.assertEquals(case_val, 2);
+    });
+  });
+  Rhum.testSuite("test suite 3", () => {
+    Rhum.afterAll(async () => {
+      await new Promise((resolve) => {
+        setTimeout(() => resolve((async_case_val = 15)), 1000);
+      });
+    });
+    Rhum.testCase("Async afterAll hook has no effect before case", () => {
+      Rhum.asserts.assertEquals(async_case_val, 5);
+    });
+  });
+  Rhum.testSuite("test suite 4", () => {
+    Rhum.testCase("Async afterAll hook has effect after case", () => {
+      Rhum.asserts.assertEquals(async_case_val, 15);
     });
   });
 });
