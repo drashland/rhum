@@ -43,6 +43,20 @@ Rhum.testPlan("after_each_test.ts", () => {
       Rhum.asserts.assertEquals(case_val, 2);
     });
   });
+  Rhum.testSuite("test suite 3", () => {
+    let async_case_val = 5;
+    Rhum.afterEach(async () => {
+      await new Promise((resolve) => {
+        setTimeout(() => resolve((async_case_val = 15)), 1000);
+      });
+    });
+    Rhum.testCase("async afterEach hook has no effect before case", () => {
+      Rhum.asserts.assertEquals(async_case_val, 5);
+    });
+    Rhum.testCase("async afterEach has effect after case", () => {
+      Rhum.asserts.assertEquals(async_case_val, 15);
+    });
+  });
 });
 
 Rhum.run();
