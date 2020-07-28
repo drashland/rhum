@@ -1,64 +1,80 @@
-import { asserts } from "./deps.ts";
-import { MockServerRequest } from "./src/mocks/server_request.ts";
+import { asserts } from "./src/rhum_asserts.ts";
+import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
-import { ITestPlan, ITestSuite, ITestCase } from "./src/interfaces.ts";
+import {
+  ITestPlan,
+  RhumMocks,
+} from "./src/interfaces.ts";
+import {
+  Constructor,
+  Stubbed,
+} from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
+export { Constructor, Stubbed } from "./src/types.ts";
+export { MockBuilder } from "./src/mock_builder.ts";
+
 /**
- * @description
- *     Deno's test runner outputs "test ", which has a length of 5. This module
- *     erases the "test " string by backspacing the test plan line and test
- *     suite line by that number. For safety, it substracts twice that number.
- *     This is how we get the number 10 here.
+ * Deno's test runner outputs "test ", which has a length of 5. This module
+ * erases the "test " string by backspacing the test plan line and test suite
+ * line by that number. For safety, it substracts twice that number.  This is
+ * how we get the number 10 here.
  */
 const extraChars = 10;
 
 /**
- * @description
- *     This testing framework allows the following syntax:
+ * This testing framework allows the following syntax:
  *
- *         import { Rhum } from "/path/to/rhum/mod.ts";
+ *     import { Rhum } from "/path/to/rhum/mod.ts";
  *
- *         Rhum.testPlan("test_plan_1", () => {
+ *     Rhum.testPlan("test_plan_1", () => {
  *
- *           Rhum.testSuite("test_suite_1a", () => {
- *             Rhum.testCase("test_case_1a1", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *             Rhum.testCase("test_case_1a2", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *             Rhum.testCase("test_case_1a3", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *           });
- *
- *           Rhum.testSuite("test_suite_1b", () => {
- *             Rhum.testCase("test_case_1b1", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *             Rhum.testCase("test_case_1b2", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *             Rhum.testCase("test_case_1b3", () => {
- *               Rhum.asserts.assertEquals(true, true);
- *             });
- *           });
- *
+ *       Rhum.testSuite("test_suite_1a", () => {
+ *         Rhum.testCase("test_case_1a1", () => {
+ *           Rhum.asserts.assertEquals(true, true);
  *         });
+ *         Rhum.testCase("test_case_1a2", () => {
+ *           Rhum.asserts.assertEquals(true, true);
+ *         });
+ *         Rhum.testCase("test_case_1a3", () => {
+ *           Rhum.asserts.assertEquals(true, true);
+ *         });
+ *       });
  *
- * Special thanks to
- *     @crookse (https://github.com/crookse)
- *     @ebebbington (https://github.com/ebebbington)
+ *       Rhum.testSuite("test_suite_1b", () => {
+ *         Rhum.testCase("test_case_1b1", () => {
+ *           Rhum.asserts.assertEquals(true, true);
+ *         });
+ *         Rhum.testCase("test_case_1b2", () => {
+ *           Rhum.asserts.assertEquals(true, true);
+ *         });
+ *         Rhum.testCase("test_case_1b3", () => {
+ *           Rhum.asserts.assertEquals(true, true);
+ *         });
+ *       });
+ *
+ *     });
  */
 export class RhumRunner {
-  public asserts: any;
-  public mocks: any = {};
+  /**
+   * The asserts module from https://deno.land/std/testing, but attached to Rhum
+   * for accessibility.
+   *
+   *     Rhum.asserts.assertEquals(true, true); // pass
+   *     Rhum.asserts.assertEquals(true, false); // fail
+   */
+  public asserts: asserts;
 
-  protected passed_in_test_plan: string = "";
-  protected passed_in_test_suite: string = "";
-  protected test_plan_in_progress: string = "";
-  protected test_suite_in_progress: string = "";
+  public mocks: RhumMocks;
+
+  protected passed_in_test_plan = "";
+
+  protected passed_in_test_suite = "";
+
+  protected test_plan_in_progress = "";
+
+  protected test_suite_in_progress = "";
+
   protected plan: ITestPlan = { suites: {} };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
@@ -68,20 +84,33 @@ export class RhumRunner {
    */
   constructor() {
     this.asserts = asserts;
-    this.mocks.ServerRequest = MockServerRequest;
+    this.mocks = { ServerRequest: MockServerRequestFn };
   }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   /**
-   * @description
-   *     Register an before each hook.
+   * Used to define a hook that will execute before each test suite or test
+   * case. If this is used inside of a test plan, then it will execute before
+   * each test suite. If this is used inside of a test suite, then it will
+   * execute before each test case.
    *
-   * @param Function cb
-   *    The callback to invoke. Would contain the required logic you need
-   *    to do what you want, before each test suite or case.
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, before each test suite or case.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.beforeEach(() => {
+   *         // Runs before each test suite in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.beforeEach(() => {
+   *           // Runs before each test case in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public beforeEach(cb: Function): void {
     // Check if the hook is for test cases inside of a suite
@@ -95,14 +124,27 @@ export class RhumRunner {
   }
 
   /**
-   * @description
-   *     Register an after each hook.
+   * Used to define a hook that will execute after each test suite or test case.
+   * If this is used inside of a test plan, then it will execute after each test
+   * suite. If this is used inside of a test suite, then it will execute after
+   * each test case.
    *
-   * @param Function cb
-   *    The callback to invoke. Would contain the required logic you need
-   *    to do what you want, after each test suite or case.
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, after each test suite or case.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.afterEach(() => {
+   *         // Runs after each test suite in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.afterEach(() => {
+   *           // Runs after each test case in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public afterEach(cb: Function): void {
     // Check if the hook is for test cases inside of a suite
@@ -116,14 +158,27 @@ export class RhumRunner {
   }
 
   /**
-   * @description
-   *     Register an after all hook.
+   * Used to define a hook that will execute after all test suites or test
+   * cases. If this is used inside of a test plan, then it will execute after
+   * all test suites. If this is used inside of a test suite, then it will
+   * execute after all test cases.
    *
-   * @param Function cb
-   *    The callback to invoke. Would contain the required logic you need
-   *    to do what you want, after all test suites or cases.
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, after all test suites or cases.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.afterAll(() => {
+   *         // Runs once after all test suites in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.afterAll(() => {
+   *           // Runs once after all test cases in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public afterAll(cb: Function): void {
     // Check if the hook is for test cases inside of a suite
@@ -137,14 +192,27 @@ export class RhumRunner {
   }
 
   /**
-   * @description
-   *     Register an before all hook.
+   * Used to define a hook that will execute before all test suites or test
+   * cases. If this is used inside of a test plan, then it will execute before
+   * all test suites. If this is used inside of a test suite, then it will
+   * execute before all test cases.
    *
-   * @param Function cb
-   *    The callback to invoke. Would contain the required logic you need
-   *    to do what you want, before all test suites or cases.
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, before all test suites or cases.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.beforeAll(() => {
+   *         // Runs once before all test suites in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.beforeAll(() => {
+   *           // Runs once before all test cases in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public beforeAll(cb: Function): void {
     // Check if the hook is for test cases inside of a suite
@@ -157,87 +225,110 @@ export class RhumRunner {
     }
   }
 
-  /**
-   * @description
-   * @param Function cb
-   *
-   * @return void
-   *
-   * TODO(#5)
-   */
-  public only(cb: Function): void {
-    // Do something
-  }
+  // public only(cb: Function): void {
+  //   // Do something
+  // }
 
   /**
-   * @description
-   *     Skip a test plan, suite, or case.
+   * Allows a test plan, suite, or case to be skipped when the tests run.
    *
-   * @param string name
-   * @param Function cb
-   *
-   * @return void
-   *
-   * TODO(ebebbington|crookse) Maybe we could still call run, but pass in { ignore: true } which the Deno.Test will use? just so it displays ignored in the console
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.skip("My Suite 1", () => { // will not run this block
+   *         Rhum.testCase("My Test Case In Suite 1", () => {
+   *           ...
+   *         });
+   *       });
+   *       Rhum.testSuite("My Suite 2", () => {
+   *         Rhum.testCase("My Test Case In Suite 2", () => {
+   *           ...
+   *         });
+   *         Rhum.skip("My Other Test Case In Suite 2", () => { // will not run this block
+   *           ...
+   *         });
+   *       });
+   *     });
    */
   public skip(name: string, cb: Function): void {
-    // Haaaaaa... you got skipped.
+    // TODO(ebebbington|crookse) Maybe we could still call run, but pass in {
+    // ignore: true } which the Deno.Test will use? just so it displays ignored
+    // in the console
   }
 
   /**
    * Stub a member of an object.
    *
-   * @param any obj
-   *     The object containing the member to stub.
-   * @param string member
-   *     The member to stub.
-   * @param any value
-   *     The return value of the stubbed member.
+   * @param obj -The object containing the member to stub.
+   * @param member -The member to stub.
+   * @param value - The return value of the stubbed member.
    *
-   * @return this
-   *     Return this so that stub() calls can be chained.
+   * Returns the object in question as a Stubbed type. Being a Stubbed type
+   * means it has access to a `.stub()` method for stubbing properties and
+   * methods.
+   *
+   *     class MyObject {
+   *       public some_property = "someValue";
+   *     }
+   *
+   *     // Define the object that will have stubbed members as a stubbed object
+   *     const myStubbedObject = Rhum.stubbed(new MyObject());
+   *
+   *     // Stub the object's some_property property to a certain value
+   *     myStubbedObject.stub("some_property", "this property is now stubbed");
+   *
+   *     // Assert that the property was stubbed
+   *     Rhum.asserts.assertEquals(myStubbedObject.some_property, "this property is now stubbed");
    */
-  public stub(obj: any, member: string, value: any): this {
-    if (!obj.calls) {
-      obj.calls = {};
-    }
-    if (!obj.calls[member]) {
-      obj.calls[member] = 0;
-    }
+  public stubbed<T>(obj: T): Stubbed<T> {
+    (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
+    (obj as unknown as { [key: string]: Function }).stub = function (
+      property: string,
+      value: unknown,
+    ): void {
+      Object.defineProperty(obj, property, {
+        value: value,
+      });
+    };
 
-    if (typeof value === "function") {
-      obj[member] = function () {
-        obj.calls[member]++;
-        return value();
-      };
-    } else {
-      obj[member] = value;
-    }
-    return this;
+    return obj as Stubbed<T>;
   }
 
   /**
    * Get the mock builder to mock classes.
    *
-   * @param any constructorFn
-   *     The constructor function.
+   * @param constructorFn - The constructor function of the object to mock.
    *
-   * @return MockBuilder
+   * Returns an instance of the MockBuilder class.
+   *
+   *     class ToBeMocked { ... }
+   *
+   *     const mock = Rhum
+   *       .mock(ToBeMocked)
+   *       .withConstructorArgs("someArg") // if the class to be mocked has a constructor and it requires args
+   *       .create();
    */
-  public mock(constructorFn: any): MockBuilder {
+  public mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
     return new MockBuilder(constructorFn);
   }
 
   /**
-   * @description
-   *     Define a test case and execute the test function.
+   * A test case is grouped by a test suite and it is what makes the assertions
+   * - it is the test. You can define multiple test cases under a test suite.
+   * Test cases can also be asynchronous. Test cases can only be defined inside
+   * of a test suite.
    *
-   * @param string name
-   *     The name of the test case.
-   * @param Function testFn
-   *     The test to execute.
+   * @param name - The name of the test case.
+   * @param testFn - The test to execute.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           Rhum.assert.assertEquals(something, true);
+   *         });
+   *         Rhum.testCase("My Test Case 2", () => {
+   *           Rhum.assert.assertEquals(something, false);
+   *         });
+   *       });
+   *     });
    */
   public testCase(name: string, testFn: Function): void {
     this.plan.suites[this.passed_in_test_suite].cases!.push({
@@ -248,15 +339,16 @@ export class RhumRunner {
   }
 
   /**
-   * @description
-   *     Define a test plan and execute the test plan's test suites.
+   * Groups up test suites to describe a test plan. Usually, a test plan is per
+   * file and contains the tests suites and test cases for a single file. Test
+   * plans are required in order to define a test suite with test cases.
    *
-   * @param string name
-   *     The name of the test plan.
-   * @param Function testSuites
-   *     The test suites to execute.
+   * @param name - The name of the test plan.
+   * @param testSuites - The test suites to execute.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       ...
+   *     });
    */
   public testPlan(name: string, testSuites: Function): void {
     this.passed_in_test_suite = ""; // New plan
@@ -265,15 +357,21 @@ export class RhumRunner {
   }
 
   /**
-   * @description
-   *     Define a test suite and execute the test suite's test cases.
+   * A test suite usually describes a method or property name and groups up all
+   * test cases for that method or property. You can define multiple test suites
+   * under a test plan. Test suites can only be defined inside of a test plan.
    *
-   * @param string name
-   *     The name of the test suite.
-   * @param Function testCases
-   *     The test cases to execute.
+   * @param name - The name of the test suite.
+   * @param testCases - The test cases to execute.
    *
-   * @return void
+   *     Rhum.testPlan("My Plan", () => {
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         ...
+   *       });
+   *       Rhum.testSuite("My Suite 2", () => {
+   *         ...
+   *       });
+   *     });
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
@@ -282,7 +380,13 @@ export class RhumRunner {
   }
 
   /**
-   * Run the test plan
+   * Run the test plan.
+   *
+   *     Rhum.testPlan("My Plan", () => {
+   *       ...
+   *     });
+   *
+   *     Rhum.run();
    */
   public run(): void {
     const tc = new TestCase(this.plan);
@@ -290,16 +394,16 @@ export class RhumRunner {
     this.deconstruct();
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Figure out the name of the test case for output purposes.
+   * Figure out the name of the test case for output purposes.
    *
-   * @param string name
-   *     The name of the test case.
+   * @param name - The name of the test case.
    *
-   * @return string
+   * Returns the new test name for outputting purposes.
    */
   protected formatTestCaseName(name: string): string {
     let newName: string;
@@ -344,7 +448,8 @@ export class RhumRunner {
   }
 
   /**
-   * 'Empty' this object. After calling this, Rhum should be ready for another Plan
+   * 'Empty' this object. After calling this, Rhum should be ready for another
+   * test plan.
    */
   protected deconstruct(): void {
     this.passed_in_test_suite = "";
@@ -355,4 +460,9 @@ export class RhumRunner {
   }
 }
 
+/**
+ * An instance of the RhumRunner.
+ *
+ *     const Rhum = new RhumRunner();
+ */
 export const Rhum = new RhumRunner();

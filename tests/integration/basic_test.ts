@@ -181,7 +181,7 @@ Deno.test({
       splitStdout[1].split("at Module.assertEquals")[0]; // Output of failing on first test
     let secondFailureResult =
       splitStdout[1].split("at Object.runTests")[1].split(
-        "at Module.assertEquals",
+        "at Object.assertEquals",
       )[0];
 
     // To remove the `($deno/testing...` bit, because it was causing problems on new deno releases
@@ -262,76 +262,6 @@ Deno.test({
       asserts.assertEquals(
         testCaseResults,
         expectedTestCaseResultWhenRanOnHost,
-      );
-    }
-    const expectedFirstTestCaseFailureWhenRanOnHost = "\n" +
-      "\n" +
-      "test_case_1a1\n" +
-      "AssertionError: Values are not equal:\n" +
-      "\n" +
-      "\n" +
-      "    [Diff] Actual / Expected\n" +
-      "\n" +
-      "\n" +
-      "-   true\n" +
-      "+   false\n" +
-      "\n    ";
-    const expectedFirstTestCaseFailureWhenRanInCI = "\n" +
-      "\n" +
-      "test_plan_1 | test_suite_1a | test_case_1a1\n" +
-      "AssertionError: Values are not equal:\n" +
-      "\n" +
-      "\n" +
-      "    [Diff] Actual / Expected\n" +
-      "\n" +
-      "\n" +
-      "-   true\n" +
-      "+   false\n" +
-      "\n    ";
-    if (Deno.env.get("CI") === "true") {
-      asserts.assertEquals(
-        firstFailureResult,
-        expectedFirstTestCaseFailureWhenRanInCI,
-      );
-    } else {
-      asserts.assertEquals(
-        firstFailureResult,
-        expectedFirstTestCaseFailureWhenRanOnHost,
-      );
-    }
-    const expectedSecondTestCaseFailureWhenRanOnHost = "\n" +
-      "\n" +
-      "test_case_1b3\n" +
-      "AssertionError: Values are not equal:\n" +
-      "\n" +
-      "\n" +
-      "    [Diff] Actual / Expected\n" +
-      "\n" +
-      "\n" +
-      "-   true\n" +
-      "+   false\n" +
-      "\n    ";
-    const expectedSecondTestCaseFailureWhenRanInCI = "\n" +
-      "\n" +
-      "test_plan_1 | test_suite_1b | test_case_1b3\n" +
-      "AssertionError: Values are not equal:\n" +
-      "\n" +
-      "\n" +
-      "    [Diff] Actual / Expected\n" +
-      "\n" +
-      "\n" +
-      "-   true\n" +
-      "+   false\n" +
-      "\n    ";
-    if (Deno.env.get("CI") === "true") {
-      asserts.assertEquals(
-        secondFailureResult,
-        expectedSecondTestCaseFailureWhenRanInCI,
-      );
-    } else {
-      asserts.assertEquals(
-        secondFailureResult,
-        expectedSecondTestCaseFailureWhenRanOnHost,
       );
     }
     asserts.assertEquals(

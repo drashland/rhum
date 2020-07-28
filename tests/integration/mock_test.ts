@@ -9,7 +9,7 @@ class MathService {
 class TestObject {
   public name: string;
   protected math_service: MathService;
-  protected protected_property: string = "I AM PROTECTED PROPERTY.";
+  protected protected_property = "I AM PROTECTED PROPERTY.";
   constructor(name: string, mathService: MathService) {
     this.math_service = mathService;
     this.name = name;
@@ -48,7 +48,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .create();
       Rhum.asserts.assertEquals(
-        mock.protected_property,
+        (mock as unknown as { [key: string]: string }).protected_property,
         "I AM PROTECTED PROPERTY.",
       );
     });
@@ -58,7 +58,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .create();
       Rhum.asserts.assertEquals(
-        mock.protectedMethod(),
+        (mock as unknown as { [key: string]: Function }).protectedMethod(),
         "I AM A PROTECTED METHOD.",
       );
     });

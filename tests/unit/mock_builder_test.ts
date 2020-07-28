@@ -1,6 +1,5 @@
 import { asserts } from "../../deps.ts";
 import { MockBuilder } from "../../src/mock_builder.ts";
-import { Rhum } from "../../mod.ts";
 
 Deno.test({
   name: "Unit | MockBuilder | constructor() | returns a MockBuilder object",
@@ -53,10 +52,4 @@ class TestObjectTwo {
   constructor(name: string) {
     this.name = name;
   }
-}
-
-class TestObjectThree {
-  public prop_one: string = "p1";
-  public prop_two: string = "p2";
-  public prop_three: string = "p3";
 }

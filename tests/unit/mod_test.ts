@@ -1,23 +1,6 @@
 import { asserts } from "../../deps.ts";
 import { Rhum } from "../../mod.ts";
 
-Deno.test({
-  name: "Unit | Rhum | mocks | Assigns the correct callback",
-  async fn(): Promise<void> {
-    const mockReq = Rhum.mocks.ServerRequest("https://google.com", "get", {
-      headers: {
-        a: "Hi",
-      },
-    });
-    asserts.assertEquals(mockReq.url === "https://google.com", true);
-    asserts.assertEquals(mockReq.method === "get", true);
-    asserts.assertEquals(mockReq.headers.get("a"), "Hi");
-    const res = mockReq.respond({ status: 200 });
-    asserts.assertEquals(res.status, 200);
-    asserts.assertEquals(typeof res.send === "function", true);
-  },
-});
-
 // TODO(any) When this feature is properly implemented
 // Deno.test({
 //   name: "Unit | Rhum | SetUp() | Assigns the correct callback",

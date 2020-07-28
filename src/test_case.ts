@@ -12,6 +12,7 @@ export class TestCase {
   }
 
   public async run() {
+    // deno-lint-ignore no-prototype-builtins, eslint-ignore-next-line no-prototype-builtins
     if (this.plan.hasOwnProperty("suites") === false) {
       return;
     }

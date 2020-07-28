@@ -1,38 +1,40 @@
-export class MockBuilder {
+import { Mocked, Constructor } from "./types.ts";
+
+export class MockBuilder<T> {
   protected properties: string[] = [];
   protected functions: string[] = [];
-  protected constructor_fn: any;
-  protected constructor_args: any[] = [];
+  protected constructor_fn: Constructor<T>;
+  protected constructor_args: unknown[] = [];
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Construct an object of this class.
+   *
+   * @param constructorFn - The object's constructor function to instantiate.
    */
-  constructor(constructorFn: any) {
+  constructor(constructorFn: Constructor<T>) {
     this.constructor_fn = constructorFn;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Create the mock object.
    *
-   * @return any
+   * Returns a mocked object.
    */
-  public create(): any {
-    let mock: any = {
+  public create(): Mocked<T> {
+    // deno-lint-ignore no-explicit-any
+    let mock: Mocked<any> = {
       calls: {},
       is_mock: true,
     };
-    let original: any;
-
-    // Construct an object of the class to be mocked
-    if (this.constructor_args.length > 0) {
-      original = new this.constructor_fn(...this.constructor_args);
-    } else {
-      original = new this.constructor_fn();
-    }
+    let original = new this.constructor_fn(...this.constructor_args);
 
     // Attach all of the original's properties to the mock
     this.getAllProperties(original).forEach((property: string) => {
@@ -62,10 +64,11 @@ export class MockBuilder {
         }
         mock[method] = function () {
           mock.calls[method]++;
-          return original[method]();
+          return (original[method as keyof T] as unknown as Function)();
         };
       } else {
-        mock[method] = original[method];
+        // copy nativeMethod directly without mocking
+        mock[method] = original[method as keyof T];
       }
     });
 
@@ -73,75 +76,72 @@ export class MockBuilder {
   }
 
   /**
-   * @description
-   *     Before constructing the mock object, track any constructur function args
-   *     that need to be passed in when constructing the mock object.
+   * Before constructing the mock object, track any constructur function args
+   * that need to be passed in when constructing the mock object.
    *
-   * @param any[] ...args
-   *     A rest parameter of arguments that will get passed in to the
-   *     constructor function of the class being mocked.
+   * @param ...args - A rest parameter of arguments that will get passed in to
+   * the constructor function of the class being mocked.
    *
-   * @return this
-   *     Return this so that methods in this class can be chained.
+   * Returns `this` so that methods in this class can be chained.
    */
-  public withConstructorArgs(...args: any[]): this {
+  public withConstructorArgs(...args: unknown[]): this {
     this.constructor_args = args;
     return this;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @description
-   *     Get all properties--public, protected, private--from the object that
-   *     will be mocked.
+   * Get all properties--public, protected, private--from the object that will
+   * be mocked.
    *
-   * @param any constructorFn
-   *     The object that will be mocked.
+   * @param obj - The object that will be mocked.
    *
-   * @return string[]
-   *     Returns an array of the object's properties.
+   * Returns an array of the object's properties.
    */
-  protected getAllProperties(constructorFn: any): string[] {
+  protected getAllProperties(obj: T): string[] {
     let functions: string[] = [];
-    let clone = constructorFn;
+    let clone = obj;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
-    } while (clone = Object.getPrototypeOf(clone));
+    } while ((clone = Object.getPrototypeOf(clone)));
 
-    return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (
-        e != arr[i + 1] && typeof constructorFn[e] != "function"
-      ) {
-        return true;
-      }
-    });
+    return functions.sort().filter(
+      function (e: string, i: number, arr: unknown[]) {
+        if (
+          e != arr[i + 1] && typeof obj[e as keyof T] != "function"
+        ) {
+          return true;
+        }
+      },
+    );
   }
 
   /**
-   * @description
-   *     Get all functions--public, protected, private--from the object that
-   *     will be mocked.
+   * Get all functions--public, protected, private--from the object that will be
+   * mocked.
    *
-   * @param any constructorFn
-   *     The object that will be mocked.
+   * @param obj - The object that will be mocked.
    *
-   * @return string[]
-   *     Returns an array of the object's functions.
+   * Returns an array of the object's functions.
    */
-  protected getAllFunctions(constructorFn: any): string[] {
+  protected getAllFunctions(obj: T): string[] {
     let functions: string[] = [];
-    let clone = constructorFn;
+    let clone = obj;
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
-    } while (clone = Object.getPrototypeOf(clone));
+    } while ((clone = Object.getPrototypeOf(clone)));
 
-    return functions.sort().filter(function (e: any, i: number, arr: any[]) {
-      if (
-        e != arr[i + 1] && typeof constructorFn[e] == "function"
-      ) {
-        return true;
-      }
-    });
+    return functions.sort().filter(
+      function (e: string, i: number, arr: unknown[]) {
+        if (
+          e != arr[i + 1] && typeof obj[e as keyof T] == "function"
+        ) {
+          return true;
+        }
+      },
+    );
   }
 }
