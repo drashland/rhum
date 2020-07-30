@@ -57,7 +57,7 @@ Deno.test({
     }
     const copyTestFn = testFn;
     Rhum.testPlan("Testing testCase", copyTestFn);
-    asserts.assertEquals(functionWasCalled, true);
+    Rhum.asserts.assert(functionWasCalled);
   },
 });
 
