@@ -1,4 +1,4 @@
-import { Asserts, asserts} from "./src/rhum_asserts.ts";
+import { Asserts, asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import {

@@ -12,18 +12,18 @@ export type asserts = typeof StdAsserts & typeof RhumAsserts;
 
 */
 export interface Asserts {
-  equal: Function,
-  assert: Function,
-  assertEquals: Function,
-  assertNotEquals: Function,
-  assertStrictEquals: Function,
-  assertStringContains: Function,
-  assertMatch: Function,
-  assertArrayContains: Function,
-  assertThrows: Function,
-  assertThrowsAsync: Function,
-  unimplemented: Function,
-  unreachable: Function,
+  equal: Function;
+  assert: Function;
+  assertEquals: Function;
+  assertNotEquals: Function;
+  assertStrictEquals: Function;
+  assertStringContains: Function;
+  assertMatch: Function;
+  assertArrayContains: Function;
+  assertThrows: Function;
+  assertThrowsAsync: Function;
+  unimplemented: Function;
+  unreachable: Function;
 }
 export const asserts: Asserts = {
   equal: StdAsserts.equal,
@@ -37,6 +37,6 @@ export const asserts: Asserts = {
   assertThrows: StdAsserts.assertThrows,
   assertThrowsAsync: StdAsserts.assertThrowsAsync,
   unimplemented: StdAsserts.unimplemented,
-  unreachable: StdAsserts.unreachable
+  unreachable: StdAsserts.unreachable,
 };
 export type asserts = typeof StdAsserts;
