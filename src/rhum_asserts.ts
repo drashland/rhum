@@ -39,4 +39,4 @@ export const asserts: Asserts = {
   unimplemented: StdAsserts.unimplemented,
   unreachable: StdAsserts.unreachable,
 };
-export type asserts = typeof StdAsserts;
+//export type asserts = typeof StdAsserts;
