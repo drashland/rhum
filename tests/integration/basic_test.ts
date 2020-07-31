@@ -1,4 +1,4 @@
-import { asserts, colors } from "../../deps.ts";
+import { StdAsserts as asserts, colors } from "../../deps.ts";
 
 /**
  * To be clear, we are making sure that when a user runs their tests using Bourbon, that everything works correctly,
