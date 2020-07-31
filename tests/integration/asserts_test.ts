@@ -25,7 +25,7 @@ Rhum.testPlan("asserts_test.ts", () => {
       Rhum.asserts.assertMatch("Test hello", /hello/g);
     });
     Rhum.testCase("assertArrayContains", () => {
-      Rhum.asserts.assertArrayContains(["t","e","s","t"], ["t","e"]);
+      Rhum.asserts.assertArrayContains(["t", "e", "s", "t"], ["t", "e"]);
     });
     Rhum.testCase("assertThrows", () => {
       Rhum.asserts.assertThrows(() => {

@@ -1,4 +1,4 @@
-import { asserts } from "../../deps.ts";
+import { StdAsserts as asserts } from "../../deps.ts";
 import { MockBuilder } from "../../src/mock_builder.ts";
 
 Deno.test({
