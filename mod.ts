@@ -1,4 +1,4 @@
-import { Asserts, asserts } from "./src/rhum_asserts.ts";
+import { asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
 import {
@@ -63,7 +63,7 @@ export class RhumRunner {
    *     Rhum.asserts.assertEquals(true, true); // pass
    *     Rhum.asserts.assertEquals(true, false); // fail
    */
-  public asserts: Asserts;
+  public asserts: { [key: string]: Function } = asserts;
 
   public mocks: RhumMocks;
 
@@ -83,7 +83,6 @@ export class RhumRunner {
    * Construct an object of this class.
    */
   constructor() {
-    this.asserts = asserts;
     this.mocks = { ServerRequest: MockServerRequestFn };
   }
 
