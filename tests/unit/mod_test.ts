@@ -1,4 +1,4 @@
-import { asserts } from "../../deps.ts";
+import { StdAsserts as asserts } from "../../deps.ts";
 import { Rhum } from "../../mod.ts";
 
 // TODO(any) When this feature is properly implemented

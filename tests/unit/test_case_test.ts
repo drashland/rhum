@@ -1,4 +1,4 @@
-import { asserts } from "../../deps.ts";
+import { StdAsserts as asserts } from "../../deps.ts";
 import { TestCase } from "../../src/test_case.ts";
 import { ITestPlan } from "../../src/interfaces.ts";
 
