@@ -5,12 +5,21 @@ import { ITestPlan, ITestCase } from "./interfaces.ts";
  * A class to help create uniform test case objects.
  */
 export class TestCase {
+  /**
+   * The whole test plan for a given test
+   */
   protected plan: ITestPlan;
 
+  /**
+   * @param plan - The test plan for a given test
+   */
   constructor(plan: ITestPlan) {
     this.plan = plan;
   }
 
+  /**
+   * Runs the test plan and each test and hook
+   */
   public async run() {
     // deno-lint-ignore no-prototype-builtins, eslint-ignore-next-line no-prototype-builtins
     if (this.plan.hasOwnProperty("suites") === false) {

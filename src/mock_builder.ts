@@ -1,9 +1,24 @@
 import { Mocked, Constructor } from "./types.ts";
 
 export class MockBuilder<T> {
+  /**
+   * Properties of the class that is passed in
+   */
   protected properties: string[] = [];
+
+  /**
+   * Functions of the class passed in
+   */
   protected functions: string[] = [];
+
+  /**
+   * The class object passed into the constructor
+   */
   protected constructor_fn: Constructor<T>;
+
+  /**
+   * A list of arguments the class constructor takes
+   */
   protected constructor_args: unknown[] = [];
 
   //////////////////////////////////////////////////////////////////////////////
@@ -26,7 +41,7 @@ export class MockBuilder<T> {
   /**
    * Create the mock object.
    *
-   * Returns a mocked object.
+   * @returns A mocked object.
    */
   public create(): Mocked<T> {
     // deno-lint-ignore no-explicit-any
@@ -79,10 +94,10 @@ export class MockBuilder<T> {
    * Before constructing the mock object, track any constructur function args
    * that need to be passed in when constructing the mock object.
    *
-   * @param ...args - A rest parameter of arguments that will get passed in to
+   * @param args - A rest parameter of arguments that will get passed in to
    * the constructor function of the class being mocked.
    *
-   * Returns `this` so that methods in this class can be chained.
+   * @returns `this` so that methods in this class can be chained.
    */
   public withConstructorArgs(...args: unknown[]): this {
     this.constructor_args = args;
@@ -99,7 +114,7 @@ export class MockBuilder<T> {
    *
    * @param obj - The object that will be mocked.
    *
-   * Returns an array of the object's properties.
+   * @returns An array of the object's properties.
    */
   protected getAllProperties(obj: T): string[] {
     let functions: string[] = [];
@@ -125,7 +140,7 @@ export class MockBuilder<T> {
    *
    * @param obj - The object that will be mocked.
    *
-   * Returns an array of the object's functions.
+   * @returns An array of the object's functions.
    */
   protected getAllFunctions(obj: T): string[] {
     let functions: string[] = [];
