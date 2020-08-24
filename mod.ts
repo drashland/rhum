@@ -75,7 +75,7 @@ export class RhumRunner {
 
   protected test_suite_in_progress = "";
 
-  protected plan: ITestPlan = { suites: {} };
+  protected plan: ITestPlan = { suites: {}, only: false };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -224,9 +224,29 @@ export class RhumRunner {
     }
   }
 
-  // public only(cb: Function): void {
-  //   // Do something
-  // }
+  /**
+   * Can be used for suites and cases. Will only run that.
+   * You can just switch a `Rhum.testSuite(...` to `Rhum,only(...`
+   *
+   * @param name - The name
+   * @param cb - The callback
+   */
+  public only(name: string, cb: Function): void {
+    // FIXME(edward) Any test suite within a plan will a ctually hit this block, if there was a test suite before it. It should not hit this block
+    if (this.passed_in_test_plan && this.passed_in_test_suite) { // is a test case being skipped
+      this.plan.suites[this.passed_in_test_suite].cases!.push({
+        name,
+        new_name: this.formatTestCaseName(name),
+        testFn: cb,
+        only: true
+      });
+    } else if (this.passed_in_test_plan) { // is a test suite being skipped
+      this.passed_in_test_suite = name;
+      this.plan.suites![name] = {cases: [], only: true};
+      cb();
+    }
+  }
+
 
   /**
    * Allows a test plan, suite, or case to be skipped when the tests run.
@@ -334,6 +354,7 @@ export class RhumRunner {
       name,
       new_name: this.formatTestCaseName(name),
       testFn,
+      only: false
     });
   }
 
@@ -374,7 +395,7 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: Function): void {
     this.passed_in_test_suite = name;
-    this.plan.suites![name] = { cases: [] };
+    this.plan.suites![name] = { cases: [], only: false };
     testCases();
   }
 
@@ -388,6 +409,24 @@ export class RhumRunner {
    *     Rhum.run();
    */
   public run(): void {
+    const onlySuite: string|undefined = Object.keys(this.plan.suites).filter(suiteName => this.plan.suites[suiteName].only === true)[0]
+    const onlyCase: string|undefined = Object.keys(this.plan.suites).filter(suiteName => this.plan.suites[suiteName].cases!.filter(c => c.only === true).length > 0)[0]
+    if (onlySuite) {
+      this.plan.suites = {
+        [onlySuite]: this.plan.suites[onlySuite]
+      };
+    } else if (onlyCase) {
+      // Select that test case
+      this.plan.suites = {
+        [onlyCase]: this.plan.suites[onlyCase]
+      }
+      this.plan.suites[onlyCase].cases = this.plan.suites[onlyCase].cases!.filter(c => c.only === true)
+      // We need to re-format the name to make it display the plan and suite
+      const tmpTestPlanInProgress =  this.test_suite_in_progress
+      this.test_plan_in_progress = "";
+      this.plan.suites[onlyCase].cases![0].new_name = this.formatTestCaseName(this.plan.suites[onlyCase].cases![0].name);
+      this.passed_in_test_suite = tmpTestPlanInProgress
+    }
     const tc = new TestCase(this.plan);
     tc.run();
     this.deconstruct();
@@ -455,7 +494,7 @@ export class RhumRunner {
     this.passed_in_test_plan = "";
     this.test_plan_in_progress = "";
     this.test_suite_in_progress = "";
-    this.plan = { suites: {} };
+    this.plan = { suites: {}, only: false };
   }
 }
 

@@ -58,6 +58,7 @@ export class TestCase {
             await this.plan.after_all_suite_hook();
           }
         };
+
         // (ebebbington) To stop the output of test running being horrible
         // in the CI, we will only display the new name which should be
         // "plan | suite " case", as opposed to the "super saiyan"

@@ -72,6 +72,7 @@ export interface ITestPlan {
   suites: {
     [key: string]: ITestSuite; // "key" is the suite name
   };
+  only: boolean;
   after_all_suite_hook?: Function;
   after_each_suite_hook?: Function;
   before_all_suite_hook?: Function;
@@ -96,6 +97,7 @@ export interface ITestPlan {
  */
 export interface ITestSuite {
   cases?: ITestCase[];
+  only: boolean;
   after_all_case_hook?: Function;
   after_each_case_hook?: Function;
   before_all_case_hook?: Function;
@@ -118,6 +120,7 @@ export interface ITestSuite {
  */
 export interface ITestCase {
   name: string;
+  only: boolean;
   new_name: string;
   testFn: Function;
 }
