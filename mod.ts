@@ -63,7 +63,7 @@ export class RhumRunner {
    *     Rhum.asserts.assertEquals(true, true); // pass
    *     Rhum.asserts.assertEquals(true, false); // fail
    */
-      // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
+  // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
   public asserts: { [key: string]: Function } = asserts;
 
   public mocks: RhumMocks;
@@ -280,7 +280,9 @@ export class RhumRunner {
    */
   public stubbed<T>(obj: T): Stubbed<T> {
     (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
-    (obj as unknown as { [key: string]: (property: string, value: unknown) => void }).stub = function (
+    (obj as unknown as {
+      [key: string]: (property: string, value: unknown) => void;
+    }).stub = function (
       property: string,
       value: unknown,
     ): void {
