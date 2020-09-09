@@ -72,10 +72,10 @@ export interface ITestPlan {
   suites: {
     [key: string]: ITestSuite; // "key" is the suite name
   };
-  after_all_suite_hook?: Function;
-  after_each_suite_hook?: Function;
-  before_all_suite_hook?: Function;
-  before_each_suite_hook?: Function;
+  after_all_suite_hook?: () => void;
+  after_each_suite_hook?: () => void;
+  before_all_suite_hook?: () => void;
+  before_each_suite_hook?: () => void;
 }
 
 /**
@@ -96,10 +96,10 @@ export interface ITestPlan {
  */
 export interface ITestSuite {
   cases?: ITestCase[];
-  after_all_case_hook?: Function;
-  after_each_case_hook?: Function;
-  before_all_case_hook?: Function;
-  before_each_case_hook?: Function;
+  after_all_case_hook?: () => void;
+  after_each_case_hook?: () => void;
+  before_all_case_hook?: () => void;
+  before_each_case_hook?: () => void;
 }
 
 /**
@@ -119,7 +119,7 @@ export interface ITestSuite {
 export interface ITestCase {
   name: string;
   new_name: string;
-  testFn: Function;
+  testFn: () => void;
 }
 
 /**

@@ -4,7 +4,7 @@
 // This scripts main purpose is to aid the `bumper`,
 // removing any extra manual work when we bump the deno version
 
-let fileContent: string = "";
+let fileContent = "";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const fetchRes = await fetch("https://cdn.deno.land/deno/meta/versions.json");

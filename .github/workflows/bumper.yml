@@ -20,7 +20,7 @@ jobs:
       - name: Update Dependencies
         run: deno run --allow-net --allow-read --allow-write https://deno.land/x/dmm/mod.ts update
 
-      - name: Update Deno Version Strings
+      - name: Update Deno Version Occurances
         run: deno run --allow-read --allow-net --allow-write console/update_deno_version_strings.ts
 
       - name: Create Pull Request

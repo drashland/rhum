@@ -63,6 +63,7 @@ export class RhumRunner {
    *     Rhum.asserts.assertEquals(true, true); // pass
    *     Rhum.asserts.assertEquals(true, false); // fail
    */
+      // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
   public asserts: { [key: string]: Function } = asserts;
 
   public mocks: RhumMocks;
@@ -111,7 +112,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public beforeEach(cb: Function): void {
+  public beforeEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before each inside a suite for every test case
@@ -145,7 +146,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public afterEach(cb: Function): void {
+  public afterEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a after each inside a suite for every test case
@@ -179,7 +180,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public afterAll(cb: Function): void {
+  public afterAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
@@ -213,7 +214,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public beforeAll(cb: Function): void {
+  public beforeAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
     if (this.passed_in_test_plan && this.passed_in_test_suite) {
       // is a before all inside a suite for every test case
@@ -247,7 +248,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public skip(name: string, cb: Function): void {
+  public skip(name: string, cb: () => void): void {
     // TODO(ebebbington|crookse) Maybe we could still call run, but pass in {
     // ignore: true } which the Deno.Test will use? just so it displays ignored
     // in the console
@@ -279,7 +280,7 @@ export class RhumRunner {
    */
   public stubbed<T>(obj: T): Stubbed<T> {
     (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
-    (obj as unknown as { [key: string]: Function }).stub = function (
+    (obj as unknown as { [key: string]: (property: string, value: unknown) => void }).stub = function (
       property: string,
       value: unknown,
     ): void {
@@ -329,7 +330,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public testCase(name: string, testFn: Function): void {
+  public testCase(name: string, testFn: () => void): void {
     this.plan.suites[this.passed_in_test_suite].cases!.push({
       name,
       new_name: this.formatTestCaseName(name),
@@ -349,7 +350,7 @@ export class RhumRunner {
    *       ...
    *     });
    */
-  public testPlan(name: string, testSuites: Function): void {
+  public testPlan(name: string, testSuites: () => void): void {
     this.passed_in_test_suite = ""; // New plan
     this.passed_in_test_plan = name;
     testSuites();
@@ -372,7 +373,7 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public testSuite(name: string, testCases: Function): void {
+  public testSuite(name: string, testCases: () => void): void {
     this.passed_in_test_suite = name;
     this.plan.suites![name] = { cases: [] };
     testCases();
