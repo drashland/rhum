@@ -58,7 +58,7 @@ Rhum.testPlan("mock_test.ts", () => {
         .mock(TestObject)
         .create();
       Rhum.asserts.assertEquals(
-        (mock as unknown as { [key: string]: Function }).protectedMethod(),
+        (mock as unknown as { [key: string]: () => string }).protectedMethod(),
         "I AM A PROTECTED METHOD.",
       );
     });
