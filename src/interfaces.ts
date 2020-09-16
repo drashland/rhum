@@ -1,4 +1,4 @@
-import { MockServerRequestFn } from "./mocks/server_request.ts";
+import type { MockServerRequestFn } from "./mocks/server_request.ts";
 
 /**
  * @remarks
