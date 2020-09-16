@@ -11,7 +11,7 @@ import type {
 } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
-export type { Constructor, Stubbed } from "./src/types.ts"
+export type { Constructor, Stubbed } from "./src/types.ts";
 export { MockBuilder } from "./src/mock_builder.ts";
 
 /**
