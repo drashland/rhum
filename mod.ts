@@ -64,7 +64,7 @@ export class RhumRunner {
    *     Rhum.asserts.assertEquals(true, false); // fail
    */
   // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
-  public asserts: {[key in assertions]: Function} = asserts;
+  public asserts: { [key in assertions]: Function } = asserts;
 
   public mocks: RhumMocks;
 
