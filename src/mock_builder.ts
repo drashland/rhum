@@ -1,4 +1,4 @@
-import { Mocked, Constructor } from "./types.ts";
+import type { Mocked, Constructor } from "./types.ts";
 
 export class MockBuilder<T> {
   /**
@@ -79,7 +79,9 @@ export class MockBuilder<T> {
         }
         mock[method] = function () {
           mock.calls[method]++;
-          return (original[method as keyof T] as unknown as Function)();
+          return (original[method as keyof T] as unknown as (
+            ...params: unknown[]
+          ) => unknown)();
         };
       } else {
         // copy nativeMethod directly without mocking

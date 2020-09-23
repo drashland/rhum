@@ -1,4 +1,4 @@
-import { MockServerRequestFn } from "./mocks/server_request.ts";
+import type { MockServerRequestFn } from "./mocks/server_request.ts";
 
 /**
  * @remarks
@@ -73,10 +73,10 @@ export interface ITestPlan {
     [key: string]: ITestSuite; // "key" is the suite name
   };
   only: boolean;
-  after_all_suite_hook?: Function;
-  after_each_suite_hook?: Function;
-  before_all_suite_hook?: Function;
-  before_each_suite_hook?: Function;
+  after_all_suite_hook?: () => void;
+  after_each_suite_hook?: () => void;
+  before_all_suite_hook?: () => void;
+  before_each_suite_hook?: () => void;
 }
 
 /**
@@ -98,10 +98,10 @@ export interface ITestPlan {
 export interface ITestSuite {
   cases?: ITestCase[];
   only: boolean;
-  after_all_case_hook?: Function;
-  after_each_case_hook?: Function;
-  before_all_case_hook?: Function;
-  before_each_case_hook?: Function;
+  after_all_case_hook?: () => void;
+  after_each_case_hook?: () => void;
+  before_all_case_hook?: () => void;
+  before_each_case_hook?: () => void;
 }
 
 /**
@@ -122,7 +122,7 @@ export interface ITestCase {
   name: string;
   only: boolean;
   new_name: string;
-  testFn: Function;
+  testFn: () => void;
 }
 
 /**
