@@ -84,10 +84,12 @@ export class TestCase {
         }
         const numberOfExtraSpaces = longestCaseNameLen - c.name.length; // for example, it would be 0 for when it's the test with the longest case name. It's just the character difference between the current case name and longest, telling us how many spaces to add
 
-        const isOnly = this.plan.only || this.plan.suites[suiteName].only || c.only
+        const only = this.plan.only || this.plan.suites[suiteName].only || c.only
+        const skip = this.plan.skip || this.plan.suites[suiteName].skip || c.skip
+        const ignore = skip === true || only === true
         await Deno.test({
           name: c.new_name + " ".repeat(numberOfExtraSpaces),
-          ignore: isOnly === false,
+          ignore: ignore,
           async fn(): Promise<void> {
             await hookAttachedTestFn();
           }

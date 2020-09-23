@@ -73,6 +73,7 @@ export interface ITestPlan {
     [key: string]: ITestSuite; // "key" is the suite name
   };
   only: boolean;
+  skip: boolean;
   after_all_suite_hook?: () => void;
   after_each_suite_hook?: () => void;
   before_all_suite_hook?: () => void;
@@ -98,6 +99,7 @@ export interface ITestPlan {
 export interface ITestSuite {
   cases?: ITestCase[];
   only: boolean;
+  skip: boolean;
   after_all_case_hook?: () => void;
   after_each_case_hook?: () => void;
   before_all_case_hook?: () => void;
@@ -120,6 +122,7 @@ export interface ITestSuite {
  */
 export interface ITestCase {
   only: boolean;
+  skip: boolean;
   name: string;
   new_name: string;
   testFn: () => void;

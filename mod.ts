@@ -76,7 +76,7 @@ export class RhumRunner {
 
   protected test_suite_in_progress = "";
 
-  protected plan: ITestPlan = { suites: {}, only: false };
+  protected plan: ITestPlan = { suites: {}, only: false, skip: false };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -238,11 +238,12 @@ export class RhumRunner {
         name,
         new_name: this.formatTestCaseName(name),
         testFn: cb,
-        only: true
+        only: true,
+        skip: false
       });
     } else if (this.passed_in_test_plan) { // is a test suite being skipped, so do the same thing we could do in `testSuite`
       this.passed_in_test_suite = name;
-      this.plan.suites![name] = {cases: [], only: true};
+      this.plan.suites![name] = {cases: [], only: true, skip: false};
       cb();
       this.passed_in_test_suite = "" // At the end of the suite, remove the name ready for a new suite. The reason for this is mainly when using `only`, so say when a 2nd suite uses `only`, it can flow through the logic properly
     }
@@ -269,9 +270,20 @@ export class RhumRunner {
    *     });
    */
   public skip(name: string, cb: () => void): void {
-    // TODO(ebebbington|crookse) Maybe we could still call run, but pass in {
-    // ignore: true } which the Deno.Test will use? just so it displays ignored
-    // in the console
+    if (this.passed_in_test_plan && this.passed_in_test_suite) { // is a test case being skipped, so do the same thing we would do in `testCase`
+      this.plan.suites[this.passed_in_test_suite].cases!.push({
+        name,
+        new_name: this.formatTestCaseName(name),
+        testFn: cb,
+        only: false,
+        skip: true
+      });
+    } else if (this.passed_in_test_plan) { // is a test suite being skipped, so do the same thing we could do in `testSuite`
+      this.passed_in_test_suite = name;
+      this.plan.suites![name] = {cases: [], only: false, skip: true};
+      cb();
+      this.passed_in_test_suite = "" // At the end of the suite, remove the name ready for a new suite. The reason for this is mainly when using `only`, so say when a 2nd suite uses `only`, it can flow through the logic properly
+    }
   }
 
   /**
@@ -357,7 +369,8 @@ export class RhumRunner {
       name,
       new_name: this.formatTestCaseName(name),
       testFn,
-      only: false
+      only: false,
+      skip: false
     });
   }
 
@@ -398,7 +411,7 @@ export class RhumRunner {
    */
   public testSuite(name: string, testCases: () => void): void {
     this.passed_in_test_suite = name;
-    this.plan.suites![name] = { cases: [], only: false };
+    this.plan.suites![name] = { cases: [], only: false, skip: false };
     testCases();
     this.passed_in_test_suite = "" // At the end of the suite, remove the name ready for a new suite. The reason for this is mainly when using `only`, so say when a 2nd suite uses `only`, it can flow through the logic properly
   }
@@ -457,27 +470,39 @@ export class RhumRunner {
    * Returns the new test name for outputting purposes.
    */
   protected formatTestCaseName(name: string): string {
+    return `${this.passed_in_test_plan}` + "\n" +
+        `       ${this.passed_in_test_suite}` + "\n" + // spaces are to keep it directly below plan name plus indentation
+        `         ${name}`; // spaces are to keep it directly below plan name plus indentation
+
+    //
+    // Description of below code
+    //
+    // Another way to display the output. It displays just how
+    // it usually would, but wee include Deno's `test ` text, but
+    // separate into it's own column to be 'out of the way'. This method
+    // would be desirable if Deno removed the "test " part
+
     // First test case for a new plan and suite
-    if (this.test_plan_in_progress != this.passed_in_test_plan) {
-      this.test_plan_in_progress = this.passed_in_test_plan;
-      this.test_suite_in_progress = this.passed_in_test_suite;
-      const newName = `| ${this.passed_in_test_plan}` +
-          `\n     |    ${this.passed_in_test_suite}` +
-          `\n     |        ${name}`;
-      return newName;
-    }
+    // if (this.test_plan_in_progress != this.passed_in_test_plan) {
+    //   this.test_plan_in_progress = this.passed_in_test_plan;
+    //   this.test_suite_in_progress = this.passed_in_test_suite;
+    //   const newName = `| ${this.passed_in_test_plan}` +
+    //       `\n     |    ${this.passed_in_test_suite}` +
+    //       `\n     |        ${name}`;
+    //   return newName;
+    // }
 
     // Case for existing plan but  new suite
-    if (this.test_suite_in_progress != this.passed_in_test_suite) {
-      this.test_suite_in_progress = this.passed_in_test_suite;
-      const newName = `|    ${this.passed_in_test_suite}` +
-          `\n     |        ${name}`;
-      return newName;
-    }
+    // if (this.test_suite_in_progress != this.passed_in_test_suite) {
+    //   this.test_suite_in_progress = this.passed_in_test_suite;
+    //   const newName = `|    ${this.passed_in_test_suite}` +
+    //       `\n     |        ${name}`;
+    //   return newName;
+    // }
 
     // Case for existing  plan and suite
-    const newName = `|        ${name}`;
-    return newName;
+    // const newName = `|        ${name}`;
+    // return newName;
   }
 
   /**
@@ -489,7 +514,7 @@ export class RhumRunner {
     this.passed_in_test_plan = "";
     this.test_plan_in_progress = "";
     this.test_suite_in_progress = "";
-    this.plan = { suites: {}, only: false };
+    this.plan = { suites: {}, only: false, skip: false};
   }
 }
 
