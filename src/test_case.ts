@@ -25,6 +25,7 @@ export class TestCase {
     if (this.plan.hasOwnProperty("suites") === false) {
       return;
     }
+
     Object.keys(this.plan.suites).forEach((suiteName) => {
       // Run cases
       this.plan!.suites[suiteName].cases!.forEach(async (c: ITestCase) => {
@@ -59,22 +60,39 @@ export class TestCase {
           }
         };
 
-        // (ebebbington) To stop the output of test running being horrible
-        // in the CI, we will only display the new name which should be
-        // "plan | suite " case", as opposed to the "super saiyan"
-        // version. This name is generated differently inside `formatTestCaseName`
-        // based on if the tests are being ran inside a CI job
-        if (Deno.env.get("CI") === "true") {
-          await Deno.test(c.new_name, async () => {
-            await hookAttachedTestFn();
-          });
-        } else {
-          await Deno.test(c.name, async () => {
-            Deno.stdout.writeSync(encoder.encode(c.new_name));
-            await hookAttachedTestFn();
-          });
+        // Because lengths of test case names vary, for example:
+        //
+        //   test plan
+        //       test suite
+        //           test case ... ok
+        //           another test case ... ok
+        //
+        // We are going to make sure the "... ok" parts display in a nice column,
+        // by getting the length of the longest test case name, and ensuring each line is a consistent length
+        // that would match the total length of the longest test case name (plus any extra spaces), eg
+        //
+        //   test plan
+        //       test suite
+        //           test case         ... ok
+        //           another test case ... ok
+        let longestCaseNameLen = 0;
+        for (const s in this.plan.suites) {
+          const len = Math.max(
+              ...(this.plan.suites[s].cases!.map((c) => c.name.length)),
+          );
+          if (len > longestCaseNameLen) longestCaseNameLen = len;
         }
-      });
-    });
+        const numberOfExtraSpaces = longestCaseNameLen - c.name.length; // for example, it would be 0 for when it's the test with the longest case name. It's just the character difference between the current case name and longest, telling us how many spaces to add
+
+        const isOnly = this.plan.only || this.plan.suites[suiteName].only || c.only
+        await Deno.test({
+          name: c.new_name + " ".repeat(numberOfExtraSpaces),
+          ignore: isOnly === false,
+          async fn(): Promise<void> {
+            await hookAttachedTestFn();
+          }
+        })
+      })
+    })
   }
 }

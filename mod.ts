@@ -232,19 +232,19 @@ export class RhumRunner {
    * @param name - The name
    * @param cb - The callback
    */
-  public only(name: string, cb: Function): void {
-    // FIXME(edward) Any test suite within a plan will a ctually hit this block, if there was a test suite before it. It should not hit this block
-    if (this.passed_in_test_plan && this.passed_in_test_suite) { // is a test case being skipped
+  public only(name: string, cb: () => void): void {
+    if (this.passed_in_test_plan && this.passed_in_test_suite) { // is a test case being skipped, so do the same thing we would do in `testCase`
       this.plan.suites[this.passed_in_test_suite].cases!.push({
         name,
         new_name: this.formatTestCaseName(name),
         testFn: cb,
         only: true
       });
-    } else if (this.passed_in_test_plan) { // is a test suite being skipped
+    } else if (this.passed_in_test_plan) { // is a test suite being skipped, so do the same thing we could do in `testSuite`
       this.passed_in_test_suite = name;
       this.plan.suites![name] = {cases: [], only: true};
       cb();
+      this.passed_in_test_suite = "" // At the end of the suite, remove the name ready for a new suite. The reason for this is mainly when using `only`, so say when a 2nd suite uses `only`, it can flow through the logic properly
     }
   }
 
@@ -400,6 +400,7 @@ export class RhumRunner {
     this.passed_in_test_suite = name;
     this.plan.suites![name] = { cases: [], only: false };
     testCases();
+    this.passed_in_test_suite = "" // At the end of the suite, remove the name ready for a new suite. The reason for this is mainly when using `only`, so say when a 2nd suite uses `only`, it can flow through the logic properly
   }
 
   /**
@@ -412,24 +413,33 @@ export class RhumRunner {
    *     Rhum.run();
    */
   public run(): void {
-    const onlySuite: string|undefined = Object.keys(this.plan.suites).filter(suiteName => this.plan.suites[suiteName].only === true)[0]
-    const onlyCase: string|undefined = Object.keys(this.plan.suites).filter(suiteName => this.plan.suites[suiteName].cases!.filter(c => c.only === true).length > 0)[0]
-    if (onlySuite) {
-      this.plan.suites = {
-        [onlySuite]: this.plan.suites[onlySuite]
-      };
-    } else if (onlyCase) {
-      // Select that test case
-      this.plan.suites = {
-        [onlyCase]: this.plan.suites[onlyCase]
+    //
+    // Validation for using `only`, mainly edge cases
+    //
+    const suitesWithOnly = Object.keys(this.plan.suites).filter(suiteName => this.plan.suites[suiteName].only === true)
+    const casesWithOnly: string[] = []
+    for (const suite in this.plan.suites) {
+      const onlyCases = this.plan.suites[suite].cases!.filter(c => c.only === true);
+      if (onlyCases.length) {
+        onlyCases.forEach(c => {
+          casesWithOnly.push(c.name)
+        })
       }
-      this.plan.suites[onlyCase].cases = this.plan.suites[onlyCase].cases!.filter(c => c.only === true)
-      // We need to re-format the name to make it display the plan and suite
-      const tmpTestPlanInProgress =  this.test_suite_in_progress
-      this.test_plan_in_progress = "";
-      this.plan.suites[onlyCase].cases![0].new_name = this.formatTestCaseName(this.plan.suites[onlyCase].cases![0].name);
-      this.passed_in_test_suite = tmpTestPlanInProgress
     }
+    // For when a user has set a suite and test case to only.. naughty
+    if (suitesWithOnly.length && casesWithOnly.length) {
+      throw new Error("A test suite and test case have been set to only in plan `" + this.passed_in_test_plan + ". Only one is allowed")
+    }
+    // Or when a user has two suites set to only... naughty
+    if (casesWithOnly.length > 1) {
+      throw new Error("Expected one test case as `only`, but " + casesWithOnly.length + " have been defined.")
+    }
+    // Or when a user has two cases seet to only.. naughty
+    if (suitesWithOnly.length > 1) {
+      throw new Error("Expected one test suite as `only`, but " + suitesWithOnly.length + " have been defined.")
+    }
+
+    // Run them
     const tc = new TestCase(this.plan);
     tc.run();
     this.deconstruct();
@@ -447,44 +457,26 @@ export class RhumRunner {
    * Returns the new test name for outputting purposes.
    */
   protected formatTestCaseName(name: string): string {
-    let newName: string;
-    // (ebebbington) Unfortunately, due to the CI not correctly displaying output
-    // (it is  all over the place and just  completely unreadable as
-    // it doesn't play well with  our control characters), we need to
-    // display the test output differently, based on if the tests are
-    // being ran inside a CI or not. Nothing will change for the current
-    // way of doing things, but if the tests are being ran inside a CI,
-    // the format would be:
-    //    test <plan> | <suite> | <case> ... ok (2ms)
-    //    test <plan> | <suite> | <case> ... ok (2ms)
-    // Even if plans and/or suites are the same. I believe this the best
-    // way we can display the output
-    if (Deno.env.get("CI") === "true") {
-      newName =
-        `${this.passed_in_test_plan} | ${this.passed_in_test_suite} | ${name}`;
-      return newName;
-    }
+    // First test case for a new plan and suite
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
       this.test_suite_in_progress = this.passed_in_test_suite;
-      newName = `${"\u0008".repeat(name.length + extraChars)}` + // strip "test "
-        `${" ".repeat(name.length + extraChars)}` +
-        `\n${this.passed_in_test_plan}` +
-        `\n    ${this.passed_in_test_suite}` +
-        `\n        ${name} ... `;
-    } else {
-      if (this.test_suite_in_progress != this.passed_in_test_suite) {
-        this.test_suite_in_progress = this.passed_in_test_suite;
-        newName = `${"\u0008".repeat(name.length + extraChars)}` +
-          `    ${this.passed_in_test_suite}` +
-          `${" ".repeat(name.length + extraChars)}` +
-          `\n        ${name} ... `;
-      } else {
-        newName = `${"\u0008".repeat(name.length + extraChars)}` +
-          `        ${name} ... `;
-      }
+      const newName = `| ${this.passed_in_test_plan}` +
+          `\n     |    ${this.passed_in_test_suite}` +
+          `\n     |        ${name}`;
+      return newName;
     }
 
+    // Case for existing plan but  new suite
+    if (this.test_suite_in_progress != this.passed_in_test_suite) {
+      this.test_suite_in_progress = this.passed_in_test_suite;
+      const newName = `|    ${this.passed_in_test_suite}` +
+          `\n     |        ${name}`;
+      return newName;
+    }
+
+    // Case for existing  plan and suite
+    const newName = `|        ${name}`;
     return newName;
   }
 

@@ -119,8 +119,8 @@ export interface ITestSuite {
  *     argument of Deno.test().
  */
 export interface ITestCase {
-  name: string;
   only: boolean;
+  name: string;
   new_name: string;
   testFn: () => void;
 }

@@ -23,6 +23,7 @@ Deno.test({
     });
     const status = await p.status();
     p.close();
+    console.log(new TextDecoder().decode(await p.stderrOutput()))
     asserts.assertEquals(status.success, true);
     asserts.assertEquals(status.code, 0);
     /**
