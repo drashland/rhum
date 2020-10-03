@@ -1,4 +1,4 @@
-import type { Mocked, Constructor } from "./types.ts";
+import type { Constructor, Mocked } from "./types.ts";
 
 export class MockBuilder<T> {
   /**

@@ -1,5 +1,5 @@
 const encoder = new TextEncoder();
-import type { ITestPlan, ITestCase } from "./interfaces.ts";
+import type { ITestCase, ITestPlan } from "./interfaces.ts";
 
 /**
  * A class to help create uniform test case objects.
