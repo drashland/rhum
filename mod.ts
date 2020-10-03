@@ -1,14 +1,8 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
-import type {
-  ITestPlan,
-  RhumMocks,
-} from "./src/interfaces.ts";
-import type {
-  Constructor,
-  Stubbed,
-} from "./src/types.ts";
+import type { ITestPlan, RhumMocks } from "./src/interfaces.ts";
+import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
 export type { Constructor, Stubbed } from "./src/types.ts";
