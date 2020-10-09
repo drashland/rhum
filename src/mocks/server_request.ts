@@ -39,13 +39,13 @@ export const MockServerRequestFn = function (
   method = "get",
   options?: MockServerRequestOptions,
 ): MockServerRequest {
-  let request: MockServerRequest = new ServerRequest();
+  const request: MockServerRequest = new ServerRequest();
   request.url = url;
   request.method = method;
   request.headers = new Headers();
   if (options) {
     if (options.headers) {
-      for (let key in options.headers) {
+      for (const key in options.headers) {
         request.headers.set(key, options.headers[key]);
       }
     }
