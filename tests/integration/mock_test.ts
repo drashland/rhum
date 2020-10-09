@@ -15,7 +15,7 @@ class TestObject {
     this.name = name;
   }
   public sum(num1: number, num2: number): number {
-    let sum = this.math_service.add(num1, num2);
+    const sum = this.math_service.add(num1, num2);
     return sum;
   }
   protected protectedMethod() {

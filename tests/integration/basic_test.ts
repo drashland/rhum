@@ -175,7 +175,7 @@ Deno.test({
      *
      * We can just break this up into segments, because we can't assert the filepaths in the error stack
      */
-    let splitStdout = stdout.split("failures:"); // [0] = the test case results, [1] = the start of the failures
+    const splitStdout = stdout.split("failures:"); // [0] = the test case results, [1] = the start of the failures
     const testCaseResults = splitStdout[0];
     const firstFailureResult =
       splitStdout[1].split("at Module.assertEquals")[0]; // Output of failing on first test
@@ -185,7 +185,7 @@ Deno.test({
       )[0];
 
     // To remove the `($deno/testing...` bit, because it was causing problems on new deno releases
-    let tmpSecondFailureResult = secondFailureResult.split("\n");
+    const tmpSecondFailureResult = secondFailureResult.split("\n");
     delete tmpSecondFailureResult[0];
     delete tmpSecondFailureResult[0];
 

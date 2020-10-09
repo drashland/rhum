@@ -45,11 +45,11 @@ export class MockBuilder<T> {
    */
   public create(): Mocked<T> {
     // deno-lint-ignore no-explicit-any
-    let mock: Mocked<any> = {
+    const mock: Mocked<any> = {
       calls: {},
       is_mock: true,
     };
-    let original = new this.constructor_fn(...this.constructor_args);
+    const original = new this.constructor_fn(...this.constructor_args);
 
     // Attach all of the original's properties to the mock
     this.getAllProperties(original).forEach((property: string) => {
