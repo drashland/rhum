@@ -24,7 +24,7 @@ console.log("\nStarting Rhum ...");
 
 console.log("\nGathering test files ...");
 
-for (const entry of walkSync("./tests", { includeDirs: false })) {
+for (const entry of walkSync(Deno.args[0], { includeDirs: false })) {
   if (
     entry.path.includes("mock_builder_test")
     || entry.path.includes("basic_test")
