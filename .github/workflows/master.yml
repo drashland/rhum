@@ -28,10 +28,10 @@ jobs:
         run: deno install -A ./cli.ts
 
       - name: Run Unit Tests
-        run: rhum tests/unit
+        run: /home/runner/.deno/bin/rhum tests/unit
 
       - name: Run Integration Tests
-        run: rhum tests/integration
+        run: /home/runner/.deno/bin/rhum tests/integration
 
   linter:
     strategy:
