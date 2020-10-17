@@ -16,6 +16,14 @@ let stats: {
 
 let tests = [];
 
+let plans: {
+  [key: string]: {name: string, pass: boolean, suite: string}[]
+} = {};
+
+console.log("\nStarting Rhum ...");
+
+console.log("\nGathering test files ...");
+
 for (const entry of walkSync("./tests", { includeDirs: false })) {
   if (
     entry.path.includes("mock_builder_test")
@@ -26,8 +34,9 @@ for (const entry of walkSync("./tests", { includeDirs: false })) {
   tests.push(entry.path);
 }
 
+console.log("\nRunning tests ...");
+
 for await (const path of tests) {
-  console.log("\n" + path);
   const p = Deno.run({
     cmd: [
       "deno",
@@ -40,7 +49,13 @@ for await (const path of tests) {
   });
   const stdout = decoder.decode(await p.output());
   const results = JSON.parse(stdout);
-  let suites: any = {};
+  plans[path] = results;
+}
+
+let suites: any = {};
+for (const planName in plans) {
+  console.log("\n" + planName);
+  const results = plans[planName];
   for (const result of results) {
     if (!suites.hasOwnProperty(result.suite)) {
       suites[result.suite] = result;
