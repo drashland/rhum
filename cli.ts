@@ -1,30 +1,26 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import { IPlan, ICase, IStats } from "./src/interfaces.ts";
+import { showHelp } from "./src/options/help.ts";
 const decoder = new TextDecoder();
 
-const stats: {
-  passed: number;
-  failed: number;
-  skipped: number;
-  errors: string;
-} = {
+const stats: IStats = {
   passed: 0,
   failed: 0,
   skipped: 0,
   errors: "",
 };
+const testFiles: string[] = [];
+const dirOrFile = Deno.args[0];
 
-const tests = [];
-
-const plans: {
-  [key: string]: { name: string; pass: boolean; suite: string }[];
-} = {};
+if (!dirOrFile) {
+  showHelp();
+  Deno.exit(0);
+}
 
 console.log("\nStarting Rhum ...");
 
 console.log("\nGathering test files ...");
-
-const dirOrFile = Deno.args[0];
 
 if (!dirOrFile.includes(".ts")) {
   for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
@@ -34,15 +30,15 @@ if (!dirOrFile.includes(".ts")) {
     ) {
       continue;
     }
-    tests.push(entry.path);
+    testFiles.push(entry.path);
   }
 } else {
-  tests.push(dirOrFile);
+  testFiles.push(dirOrFile);
 }
 
 console.log("\nRunning tests ...\n");
 
-for await (const path of tests) {
+for await (const path of testFiles) {
   console.log(path);
   const p = Deno.run({
     cmd: [

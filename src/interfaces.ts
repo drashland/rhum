@@ -122,3 +122,21 @@ export interface ITestCase {
 export interface RhumMocks {
   ServerRequest: typeof MockServerRequestFn;
 }
+
+export interface IPlan {
+  [key: string]: ICase[];
+}
+
+export interface ICase {
+  name: string;
+  pass: boolean;
+  suite: string;
+  errors?: string;
+}
+
+export interface IStats {
+  passed: number;
+  failed: number;
+  skipped: number;
+  errors: string;
+}
