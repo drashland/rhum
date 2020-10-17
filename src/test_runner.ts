@@ -4,8 +4,14 @@ import { IPlan, ICase, IStats } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
 
+/**
+ * Run all tests.
+ */
 export async function runTests(dirOrFile: string): Promise<void> {
+  console.log("\nStarting Rhum ...");
 
+  // Define the object that will keep a running total of all the stats we care
+  // about.
   const stats: IStats = {
     passed: 0,
     failed: 0,
@@ -13,16 +19,15 @@ export async function runTests(dirOrFile: string): Promise<void> {
     errors: "",
   };
 
-  console.log("\nStarting Rhum ...");
-
   console.log("\nGathering test files ...");
-
   const testFiles = getTestFiles(dirOrFile);
 
   console.log("\nRunning tests ...\n");
-
   for await (const path of testFiles) {
+    // Output the file being tested
     console.log(path);
+
+    // Run the test file
     const p = Deno.run({
       cmd: [
         "deno",
@@ -33,10 +38,10 @@ export async function runTests(dirOrFile: string): Promise<void> {
       stdout: "piped",
       stderr: "piped",
     });
-    const stdout = decoder.decode(await p.output());
 
+    // TODO(crookse) We might need this for debugging. Maybe use a --debug
+    // option or something.
     // const stderr = decoder.decode(await p.stderrOutput());
-
     // if (stderr) {
     //   errors += stderr + "\n";
     // }
@@ -44,7 +49,9 @@ export async function runTests(dirOrFile: string): Promise<void> {
     // Define the stats string so that we can strip it out of the stdout results
     const statsString = new RegExp(/\{\"passed.*failed.*skipped.*/, "g");
 
-    // Output the results of the test file
+    // Output the results of the test file, but make sure to strip out the stats
+    // string
+    const stdout = decoder.decode(await p.output());
     console.log(stdout.replace(statsString, ""));
 
     // Store the results from the test file in the stats. We want to keep track
