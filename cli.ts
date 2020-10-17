@@ -73,7 +73,7 @@ for (const planName in plans) {
     } else {
       stats.failed++;
       console.log("        " + red(testCase.name));
-      stats.errors += testCase.error;
+      stats.errors += "\n\n" + testCase.error;
     }
   }
 }
