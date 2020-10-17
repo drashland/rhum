@@ -24,11 +24,14 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      - name: Unit
-        run: deno test --allow-env tests/unit
+      - name: Install Rhum
+        run: deno install -A ./cli.ts
 
-      - name: Integration
-        run: deno test --allow-run --allow-env tests/integration
+      - name: Run Unit Tests
+        run: rhum tests/unit
+
+      - name: Run Integration Tests
+        run: rhum tests/integration
 
   linter:
     strategy:
