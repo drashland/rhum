@@ -24,19 +24,28 @@ console.log("\nStarting Rhum ...");
 
 console.log("\nGathering test files ...");
 
-for (const entry of walkSync(Deno.args[0], { includeDirs: false })) {
-  if (
-    entry.path.includes("mock_builder_test")
-    || entry.path.includes("basic_test")
-  ) {
-    continue;
+const dirOrFile = Deno.args[0];
+
+if (!dirOrFile.includes(".ts")) {
+  for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
+    if (
+      entry.path.includes("mock_builder_test")
+      || entry.path.includes("basic_test")
+    ) {
+      continue;
+    }
+    tests.push(entry.path);
   }
-  tests.push(entry.path);
+} else {
+  tests.push(dirOrFile);
 }
 
-console.log("\nRunning tests ...");
+console.log("\nRunning tests ...\n");
+
+let errors: string = "";
 
 for await (const path of tests) {
+  console.log(path);
   const p = Deno.run({
     cmd: [
       "deno",
@@ -48,43 +57,23 @@ for await (const path of tests) {
     stderr: "piped",
   });
   const stdout = decoder.decode(await p.output());
-  // const stderr = decoder.decode(await p.stderrOutput());
-  // if (stderr) {
-  //   console.log(stderr);
-  // }
-  const results = JSON.parse(stdout);
-  plans[path] = results;
-}
-
-// Output the test suites and test cases
-
-let suites: any = {};
-for (const planName in plans) {
-  console.log("\n" + planName);
-  const results = plans[planName];
-  for (const result of results) {
-    if (!suites.hasOwnProperty(result.suite)) {
-      suites[result.suite] = result;
-    }
+  const stderr = decoder.decode(await p.stderrOutput());
+  if (stderr) {
+    errors += stderr + "\n";
   }
+  const statsString = new RegExp(/\{\"passed.*/, "g");
 
-  for (const suiteName in suites) {
-    console.log("    " + suiteName);
-    const testCase = suites[suiteName];
-    if (testCase.pass) {
-      stats.passed++;
-      console.log("        " + green(testCase.name));
-    } else {
-      stats.failed++;
-      console.log("        " + red(testCase.name));
-      stats.errors += "\n\n" + testCase.error;
-    }
-  }
+  console.log(stdout.replace(statsString, ""));
+
+  const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
+  stats.passed += testPlanResults.passed;
+  stats.failed += testPlanResults.failed;
+  stats.skipped += testPlanResults.skipped;
+  stats.errors += testPlanResults.errors;
 }
 
 // Output the errors
 
-console.log();
 console.log(stats.errors);
 
 // Output the overall results

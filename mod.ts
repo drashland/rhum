@@ -5,6 +5,20 @@ import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
+const encoder = new TextEncoder();
+
+let stats: {
+  passed: number,
+  failed: number,
+  skipped: number,
+  errors: string
+} = {
+  passed: 0,
+  failed: 0,
+  skipped: 0,
+  errors: "",
+};
+
 export type { Constructor, Stubbed } from "./src/types.ts";
 export { MockBuilder } from "./src/mock_builder.ts";
 
@@ -385,46 +399,30 @@ export class RhumRunner {
    *
    *     Rhum.run();
    */
-  public run(): void {
-    let stdout = [];
-    const encoder = new TextEncoder();
+  public async run(): Promise<void> {
     for (const suiteName in this.plan.suites) {
-      // Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
 
       for (const c of this.plan.suites[suiteName].cases!) {
         let message;
         try {
-          (async () => await c.testFn())();
-          stdout.push({name: c.name, suite: suiteName, pass: true});
-          message = encoder.encode(green("[\u2713]") + "      " + c.name + "\n");
-          // Deno.stdout.writeSync(encoder.encode(JSON.stringify({name: c.name, status: "pass"})));
+          await c.testFn();
+          Deno.stdout.writeSync(encoder.encode("        " + green("PASS") + " " + c.name + "\n"));
+          stats.passed++;
         } catch (error) {
-          stdout.push({name: c.name, suite: suiteName, pass: false, error: error.stack});
-          message = encoder.encode(red("[\u2717]") + "      " + c.name + "\n");
-          // Deno.stdout.writeSync(encoder.encode(JSON.stringify({name: c.name, status: "fail", error: error})));
+          Deno.stdout.writeSync(encoder.encode("        " + red("FAIL") + " " + c.name + "\n"));
+          stats.failed++;
+          stats.errors += ("\n" + error.stack + "\n");
         }
       }
     }
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stdout)));
+
+    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * 'Empty' this object. After calling this, Rhum should be ready for another
-   * test plan.
-   */
-  protected deconstruct(): void {
-    this.passed_in_test_suite = "";
-    this.passed_in_test_plan = "";
-    this.test_plan_in_progress = "";
-    this.test_suite_in_progress = "";
-    this.plan = {
-      suites: {},
-    };
-  }
 }
 
 /**
