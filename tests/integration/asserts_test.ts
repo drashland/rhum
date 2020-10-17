@@ -6,14 +6,14 @@ Rhum.testPlan("asserts_test.ts", () => {
       Rhum.asserts.assert(true);
     });
     Rhum.testCase("assertEquals", () => {
-      Rhum.asserts.assertEquals(false, true);
+      Rhum.asserts.assertEquals(true, true);
     });
     Rhum.testCase("assertNotEquals", () => {
       Rhum.asserts.assertNotEquals(true, false);
       Rhum.asserts.assertNotEquals("1", 1);
     });
     Rhum.testCase("assertStrictEquals", () => {
-      Rhum.asserts.assertStrictEquals(false, true);
+      Rhum.asserts.assertStrictEquals(true, true);
       const a = {};
       const b = a;
       Rhum.asserts.assertStrictEquals(a, b);
