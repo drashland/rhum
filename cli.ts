@@ -3,10 +3,10 @@ import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 const decoder = new TextDecoder();
 
 let stats: {
-  passed: number,
-  failed: number,
-  skipped: number,
-  errors: string
+  passed: number;
+  failed: number;
+  skipped: number;
+  errors: string;
 } = {
   passed: 0,
   failed: 0,
@@ -17,7 +17,7 @@ let stats: {
 let tests = [];
 
 let plans: {
-  [key: string]: {name: string, pass: boolean, suite: string}[]
+  [key: string]: { name: string; pass: boolean; suite: string }[];
 } = {};
 
 console.log("\nStarting Rhum ...");
@@ -29,8 +29,8 @@ const dirOrFile = Deno.args[0];
 if (!dirOrFile.includes(".ts")) {
   for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
     if (
-      entry.path.includes("mock_builder_test")
-      || entry.path.includes("basic_test")
+      entry.path.includes("mock_builder_test") ||
+      entry.path.includes("basic_test")
     ) {
       continue;
     }
@@ -51,7 +51,7 @@ for await (const path of tests) {
       "deno",
       "run",
       "-A",
-      Deno.realPathSync("./" + path)
+      Deno.realPathSync("./" + path),
     ],
     stdout: "piped",
     stderr: "piped",
@@ -80,4 +80,8 @@ console.log(stats.errors);
 
 // Output the overall results
 
-console.log(`\nTest Results: ${green(stats.passed.toString())} passed; ${red(stats.failed.toString())} failed; ${yellow(stats.skipped.toString())} skipped`);
+console.log(
+  `\nTest Results: ${green(stats.passed.toString())} passed; ${
+    red(stats.failed.toString())
+  } failed; ${yellow(stats.skipped.toString())} skipped`,
+);

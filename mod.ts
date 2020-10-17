@@ -8,10 +8,10 @@ import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 const encoder = new TextEncoder();
 
 let stats: {
-  passed: number,
-  failed: number,
-  skipped: number,
-  errors: string
+  passed: number;
+  failed: number;
+  skipped: number;
+  errors: string;
 } = {
   passed: 0,
   failed: 0,
@@ -431,10 +431,14 @@ export class RhumRunner {
           if (this.plan.after_all_suite_hook) {
             await this.plan.after_all_suite_hook();
           }
-          Deno.stdout.writeSync(encoder.encode("        " + green("PASS") + " " + c.name + "\n"));
+          Deno.stdout.writeSync(
+            encoder.encode("        " + green("PASS") + " " + c.name + "\n"),
+          );
           stats.passed++;
         } catch (error) {
-          Deno.stdout.writeSync(encoder.encode("        " + red("FAIL") + " " + c.name + "\n"));
+          Deno.stdout.writeSync(
+            encoder.encode("        " + red("FAIL") + " " + c.name + "\n"),
+          );
           stats.failed++;
           stats.errors += ("\n" + error.stack + "\n");
         }
