@@ -29,12 +29,12 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          export PATH="/home/runner/.deno/bin:$PATH"
+          export PATH="~/.deno/bin:$PATH"
           rhum tests/unit
 
       - name: Run Integration Tests
         run: |
-          export PATH="/home/runner/.deno/bin:$PATH"
+          export PATH="~/.deno/bin:$PATH"
           rhum tests/integration
 
   linter:
