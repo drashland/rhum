@@ -3,7 +3,7 @@ import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import type { ITestCase, ITestPlan, RhumMocks } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
-import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
 const encoder = new TextEncoder();
 

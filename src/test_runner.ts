@@ -1,6 +1,6 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
-import { IPlan, ICase, IStats } from "./interfaces.ts";
+import { blue, yellow, green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import { IStats } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
 
@@ -8,7 +8,8 @@ const decoder = new TextDecoder();
  * Run all tests.
  */
 export async function runTests(dirOrFile: string): Promise<void> {
-  console.log("\nStarting Rhum ...");
+  console.log();
+  logInfo("Starting Rhum");
 
   // Define the object that will keep a running total of all the stats we care
   // about.
@@ -19,10 +20,17 @@ export async function runTests(dirOrFile: string): Promise<void> {
     errors: "",
   };
 
-  console.log("\nGathering test files ...");
-  const testFiles = getTestFiles(dirOrFile);
+  logInfo("Checking test file(s)");
 
-  console.log("\nRunning tests ...\n");
+  let testFiles: string[];
+  try {
+    testFiles = getTestFiles(dirOrFile);
+  } catch (error) {
+    logError("Please specify a valid directory or test file.");
+    Deno.exit(0);
+  }
+
+  logInfo("Running tests\n");
   for await (const path of testFiles) {
     // Output the file being tested
     console.log(path);
@@ -96,8 +104,29 @@ function getTestFiles(dirOrFile: string): string[] {
       testFiles.push(entry.path);
     }
   } else {
+    if (!Deno.readFileSync(dirOrFile)) {
+      throw new Error("Invalid test file.");
+    }
     testFiles.push(dirOrFile);
   }
 
   return testFiles;
+}
+
+/**
+ * Log an error message.
+ *
+ * @param message The message to log.
+ */
+function logError(message: string): void {
+  console.log(red("ERROR") + " " + message);
+}
+
+/**
+ * Log an info message.
+ *
+ * @param message The message to log.
+ */
+function logInfo(message: string): void {
+  console.log(blue("INFO") + " " + message);
 }
