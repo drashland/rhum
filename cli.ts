@@ -63,7 +63,7 @@ for await (const path of tests) {
   //   errors += stderr + "\n";
   // }
 
-  const statsString = new RegExp(/\{\"passed.*/, "g");
+  const statsString = new RegExp(/\{\"passed.*failed.*skipped.*/, "g");
 
   console.log(stdout.replace(statsString, ""));
 
