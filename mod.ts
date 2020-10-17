@@ -7,7 +7,7 @@ import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
 const encoder = new TextEncoder();
 
-let stats: {
+const stats: {
   passed: number;
   failed: number;
   skipped: number;

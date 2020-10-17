@@ -2,7 +2,7 @@ import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 const decoder = new TextDecoder();
 
-let stats: {
+const stats: {
   passed: number;
   failed: number;
   skipped: number;
@@ -14,9 +14,9 @@ let stats: {
   errors: "",
 };
 
-let tests = [];
+const tests = [];
 
-let plans: {
+const plans: {
   [key: string]: { name: string; pass: boolean; suite: string }[];
 } = {};
 
@@ -41,8 +41,6 @@ if (!dirOrFile.includes(".ts")) {
 }
 
 console.log("\nRunning tests ...\n");
-
-let errors: string = "";
 
 for await (const path of tests) {
   console.log(path);
