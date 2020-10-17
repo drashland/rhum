@@ -406,7 +406,31 @@ export class RhumRunner {
       for (const c of this.plan.suites[suiteName].cases!) {
         let message;
         try {
+          if (this.plan.before_all_suite_hook) {
+            await this.plan.before_all_suite_hook();
+          }
+          if (this.plan.before_each_suite_hook) {
+            await this.plan.before_each_suite_hook();
+          }
+          if (this.plan.suites[suiteName].before_all_case_hook) {
+            await this.plan.suites[suiteName].before_all_case_hook!();
+          }
+          if (this.plan.suites[suiteName].before_each_case_hook) {
+            await this.plan.suites[suiteName].before_each_case_hook!();
+          }
           await c.testFn();
+          if (this.plan.suites[suiteName].after_each_case_hook) {
+            await this.plan.suites[suiteName].after_each_case_hook!();
+          }
+          if (this.plan.suites[suiteName].after_all_case_hook) {
+            await this.plan.suites[suiteName].after_all_case_hook!();
+          }
+          if (this.plan.after_each_suite_hook) {
+            await this.plan.after_each_suite_hook();
+          }
+          if (this.plan.after_all_suite_hook) {
+            await this.plan.after_all_suite_hook();
+          }
           Deno.stdout.writeSync(encoder.encode("        " + green("PASS") + " " + c.name + "\n"));
           stats.passed++;
         } catch (error) {
