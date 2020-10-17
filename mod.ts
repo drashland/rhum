@@ -394,7 +394,7 @@ export class RhumRunner {
       for (const c of this.plan.suites[suiteName].cases!) {
         let message;
         try {
-          c.testFn();
+          (async () => await c.testFn())();
           stdout.push({name: c.name, suite: suiteName, pass: true});
           message = encoder.encode(green("[\u2713]") + "      " + c.name + "\n");
           // Deno.stdout.writeSync(encoder.encode(JSON.stringify({name: c.name, status: "pass"})));

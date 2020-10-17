@@ -48,6 +48,10 @@ for await (const path of tests) {
     stderr: "piped",
   });
   const stdout = decoder.decode(await p.output());
+  // const stderr = decoder.decode(await p.stderrOutput());
+  // if (stderr) {
+  //   console.log(stderr);
+  // }
   const results = JSON.parse(stdout);
   plans[path] = results;
 }
