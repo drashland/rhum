@@ -28,10 +28,14 @@ jobs:
         run: deno install -A ./cli.ts
 
       - name: Run Unit Tests
-        run: /home/runner/.deno/bin/rhum tests/unit
+        run: |
+          export PATH="/home/runner/.deno/bin:$PATH"
+          rhum tests/unit
 
       - name: Run Integration Tests
-        run: /home/runner/.deno/bin/rhum tests/integration
+        run: |
+          export PATH="/home/runner/.deno/bin:$PATH"
+          rhum tests/integration
 
   linter:
     strategy:
