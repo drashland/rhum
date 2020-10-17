@@ -52,6 +52,8 @@ for await (const path of tests) {
   plans[path] = results;
 }
 
+// Output the test suites and test cases
+
 let suites: any = {};
 for (const planName in plans) {
   console.log("\n" + planName);
@@ -76,7 +78,11 @@ for (const planName in plans) {
   }
 }
 
+// Output the errors
+
 console.log();
 console.log(stats.errors);
+
+// Output the overall results
 
 console.log(`\nTest Results: ${green(stats.passed.toString())} passed; ${red(stats.failed.toString())} failed; ${yellow(stats.skipped.toString())} skipped`);
