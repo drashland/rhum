@@ -1,9 +1,9 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
 import { MockServerRequestFn } from "./src/mocks/server_request.ts";
-import { TestCase } from "./src/test_case.ts";
-import type { ITestPlan, RhumMocks } from "./src/interfaces.ts";
+import type { ITestCase, ITestPlan, RhumMocks } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
+import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
 export type { Constructor, Stubbed } from "./src/types.ts";
 export { MockBuilder } from "./src/mock_builder.ts";
@@ -70,7 +70,9 @@ export class RhumRunner {
 
   protected test_suite_in_progress = "";
 
-  protected plan: ITestPlan = { suites: {} };
+  protected plan: ITestPlan = {
+    suites: {},
+  };
 
   // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
 
@@ -329,7 +331,6 @@ export class RhumRunner {
   public testCase(name: string, testFn: () => void): void {
     this.plan.suites[this.passed_in_test_suite].cases!.push({
       name,
-      new_name: this.formatTestCaseName(name),
       testFn,
     });
   }
@@ -385,63 +386,31 @@ export class RhumRunner {
    *     Rhum.run();
    */
   public run(): void {
-    const tc = new TestCase(this.plan);
-    tc.run();
-    this.deconstruct();
+    let stdout = [];
+    const encoder = new TextEncoder();
+    for (const suiteName in this.plan.suites) {
+      // Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+
+      for (const c of this.plan.suites[suiteName].cases!) {
+        let message;
+        try {
+          c.testFn();
+          stdout.push({name: c.name, suite: suiteName, pass: true});
+          message = encoder.encode(green("[\u2713]") + "      " + c.name + "\n");
+          // Deno.stdout.writeSync(encoder.encode(JSON.stringify({name: c.name, status: "pass"})));
+        } catch (error) {
+          stdout.push({name: c.name, suite: suiteName, pass: false, error: error.stack});
+          message = encoder.encode(red("[\u2717]") + "      " + c.name + "\n");
+          // Deno.stdout.writeSync(encoder.encode(JSON.stringify({name: c.name, status: "fail", error: error})));
+        }
+      }
+    }
+    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stdout)));
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Figure out the name of the test case for output purposes.
-   *
-   * @param name - The name of the test case.
-   *
-   * Returns the new test name for outputting purposes.
-   */
-  protected formatTestCaseName(name: string): string {
-    let newName: string;
-    // (ebebbington) Unfortunately, due to the CI not correctly displaying output
-    // (it is  all over the place and just  completely unreadable as
-    // it doesn't play well with  our control characters), we need to
-    // display the test output differently, based on if the tests are
-    // being ran inside a CI or not. Nothing will change for the current
-    // way of doing things, but if the tests are being ran inside a CI,
-    // the format would be:
-    //    test <plan> | <suite> | <case> ... ok (2ms)
-    //    test <plan> | <suite> | <case> ... ok (2ms)
-    // Even if plans and/or suites are the same. I believe this the best
-    // way we can display the output
-    if (Deno.env.get("CI") === "true") {
-      newName =
-        `${this.passed_in_test_plan} | ${this.passed_in_test_suite} | ${name}`;
-      return newName;
-    }
-    if (this.test_plan_in_progress != this.passed_in_test_plan) {
-      this.test_plan_in_progress = this.passed_in_test_plan;
-      this.test_suite_in_progress = this.passed_in_test_suite;
-      newName = `${"\u0008".repeat(name.length + extraChars)}` + // strip "test "
-        `${" ".repeat(name.length + extraChars)}` +
-        `\n${this.passed_in_test_plan}` +
-        `\n    ${this.passed_in_test_suite}` +
-        `\n        ${name} ... `;
-    } else {
-      if (this.test_suite_in_progress != this.passed_in_test_suite) {
-        this.test_suite_in_progress = this.passed_in_test_suite;
-        newName = `${"\u0008".repeat(name.length + extraChars)}` +
-          `    ${this.passed_in_test_suite}` +
-          `${" ".repeat(name.length + extraChars)}` +
-          `\n        ${name} ... `;
-      } else {
-        newName = `${"\u0008".repeat(name.length + extraChars)}` +
-          `        ${name} ... `;
-      }
-    }
-
-    return newName;
-  }
 
   /**
    * 'Empty' this object. After calling this, Rhum should be ready for another
@@ -452,7 +421,9 @@ export class RhumRunner {
     this.passed_in_test_plan = "";
     this.test_plan_in_progress = "";
     this.test_suite_in_progress = "";
-    this.plan = { suites: {} };
+    this.plan = {
+      suites: {},
+    };
   }
 }
 

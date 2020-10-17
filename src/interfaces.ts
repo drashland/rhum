@@ -106,19 +106,12 @@ export interface ITestSuite {
  * name
  *     The name of the test case.
  *
- * new_name
- *     The new name of the test. This is strictly for outputting purposes.
- *     Deno's test runner outputs "test name of test" and we want to
- *     overwrite that text. This new_name string helps us do that. See
- *     formatTestCaseName() in mod.ts for more information.
- *
  * testFn
  *     The test function. Ultimately, this gets passed as the second
  *     argument of Deno.test().
  */
 export interface ITestCase {
   name: string;
-  new_name: string;
   testFn: () => void;
 }
 
