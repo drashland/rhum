@@ -381,13 +381,13 @@ export class RhumRunner {
       return await this.runTestSuiteFiltered(filterTestSuite);
     }
 
-    this.runAllTestCases();
+    await this.runAll();
   }
 
   /**
-   * Run all test cases.
+   * Run all test suites and test cases in the test plan.
    */
-  public async runAllTestCases(): Promise<void> {
+  public async runAll(): Promise<void> {
     // Execute .beforeAll() hook before all test suites
     if (this.plan.before_all_suites_hook) {
       await this.plan.before_all_suites_hook();
@@ -407,7 +407,7 @@ export class RhumRunner {
       }
 
       for (const testCase of this.plan.suites[suiteName].cases) {
-        this.runTestCase(testCase, suiteName);
+        await this.runTestCase(testCase, suiteName);
       }
 
       // Execute .afterAll() hook after all test cases
@@ -486,7 +486,7 @@ export class RhumRunner {
       for (const testCase of this.plan.suites[suiteName].cases) {
         if (testCase.name == testCaseName) {
           Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-          this.runTestCase(testCase, suiteName);
+          await this.runTestCase(testCase, suiteName);
         }
       }
 
@@ -516,34 +516,32 @@ export class RhumRunner {
     }
 
     for (const suiteName in this.plan.suites) {
-      if (suiteName != testSuiteName) {
-        continue;
-      }
+      if (suiteName == testSuiteName) {
+        Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
 
-      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+        // Execute .beforeEach() hook before each test suite if it exists
+        if (this.plan.before_each_suite_hook) {
+          await this.plan.before_each_suite_hook();
+        }
 
-      // Execute .beforeEach() hook before each test suite if it exists
-      if (this.plan.before_each_suite_hook) {
-        await this.plan.before_each_suite_hook();
-      }
+        // Execute .beforeAll() hook before all test cases
+        if (this.plan.suites[suiteName].before_all_cases_hook) {
+          await this.plan.suites[suiteName].before_all_cases_hook!();
+        }
 
-      // Execute .beforeAll() hook before all test cases
-      if (this.plan.suites[suiteName].before_all_cases_hook) {
-        await this.plan.suites[suiteName].before_all_cases_hook!();
-      }
+        for (const testCase of this.plan.suites[suiteName].cases) {
+          await this.runTestCase(testCase, suiteName);
+        }
 
-      for (const testCase of this.plan.suites[suiteName].cases) {
-        await this.runTestCase(testCase, suiteName);
-      }
+        // Execute .afterAll() hook after all test cases
+        if (this.plan.suites[suiteName].after_all_cases_hook) {
+          await this.plan.suites[suiteName].after_all_cases_hook!();
+        }
 
-      // Execute .afterAll() hook after all test cases
-      if (this.plan.suites[suiteName].after_all_cases_hook) {
-        await this.plan.suites[suiteName].after_all_cases_hook!();
-      }
-
-      // Execute .afterEach() hook after each test suite if it exists
-      if (this.plan.after_each_suite_hook) {
-        await this.plan.after_each_suite_hook();
+        // Execute .afterEach() hook after each test suite if it exists
+        if (this.plan.after_each_suite_hook) {
+          await this.plan.after_each_suite_hook();
+        }
       }
     }
 

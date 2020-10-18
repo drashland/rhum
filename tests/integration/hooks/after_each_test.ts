@@ -22,7 +22,7 @@ Rhum.testPlan(() => {
     });
 
     Rhum.testCase(
-      "hook in this test suite doesn't change first test's case_val",
+      "hook in this test suite doesn't change first test's suite_val",
       () => {
         Rhum.asserts.assertEquals(suite_val, "Ed");
       },
