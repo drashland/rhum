@@ -6,6 +6,11 @@ import { logError } from "./src/test_runner.ts";
 
 const dirOrFile = Deno.args[Deno.args.length - 1];
 
+if (!dirOrFile) {
+  showHelp();
+  Deno.exit(0);
+}
+
 if (dirOrFile) {
   if (dirOrFile.includes("--")) {
     if (dirOrFile.trim() == "--version") {
