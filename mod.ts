@@ -230,15 +230,27 @@ export class RhumRunner {
    *     });
    */
   public skip(name: string, cb: () => void): void {
+    // If there is no current test suite, then we know we know this .skip() call
+    // is attached to a test suite.
     if (this.current_test_suite == "") {
+      console.log("we're skipping a test suite: " + name);
       this.skip_current_test_suite = true;
       this.current_test_suite = name;
       this.plan.suites[name] = {
         cases: [],
       };
 
+      // Execute the test cases in this test suite
       cb();
+
+      console.log("resetting current test suite");
+      this.skip_current_test_suite = false;
+      this.current_test_suite = "";
+
+    // Otherwise, if there is a current test suite, then we know this .skip()
+    // call is attached to a test case.
     } else {
+      console.log("we're skipping a test case: " + this.current_test_suite + " -> " + name);
       this.plan.suites[this.current_test_suite].cases.push({
         name,
         test_fn: cb,
@@ -376,18 +388,22 @@ export class RhumRunner {
    *     });
    */
   public async testSuite(name: string, testCases: () => void): Promise<void> {
-    this.skip_current_test_suite = false;
+    console.log("executing test suite: " + name);
+    // Set the name of the currently running test suite so that other methods
+    // know what test suite is running
     this.current_test_suite = name;
 
+    // If the test suite and its test cases are not yet tracked in the plan
+    // object, then add the required data so we can track the test suite and its
+    // test cases. We use this data when we call runTestPlan().
     if (!this.plan.suites[name]) {
       this.plan.suites[name] = {
         cases: [],
       };
     }
 
+    // Execute the test cases in this test suite
     await testCases();
-
-    this.current_test_suite = "";
   }
 
   /**
