@@ -67,6 +67,7 @@ export class RhumRunner {
 
   protected current_test_suite = "";
   protected skip_current_test_suite = true;
+  protected current_test_suite_num_cases = 0;
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
@@ -229,33 +230,36 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public skip(name: string, cb: () => void): void {
+  public async skip(name: string, cb: () => void): Promise<void> {
+
     // If there is no current test suite, then we know we know this .skip() call
     // is attached to a test suite.
     if (this.current_test_suite == "") {
-      console.log("we're skipping a test suite: " + name);
-      this.skip_current_test_suite = true;
       this.current_test_suite = name;
       this.plan.suites[name] = {
         cases: [],
+        skip: true,
       };
 
       // Execute the test cases in this test suite
-      cb();
-
-      console.log("resetting current test suite");
-      this.skip_current_test_suite = false;
-      this.current_test_suite = "";
+      await cb();
 
     // Otherwise, if there is a current test suite, then we know this .skip()
     // call is attached to a test case.
     } else {
-      console.log("we're skipping a test case: " + this.current_test_suite + " -> " + name);
+      // If all of the test cases in a test suite have been executed, then this
+      // .skip() call is for a test suite. Soooo recursion...
+      if (this.current_test_suite_num_cases == 0 ) {
+        this.current_test_suite = "";
+        this.skip(name, cb);
+        return;
+      }
       this.plan.suites[this.current_test_suite].cases.push({
         name,
         test_fn: cb,
         skip: true,
       });
+      this.current_test_suite_num_cases--;
     }
   }
 
@@ -338,7 +342,7 @@ export class RhumRunner {
    *     });
    */
   public testCase(name: string, testFn: () => void): void {
-    if (this.skip_current_test_suite) {
+    if (this.plan.suites[this.current_test_suite].skip) {
       this.plan.suites[this.current_test_suite].cases.push({
         name,
         test_fn: testFn,
@@ -351,6 +355,8 @@ export class RhumRunner {
         skip: false,
       });
     }
+
+    this.current_test_suite_num_cases--;
   }
 
   /**
@@ -388,7 +394,6 @@ export class RhumRunner {
    *     });
    */
   public async testSuite(name: string, testCases: () => void): Promise<void> {
-    console.log("executing test suite: " + name);
     // Set the name of the currently running test suite so that other methods
     // know what test suite is running
     this.current_test_suite = name;
@@ -399,11 +404,19 @@ export class RhumRunner {
     if (!this.plan.suites[name]) {
       this.plan.suites[name] = {
         cases: [],
+        skip: false,
       };
+    }
+
+    const matches = testCases.toString().match(/Rhum\.(skip|testCase)/g);
+    if (matches && matches.length) {
+      this.current_test_suite_num_cases = matches.length;
     }
 
     // Execute the test cases in this test suite
     await testCases();
+
+    this.current_test_suite = "";
   }
 
   /**

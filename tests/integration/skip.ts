@@ -44,6 +44,9 @@ Rhum.testPlan(() => {
     Rhum.skip("skipped", () => {
       Rhum.asserts.assertEquals(true, true);
     });
+    Rhum.testCase("testCase", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
   });
 
   Rhum.skip("testSuite skipped 6", () => {
