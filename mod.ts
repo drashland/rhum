@@ -2,11 +2,13 @@ import { assertions, asserts } from "./src/rhum_asserts.ts";
 import type { ICase, IPlan, IStats } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
-import { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 
 export const version = "v1.1.4";
 
 const encoder = new TextEncoder();
+
+const skipped: string[] = [];
 
 const stats: IStats = {
   passed: 0,
@@ -64,6 +66,7 @@ export class RhumRunner {
   };
 
   protected current_test_suite = "";
+  protected skip_current_test_suite = true;
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
@@ -227,9 +230,21 @@ export class RhumRunner {
    *     });
    */
   public skip(name: string, cb: () => void): void {
-    // TODO(ebebbington|crookse) Maybe we could still call run, but pass in {
-    // ignore: true } which the Deno.Test will use? just so it displays ignored
-    // in the console
+    if (this.current_test_suite == "") {
+      this.skip_current_test_suite = true;
+      this.current_test_suite = name;
+      this.plan.suites[name] = {
+        cases: [],
+      };
+
+      cb();
+    } else {
+      this.plan.suites[this.current_test_suite].cases.push({
+        name,
+        test_fn: cb,
+        skip: true,
+      });
+    }
   }
 
   /**
@@ -311,10 +326,19 @@ export class RhumRunner {
    *     });
    */
   public testCase(name: string, testFn: () => void): void {
-    this.plan.suites[this.current_test_suite].cases.push({
-      name,
-      test_fn: testFn,
-    });
+    if (this.skip_current_test_suite) {
+      this.plan.suites[this.current_test_suite].cases.push({
+        name,
+        test_fn: testFn,
+        skip: true,
+      });
+    } else {
+      this.plan.suites[this.current_test_suite].cases.push({
+        name,
+        test_fn: testFn,
+        skip: false,
+      });
+    }
   }
 
   /**
@@ -352,6 +376,7 @@ export class RhumRunner {
    *     });
    */
   public async testSuite(name: string, testCases: () => void): Promise<void> {
+    this.skip_current_test_suite = false;
     this.current_test_suite = name;
 
     if (!this.plan.suites[name]) {
@@ -404,6 +429,16 @@ export class RhumRunner {
    * @param suiteName - The name of the test suite this test case belongs to.
    */
   public async runCase(testCase: ICase, suiteName: string): Promise<void> {
+    if (testCase.skip) {
+      Deno.stdout.writeSync(
+        encoder.encode(
+          "        " + yellow("SKIP") + " " + testCase.name + "\n",
+        ),
+      );
+      stats.skipped++;
+      return;
+    }
+
     // Execute .beforeEach() hook before each test case if it exists
     if (this.plan.suites[suiteName].before_each_case_hook) {
       await this.plan.suites[suiteName].before_each_case_hook!();

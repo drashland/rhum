@@ -51,6 +51,7 @@ export async function runTests(
         Deno.realPathSync("./" + path),
         filters.test_case as string,
         filters.test_suite as string,
+        path,
       ],
       stdout: "piped",
       stderr: "piped",

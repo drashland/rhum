@@ -33,6 +33,7 @@ export interface ISuite {
 export interface ICase {
   name: string;
   test_fn: () => void;
+  skip: boolean;
 }
 
 export interface IPlan {
