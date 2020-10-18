@@ -32,9 +32,6 @@ export async function runTests(dirOrFile: string): Promise<void> {
 
   logInfo("Running tests\n");
   for await (const path of testFiles) {
-    // Output the file being tested
-    console.log(path);
-
     // Run the test file
     const p = Deno.run({
       cmd: [
@@ -47,19 +44,24 @@ export async function runTests(dirOrFile: string): Promise<void> {
       stderr: "piped",
     });
 
-    // TODO(crookse) We might need this for debugging. Maybe use a --debug
-    // option or something.
-    // const stderr = decoder.decode(await p.stderrOutput());
-    // if (stderr) {
-    //   errors += stderr + "\n";
-    // }
-
-    // Define the stats string so that we can strip it out of the stdout results
-    const statsString = new RegExp(/\{\"passed.*failed.*skipped.*/, "g");
+    const stderr = decoder.decode(await p.stderrOutput());
+    if (stderr) {
+      // Output the error, but remove the "Check file:///" line, and replace it
+      // with the test file being run
+      const stderrFormatted = stderr
+        .replace(/.+/, "\r")
+        .replace(/\n|\r|\r\n|\n\r/g, "");
+      console.log(stderrFormatted.replace("", path));
+    } else {
+      // Otherwise, just output the test file being run
+      console.log(path);
+    }
 
     // Output the results of the test file, but make sure to strip out the stats
     // string
     const stdout = decoder.decode(await p.output());
+    // Define the stats string so that we can strip it out of the stdout results
+    const statsString = new RegExp(/\{\"passed.*failed.*skipped.*/, "g");
     console.log(stdout.replace(statsString, ""));
 
     // Store the results from the test file in the stats. We want to keep track

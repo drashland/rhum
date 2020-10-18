@@ -23,7 +23,7 @@ class TestObject {
   }
 }
 
-Rhum.testPlan("mock_test.ts", () => {
+Rhum.testPlan(() => {
   Rhum.testSuite("mock()", () => {
     Rhum.testCase("can mock an object", () => {
       const mock = Rhum
@@ -77,5 +77,3 @@ Rhum.testPlan("mock_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

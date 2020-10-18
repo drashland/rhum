@@ -11,7 +11,7 @@ class Server {
   }
 }
 
-Rhum.testPlan("stub_test.ts", () => {
+Rhum.testPlan(() => {
   Rhum.testSuite("stub()", () => {
     Rhum.testCase("can stub a property", () => {
       const server = Rhum.stubbed(new Server());
@@ -35,5 +35,3 @@ Rhum.testPlan("stub_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

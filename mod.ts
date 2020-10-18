@@ -1,5 +1,5 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import type { IStats, ITestPlan } from "./src/interfaces.ts";
+import type { ICase, IPlan, IStats } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
@@ -21,29 +21,30 @@ export { MockBuilder } from "./src/mock_builder.ts";
  *
  *     import { Rhum } from "/path/to/rhum/mod.ts";
  *
-*      Rhum.testSuite("test_suite_1a", () => {
-*        Rhum.testCase("test_case_1a1", () => {
-*          Rhum.asserts.assertEquals(true, true);
+ *     Rhum.testPlan(() => {
+*        Rhum.testSuite("test_suite_1a", () => {
+*          Rhum.testCase("test_case_1a1", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
+*          Rhum.testCase("test_case_1a2", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
+*          Rhum.testCase("test_case_1a3", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
 *        });
-*        Rhum.testCase("test_case_1a2", () => {
-*          Rhum.asserts.assertEquals(true, true);
+*        Rhum.testSuite("test_suite_1b", () => {
+*          Rhum.testCase("test_case_1b1", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
+*          Rhum.testCase("test_case_1b2", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
+*          Rhum.testCase("test_case_1b3", () => {
+*            Rhum.asserts.assertEquals(true, true);
+*          });
 *        });
-*        Rhum.testCase("test_case_1a3", () => {
-*          Rhum.asserts.assertEquals(true, true);
-*        });
-*      });
-*
-*      Rhum.testSuite("test_suite_1b", () => {
-*        Rhum.testCase("test_case_1b1", () => {
-*          Rhum.asserts.assertEquals(true, true);
-*        });
-*        Rhum.testCase("test_case_1b2", () => {
-*          Rhum.asserts.assertEquals(true, true);
-*        });
-*        Rhum.testCase("test_case_1b3", () => {
-*          Rhum.asserts.assertEquals(true, true);
-*        });
-*      });
+ *     });
  */
 export class RhumRunner {
   /**
@@ -56,25 +57,11 @@ export class RhumRunner {
   // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
   public asserts: { [key in assertions]: Function } = asserts;
 
-  protected passed_in_test_plan = "";
-
-  protected passed_in_test_suite = "";
-
-  protected test_plan_in_progress = "";
-
-  protected test_suite_in_progress = "";
-
-  protected plan: ITestPlan = {
-    suites: {},
+  protected plan: IPlan = {
+    suites: {}
   };
 
-  // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
-
-  /**
-   * Construct an object of this class.
-   */
-  constructor() {
-  }
+  protected current_test_suite: string = "";
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
@@ -103,10 +90,10 @@ export class RhumRunner {
    */
   public beforeEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+    if (this.current_test_suite != "") {
       // is a before each inside a suite for every test case
-      this.plan.suites![this.passed_in_test_suite].before_each_case_hook = cb;
-    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      this.plan.suites![this.current_test_suite].before_each_case_hook = cb;
+    } else if (this.current_test_suite == "") {
       // before each hooks for the suites
       this.plan.before_each_suite_hook = cb;
     }
@@ -137,10 +124,10 @@ export class RhumRunner {
    */
   public afterEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+    if (this.current_test_suite != "") {
       // is a after each inside a suite for every test case
-      this.plan.suites![this.passed_in_test_suite].after_each_case_hook = cb;
-    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      this.plan.suites![this.current_test_suite].after_each_case_hook = cb;
+    } else if (this.current_test_suite == "") {
       // after each hooks for the suites
       this.plan.after_each_suite_hook = cb;
     }
@@ -171,12 +158,12 @@ export class RhumRunner {
    */
   public afterAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+    if (this.current_test_suite != "") {
       // is a before all inside a suite for every test case
-      this.plan.suites![this.passed_in_test_suite].after_all_case_hook = cb;
-    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      this.plan.suites[this.current_test_suite].after_all_cases_hook = cb;
+    } else if (this.current_test_suite == "") {
       // before all hooks for the suites
-      this.plan.after_all_suite_hook = cb;
+      this.plan.after_all_suites_hook = cb;
     }
   }
 
@@ -205,12 +192,12 @@ export class RhumRunner {
    */
   public beforeAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.passed_in_test_plan && this.passed_in_test_suite) {
+    if (this.current_test_suite != "") {
       // is a before all inside a suite for every test case
-      this.plan.suites![this.passed_in_test_suite].before_all_case_hook = cb;
-    } else if (this.passed_in_test_plan && !this.passed_in_test_suite) {
+      this.plan.suites[this.current_test_suite].before_all_cases_hook = cb;
+    } else if (this.current_test_suite == "") {
       // before all hooks for the suites
-      this.plan.before_all_suite_hook = cb;
+      this.plan.before_all_suites_hook = cb;
     }
   }
 
@@ -322,9 +309,9 @@ export class RhumRunner {
    *     });
    */
   public testCase(name: string, testFn: () => void): void {
-    this.plan.suites[this.passed_in_test_suite].cases!.push({
+    this.plan.suites[this.current_test_suite].cases.push({
       name,
-      testFn,
+      test_fn: testFn,
     });
   }
 
@@ -340,10 +327,9 @@ export class RhumRunner {
    *       ...
    *     });
    */
-  public testPlan(name: string, testSuites: () => void): void {
-    this.passed_in_test_suite = ""; // New plan
-    this.passed_in_test_plan = name;
-    testSuites();
+  public async testPlan(testSuites: () => void): Promise<void> {
+    await testSuites();
+    await this.runTestPlan();
   }
 
   /**
@@ -363,65 +349,86 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public testSuite(name: string, testCases: () => void): void {
-    this.passed_in_test_suite = name;
-    this.plan.suites![name] = { cases: [] };
-    testCases();
+  public async testSuite(name: string, testCases: () => void): Promise<void> {
+    this.current_test_suite = name;
+
+    if (!this.plan.suites.hasOwnProperty(name)) {
+      this.plan.suites[name] = {
+        cases: []
+      };
+    }
+
+    await testCases();
+
+    this.current_test_suite = "";
   }
 
   /**
    * Run the test plan.
-   *
-   *     Rhum.testPlan("My Plan", () => {
-   *       ...
-   *     });
-   *
-   *     Rhum.run();
    */
-  public async run(): Promise<void> {
+  public async runTestPlan(): Promise<void> {
+
+    // Execute .beforeAll() hook before all test suites
+    if (this.plan.before_all_suites_hook) {
+      await this.plan.before_all_suites_hook();
+    }
+
     for (const suiteName in this.plan.suites) {
       Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
 
-      for (const c of this.plan.suites[suiteName].cases!) {
-        let message;
+      // Execute .beforeEach() hook before each test suite if it exists
+      if (this.plan.before_each_suite_hook) {
+        await this.plan.before_each_suite_hook();
+      }
+
+      // Execute .beforeAll() hook before all test cases
+      if (this.plan.suites[suiteName].before_all_cases_hook) {
+        await this.plan.suites[suiteName].before_all_cases_hook!();
+      }
+
+      for (const testCase of this.plan.suites[suiteName].cases) {
+
+        // Execute .beforeEach() hook before each test case if it exists
+        if (this.plan.suites[suiteName].before_each_case_hook) {
+          await this.plan.suites[suiteName].before_each_case_hook!();
+        }
+
+        // Execute the test
         try {
-          if (this.plan.before_all_suite_hook) {
-            await this.plan.before_all_suite_hook();
-          }
-          if (this.plan.before_each_suite_hook) {
-            await this.plan.before_each_suite_hook();
-          }
-          if (this.plan.suites[suiteName].before_all_case_hook) {
-            await this.plan.suites[suiteName].before_all_case_hook!();
-          }
-          if (this.plan.suites[suiteName].before_each_case_hook) {
-            await this.plan.suites[suiteName].before_each_case_hook!();
-          }
-          await c.testFn();
-          if (this.plan.suites[suiteName].after_each_case_hook) {
-            await this.plan.suites[suiteName].after_each_case_hook!();
-          }
-          if (this.plan.suites[suiteName].after_all_case_hook) {
-            await this.plan.suites[suiteName].after_all_case_hook!();
-          }
-          if (this.plan.after_each_suite_hook) {
-            await this.plan.after_each_suite_hook();
-          }
-          if (this.plan.after_all_suite_hook) {
-            await this.plan.after_all_suite_hook();
-          }
+          await testCase.test_fn();
           Deno.stdout.writeSync(
-            encoder.encode("        " + green("PASS") + " " + c.name + "\n"),
+            encoder.encode("        " + green("PASS") + " " + testCase.name + "\n"),
           );
           stats.passed++;
         } catch (error) {
           Deno.stdout.writeSync(
-            encoder.encode("        " + red("FAIL") + " " + c.name + "\n"),
+            encoder.encode("        " + red("FAIL") + " " + testCase.name + "\n"),
           );
           stats.failed++;
           stats.errors += ("\n" + error.stack + "\n");
         }
+
+        // Execute .afterEach() hook after each test case if it exists
+        if (this.plan.suites[suiteName].after_each_case_hook) {
+          await this.plan.suites[suiteName].after_each_case_hook!();
+        }
+
       }
+
+      // Execute .afterAll() hook after all test cases
+      if (this.plan.suites[suiteName].after_all_cases_hook) {
+        await this.plan.suites[suiteName].after_all_cases_hook!();
+      }
+
+      // Execute .afterEach() hook after each test suite if it exists
+      if (this.plan.after_each_suite_hook) {
+        await this.plan.after_each_suite_hook();
+      }
+    }
+
+    // Execute .afterAll() hook after all test suites
+    if (this.plan.after_all_suites_hook) {
+      await this.plan.after_all_suites_hook();
     }
 
     Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));

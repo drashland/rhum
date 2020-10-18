@@ -13,7 +13,7 @@ async function close() {
   return value;
 }
 
-Rhum.testPlan("app_test.ts", () => {
+Rhum.testPlan(() => {
   // Run the first test suite
   Rhum.testSuite("run()", () => {
     Rhum.testCase("Returns true", () => {
@@ -29,5 +29,3 @@ Rhum.testPlan("app_test.ts", () => {
     });
   });
 });
-
-Rhum.run();

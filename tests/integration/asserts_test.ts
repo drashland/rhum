@@ -1,12 +1,12 @@
 import { Rhum } from "../../mod.ts";
 
-Rhum.testPlan("asserts_test.ts", () => {
+Rhum.testPlan(() => {
   Rhum.testSuite("Deno std asserts", () => {
     Rhum.testCase("asserts", () => {
       Rhum.asserts.assert(true);
     });
     Rhum.testCase("assertEquals", () => {
-      Rhum.asserts.assertEquals(false, true);
+      Rhum.asserts.assertEquals(true, true);
     });
     Rhum.testCase("assertNotEquals", () => {
       Rhum.asserts.assertNotEquals(true, false);
@@ -41,5 +41,3 @@ Rhum.testPlan("asserts_test.ts", () => {
     });
   });
 });
-
-Rhum.run();
