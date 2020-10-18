@@ -1,43 +1,64 @@
 import { Rhum } from "../../mod.ts";
 
 Rhum.testPlan(() => {
-  Rhum.skip("skipped test suite 0", () => {
-    Rhum.testCase("skipped because of test suite 0-0", () => {
+  Rhum.skip("testSuite skipped 1", () => {
+    Rhum.testCase("skipped", () => {
       Rhum.asserts.assertEquals(true, true);
     });
-    Rhum.testCase("skipped because of test suite 0-1", () => {
-      Rhum.asserts.assertEquals(true, true);
-    });
-  });
-
-  Rhum.testSuite("not skipped test suite 1", () => {
-    Rhum.testCase("not skipped test case", () => {
-      Rhum.asserts.assertEquals(true, true);
-    });
-    Rhum.skip("skipped test case 1-1", () => {
-      Rhum.asserts.assertEquals(true, true);
-    });
-    Rhum.skip("skipped test case 1-2", () => {
+    Rhum.testCase("skipped", () => {
       Rhum.asserts.assertEquals(true, true);
     });
   });
 
-  Rhum.testSuite("not skipped test suite 2", () => {
-    Rhum.skip("skipped test case 2-1", () => {
-      Rhum.asserts.assertEquals(true, true);
-    });
-    Rhum.testCase("not skipped test case 2-2", () => {
+  Rhum.skip("testSuite skipped 2", () => {
+    Rhum.testCase("skipped", () => {
       Rhum.asserts.assertEquals(true, true);
     });
   });
 
-  Rhum.skip("skipped test suite 3", () => {
-    Rhum.testCase("skipped because of test suite", () => {
+  Rhum.testSuite("testSuite not skipped 3", () => {
+    Rhum.testCase("testCase", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+    Rhum.skip("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+    Rhum.skip("skipped", () => {
       Rhum.asserts.assertEquals(true, true);
     });
   });
 
-  Rhum.testSuite("test suite", () => {
+  Rhum.testSuite("testSuite not skipped 4", () => {
+    Rhum.skip("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+    Rhum.testCase("testCase", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+  });
+
+  Rhum.testSuite("testSuite not skipped 5", () => {
+    Rhum.skip("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+    Rhum.skip("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+  });
+
+  Rhum.skip("testSuite skipped 6", () => {
+    Rhum.testCase("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+  });
+
+  Rhum.testSuite("testSuite not skipped 7", () => {
+    Rhum.testCase("testCase", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
+    Rhum.skip("skipped", () => {
+      Rhum.asserts.assertEquals(true, true);
+    });
     Rhum.testCase("testCase", () => {
       Rhum.asserts.assertEquals(true, true);
     });
