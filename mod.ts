@@ -381,13 +381,13 @@ export class RhumRunner {
       return await this.runSuiteFiltered(filterTestSuite);
     }
 
-    await this.runAll();
+    await this.runAllSuitesAndCases();
   }
 
   /**
    * Run all test suites and test cases in the test plan.
    */
-  public async runAll(): Promise<void> {
+  public async runAllSuitesAndCases(): Promise<void> {
     await this.runHooksBeforeSuites();
     for (const suiteName in this.plan.suites) {
       await this.runSuite(suiteName);
@@ -398,6 +398,10 @@ export class RhumRunner {
 
   /**
    * Run a test case.
+   *
+   * @param testCase - The test case object that contains the name of the test
+   * and the test function to execute.
+   * @param suiteName - The name of the test suite this test case belongs to.
    */
   public async runCase(testCase: ICase, suiteName: string): Promise<void> {
     // Execute .beforeEach() hook before each test case if it exists
@@ -431,14 +435,16 @@ export class RhumRunner {
   }
 
   /**
-   * Run a test case with the --filter-test-case option being specified.
+   * Run a test suite with the --filter-test-case option being specified.
+   *
+   * @param filterVal - The name specified as the filter's value.
    */
-  public async runCaseFiltered(testCaseName: string): Promise<void> {
+  public async runCaseFiltered(filterVal: string): Promise<void> {
     await this.runHooksBeforeSuites();
 
     for (const suiteName in this.plan.suites) {
       await this.runHooksBeforeSuitesAndCases(suiteName);
-      await this.runSuite(suiteName, testCaseName);
+      await this.runSuite(suiteName, filterVal);
       await this.runHooksAfterSuitesAndCases(suiteName);
     }
 
@@ -446,16 +452,22 @@ export class RhumRunner {
     this.sendStats();
   }
 
-  public async runSuite(suiteName: string, testCaseName?: string): Promise<void> {
-    if (!testCaseName || testCaseName == "undefined") {
+  /**
+   * Run a test suite.
+   *
+   * @param suiteName - The name of the suite.
+   * @param filterValTestCase - (optional) Are we filtering out a test case?
+   */
+  public async runSuite(suiteName: string, filterValTestCase?: string): Promise<void> {
+    if (!filterValTestCase || filterValTestCase == "undefined") {
       Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
     }
 
     await this.runHooksBeforeSuitesAndCases(suiteName);
 
     for (const testCase of this.plan.suites[suiteName].cases) {
-      if (testCaseName) {
-        if (testCase.name != testCaseName) {
+      if (filterValTestCase) {
+        if (testCase.name != filterValTestCase) {
           continue;
         }
         Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
@@ -466,11 +478,16 @@ export class RhumRunner {
     await this.runHooksAfterSuitesAndCases(suiteName);
   }
 
-  public async runSuiteFiltered(testSuiteName: string): Promise<void> {
+  /**
+   * Run a test suite with the --filter-test-suite option being specified.
+   *
+   * @param filterVal - The name specified as the filter's value.
+   */
+  public async runSuiteFiltered(filterVal: string): Promise<void> {
     await this.runHooksBeforeSuites();
 
     for (const suiteName in this.plan.suites) {
-      if (suiteName == testSuiteName) {
+      if (suiteName == filterVal) {
         await this.runSuite(suiteName);
       }
     }
