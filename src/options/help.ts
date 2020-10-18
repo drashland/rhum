@@ -25,10 +25,10 @@ OPTIONS
 EXAMPLE USAGE
 
     Execute the matching test case in the file(s) being tested.
-        rhum --filter-test-case=myTestCase test_file.ts
+        rhum --filter-test-case="myTestCase" test_file.ts
 
     Execute the matching test suite in the file(s) being tested.
-        rhum --filter-test-suite=myTestSuite test_file.ts
+        rhum --filter-test-suite="myTestSuite" test_file.ts
 
     Show the help menu.
         rhum --help
