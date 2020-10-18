@@ -2,6 +2,7 @@ import { showHelp } from "./src/options/help.ts";
 import { showVersion } from "./src/options/version.ts";
 import { runTests } from "./src/test_runner.ts";
 import { IFilters } from "./src/interfaces.ts";
+import { logError } from "./src/test_runner.ts";
 
 const dirOrFile = Deno.args[Deno.args.length - 1];
 
@@ -31,6 +32,12 @@ if (Deno.args.length > 1) {
       filters.test_suite = getFilterTestSuiteValue(arg);
     }
   });
+
+  if (filters.test_case && filters.test_suite) {
+    console.log();
+    logError("You cannot specify both --filter-test-case and --filter-test-suite in one command. See --help for more information.");
+    Deno.exit(0);
+  }
 }
 
 function getFilterTestCaseValue(arg: string): string {

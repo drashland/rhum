@@ -127,7 +127,7 @@ function getTestFiles(dirOrFile: string): string[] {
  *
  * @param message The message to log.
  */
-function logError(message: string): void {
+export function logError(message: string): void {
   console.log(red("ERROR") + " " + message);
 }
 
@@ -136,6 +136,6 @@ function logError(message: string): void {
  *
  * @param message The message to log.
  */
-function logInfo(message: string): void {
+export function logInfo(message: string): void {
   console.log(blue("INFO") + " " + message);
 }

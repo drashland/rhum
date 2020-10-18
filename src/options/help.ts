@@ -9,10 +9,12 @@ USAGE
 OPTIONS
 
     --filter-test-case
-        Execute the matching test case in the file(s) being tested.
+        Execute the matching test case in the file(s) being tested. This option
+        cannot be used with --filter-test-suite.
 
     --filter-test-suite
-        Execute the matching test suite in the file(s) being tested.
+        Execute the matching test suite in the file(s) being tested. This option
+        cannot be used with --filter-test-case.
 
     --help
         Show the help menu.
