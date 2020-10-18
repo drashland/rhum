@@ -61,7 +61,7 @@ export class RhumRunner {
     suites: {},
   };
 
-  protected current_test_suite: string = "";
+  protected current_test_suite = "";
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
@@ -352,7 +352,7 @@ export class RhumRunner {
   public async testSuite(name: string, testCases: () => void): Promise<void> {
     this.current_test_suite = name;
 
-    if (!this.plan.suites.hasOwnProperty(name)) {
+    if (!this.plan.suites[name]) {
       this.plan.suites[name] = {
         cases: [],
       };
