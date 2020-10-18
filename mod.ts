@@ -374,11 +374,11 @@ export class RhumRunner {
     const filterTestSuite = filters[1];
 
     if (filterTestCase != "undefined") {
-      return await this.runTestCaseFiltered(filterTestCase);
+      return await this.runCaseFiltered(filterTestCase);
     }
 
     if (filterTestSuite != "undefined") {
-      return await this.runTestSuiteFiltered(filterTestSuite);
+      return await this.runSuiteFiltered(filterTestSuite);
     }
 
     await this.runAll();
@@ -388,51 +388,18 @@ export class RhumRunner {
    * Run all test suites and test cases in the test plan.
    */
   public async runAll(): Promise<void> {
-    // Execute .beforeAll() hook before all test suites
-    if (this.plan.before_all_suites_hook) {
-      await this.plan.before_all_suites_hook();
-    }
-
+    await this.runHooksBeforeSuites();
     for (const suiteName in this.plan.suites) {
-      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-
-      // Execute .beforeEach() hook before each test suite if it exists
-      if (this.plan.before_each_suite_hook) {
-        await this.plan.before_each_suite_hook();
-      }
-
-      // Execute .beforeAll() hook before all test cases
-      if (this.plan.suites[suiteName].before_all_cases_hook) {
-        await this.plan.suites[suiteName].before_all_cases_hook!();
-      }
-
-      for (const testCase of this.plan.suites[suiteName].cases) {
-        await this.runTestCase(testCase, suiteName);
-      }
-
-      // Execute .afterAll() hook after all test cases
-      if (this.plan.suites[suiteName].after_all_cases_hook) {
-        await this.plan.suites[suiteName].after_all_cases_hook!();
-      }
-
-      // Execute .afterEach() hook after each test suite if it exists
-      if (this.plan.after_each_suite_hook) {
-        await this.plan.after_each_suite_hook();
-      }
+      await this.runSuite(suiteName);
     }
-
-    // Execute .afterAll() hook after all test suites
-    if (this.plan.after_all_suites_hook) {
-      await this.plan.after_all_suites_hook();
-    }
-
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
+    await this.runHooksAfterSuites();
+    this.sendStats();
   }
 
   /**
    * Run a test case.
    */
-  public async runTestCase(testCase: ICase, suiteName: string): Promise<void> {
+  public async runCase(testCase: ICase, suiteName: string): Promise<void> {
     // Execute .beforeEach() hook before each test case if it exists
     if (this.plan.suites[suiteName].before_each_case_hook) {
       await this.plan.suites[suiteName].before_each_case_hook!();
@@ -466,96 +433,98 @@ export class RhumRunner {
   /**
    * Run a test case with the --filter-test-case option being specified.
    */
-  public async runTestCaseFiltered(testCaseName: string): Promise<void> {
-    // Execute .beforeAll() hook before all test suites
-    if (this.plan.before_all_suites_hook) {
-      await this.plan.before_all_suites_hook();
-    }
+  public async runCaseFiltered(testCaseName: string): Promise<void> {
+    await this.runHooksBeforeSuites();
 
     for (const suiteName in this.plan.suites) {
-      // Execute .beforeEach() hook before each test suite if it exists
-      if (this.plan.before_each_suite_hook) {
-        await this.plan.before_each_suite_hook();
-      }
-
-      // Execute .beforeAll() hook before all test cases
-      if (this.plan.suites[suiteName].before_all_cases_hook) {
-        await this.plan.suites[suiteName].before_all_cases_hook!();
-      }
-
-      for (const testCase of this.plan.suites[suiteName].cases) {
-        if (testCase.name == testCaseName) {
-          Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-          await this.runTestCase(testCase, suiteName);
-        }
-      }
-
-      // Execute .afterAll() hook after all test cases
-      if (this.plan.suites[suiteName].after_all_cases_hook) {
-        await this.plan.suites[suiteName].after_all_cases_hook!();
-      }
-
-      // Execute .afterEach() hook after each test suite if it exists
-      if (this.plan.after_each_suite_hook) {
-        await this.plan.after_each_suite_hook();
-      }
+      await this.runHooksBeforeSuitesAndCases(suiteName);
+      await this.runSuite(suiteName, testCaseName);
+      await this.runHooksAfterSuitesAndCases(suiteName);
     }
 
-    // Execute .afterAll() hook after all test suites
-    if (this.plan.after_all_suites_hook) {
-      await this.plan.after_all_suites_hook();
-    }
-
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
+    await this.runHooksAfterSuites();
+    this.sendStats();
   }
 
-  public async runTestSuiteFiltered(testSuiteName: string): Promise<void> {
-    // Execute .beforeAll() hook before all test suites
-    if (this.plan.before_all_suites_hook) {
-      await this.plan.before_all_suites_hook();
+  public async runSuite(suiteName: string, testCaseName?: string): Promise<void> {
+    if (!testCaseName || testCaseName == "undefined") {
+      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
     }
+
+    await this.runHooksBeforeSuitesAndCases(suiteName);
+
+    for (const testCase of this.plan.suites[suiteName].cases) {
+      if (testCaseName) {
+        if (testCase.name != testCaseName) {
+          continue;
+        }
+        Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+      }
+      await this.runCase(testCase, suiteName);
+    }
+
+    await this.runHooksAfterSuitesAndCases(suiteName);
+  }
+
+  public async runSuiteFiltered(testSuiteName: string): Promise<void> {
+    await this.runHooksBeforeSuites();
 
     for (const suiteName in this.plan.suites) {
       if (suiteName == testSuiteName) {
-        Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-
-        // Execute .beforeEach() hook before each test suite if it exists
-        if (this.plan.before_each_suite_hook) {
-          await this.plan.before_each_suite_hook();
-        }
-
-        // Execute .beforeAll() hook before all test cases
-        if (this.plan.suites[suiteName].before_all_cases_hook) {
-          await this.plan.suites[suiteName].before_all_cases_hook!();
-        }
-
-        for (const testCase of this.plan.suites[suiteName].cases) {
-          await this.runTestCase(testCase, suiteName);
-        }
-
-        // Execute .afterAll() hook after all test cases
-        if (this.plan.suites[suiteName].after_all_cases_hook) {
-          await this.plan.suites[suiteName].after_all_cases_hook!();
-        }
-
-        // Execute .afterEach() hook after each test suite if it exists
-        if (this.plan.after_each_suite_hook) {
-          await this.plan.after_each_suite_hook();
-        }
+        await this.runSuite(suiteName);
       }
     }
 
-    // Execute .afterAll() hook after all test suites
-    if (this.plan.after_all_suites_hook) {
-      await this.plan.after_all_suites_hook();
-    }
-
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
+    await this.runHooksAfterSuites();
+    this.sendStats();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
+
+  protected async runHooksAfterSuites(): Promise<void> {
+    // Execute .afterAll() hook after all test suites
+    if (this.plan.after_all_suites_hook) {
+      await this.plan.after_all_suites_hook();
+    }
+  }
+
+  protected async runHooksAfterSuitesAndCases(suiteName: string): Promise<void> {
+    // Execute .afterAll() hook after all test cases
+    if (this.plan.suites[suiteName].after_all_cases_hook) {
+      await this.plan.suites[suiteName].after_all_cases_hook!();
+    }
+
+    // Execute .afterEach() hook after each test suite if it exists
+    if (this.plan.after_each_suite_hook) {
+      await this.plan.after_each_suite_hook();
+    }
+  }
+
+  protected async runHooksBeforeSuites(): Promise<void> {
+    // Execute .beforeAll() hook before all test suites
+    if (this.plan.before_all_suites_hook) {
+      await this.plan.before_all_suites_hook();
+    }
+  }
+
+  protected async runHooksBeforeSuitesAndCases(suiteName: string): Promise<void> {
+    // Execute .beforeEach() hook before each test suite if it exists
+    if (this.plan.before_each_suite_hook) {
+      await this.plan.before_each_suite_hook();
+    }
+
+    // Execute .beforeAll() hook before all test cases
+    if (this.plan.suites[suiteName].before_all_cases_hook) {
+      await this.plan.suites[suiteName].before_all_cases_hook!();
+    }
+  }
+
+  protected sendStats(): void {
+    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
+  }
+
 }
 
 /**
