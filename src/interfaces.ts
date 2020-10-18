@@ -58,3 +58,8 @@ export interface IStats {
   skipped: number;
   errors: string;
 }
+
+export interface IFilters {
+  test_case?: string;
+  test_suite?: string;
+}
