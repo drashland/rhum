@@ -1,5 +1,10 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { blue, yellow, green, red } from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import {
+  blue,
+  green,
+  red,
+  yellow,
+} from "https://deno.land/std@0.74.0/fmt/colors.ts";
 import { IStats } from "./interfaces.ts";
 
 const decoder = new TextDecoder();

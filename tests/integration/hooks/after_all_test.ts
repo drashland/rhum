@@ -9,7 +9,6 @@ let case_val = 22;
 let async_case_val = 5;
 
 Rhum.testPlan(() => {
-
   Rhum.afterAll(() => {
     suite_val = "Eric";
   });
@@ -23,7 +22,6 @@ Rhum.testPlan(() => {
 
   // Run the second test suite
   Rhum.testSuite("test suite 2", () => {
-
     // This hook should run after all test cases
     Rhum.afterAll(() => {
       suite_val = "Breno";
@@ -37,7 +35,6 @@ Rhum.testPlan(() => {
 
   // Run the third test suite
   Rhum.testSuite("test suite 3", () => {
-
     // This hook should run after all test cases
     Rhum.afterAll(async () => {
       await new Promise((resolve) => {

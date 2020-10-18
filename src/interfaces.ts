@@ -38,7 +38,7 @@ export interface ICase {
 export interface IPlan {
   suites: {
     [key: string]: ISuite;
-  }
+  };
   after_all_suites_hook?: () => void;
   after_each_suite_hook?: () => void;
   before_all_suites_hook?: () => void;

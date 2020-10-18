@@ -8,7 +8,6 @@ let suite_val = "Ed";
 let case_val = 22;
 
 Rhum.testPlan(() => {
-
   // This hook should run before each test suite
   Rhum.beforeEach(() => {
     suite_val = "Eric";
@@ -16,7 +15,6 @@ Rhum.testPlan(() => {
 
   // Run the first test suite
   Rhum.testSuite("test suite 1", () => {
-
     // This hook should run before each test case
     Rhum.beforeEach(() => {
       case_val = 2;
@@ -36,14 +34,16 @@ Rhum.testPlan(() => {
       case_val = 22;
     });
 
-    Rhum.testCase("previous test case changes case_val and hook in test suite changes case_val", () => {
-      Rhum.asserts.assertEquals(case_val, 2);
-    });
+    Rhum.testCase(
+      "previous test case changes case_val and hook in test suite changes case_val",
+      () => {
+        Rhum.asserts.assertEquals(case_val, 2);
+      },
+    );
   });
 
   // Run the second test suite
   Rhum.testSuite("test suite 2", () => {
-
     // This hook should run before each test case
     Rhum.beforeEach(() => {
       case_val = 0;

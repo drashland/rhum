@@ -58,7 +58,7 @@ export class RhumRunner {
   public asserts: { [key in assertions]: Function } = asserts;
 
   protected plan: IPlan = {
-    suites: {}
+    suites: {},
   };
 
   protected current_test_suite: string = "";
@@ -354,7 +354,7 @@ export class RhumRunner {
 
     if (!this.plan.suites.hasOwnProperty(name)) {
       this.plan.suites[name] = {
-        cases: []
+        cases: [],
       };
     }
 
@@ -367,7 +367,6 @@ export class RhumRunner {
    * Run the test plan.
    */
   public async runTestPlan(): Promise<void> {
-
     // Execute .beforeAll() hook before all test suites
     if (this.plan.before_all_suites_hook) {
       await this.plan.before_all_suites_hook();
@@ -387,7 +386,6 @@ export class RhumRunner {
       }
 
       for (const testCase of this.plan.suites[suiteName].cases) {
-
         // Execute .beforeEach() hook before each test case if it exists
         if (this.plan.suites[suiteName].before_each_case_hook) {
           await this.plan.suites[suiteName].before_each_case_hook!();
@@ -397,12 +395,16 @@ export class RhumRunner {
         try {
           await testCase.test_fn();
           Deno.stdout.writeSync(
-            encoder.encode("        " + green("PASS") + " " + testCase.name + "\n"),
+            encoder.encode(
+              "        " + green("PASS") + " " + testCase.name + "\n",
+            ),
           );
           stats.passed++;
         } catch (error) {
           Deno.stdout.writeSync(
-            encoder.encode("        " + red("FAIL") + " " + testCase.name + "\n"),
+            encoder.encode(
+              "        " + red("FAIL") + " " + testCase.name + "\n",
+            ),
           );
           stats.failed++;
           stats.errors += ("\n" + error.stack + "\n");
@@ -412,7 +414,6 @@ export class RhumRunner {
         if (this.plan.suites[suiteName].after_each_case_hook) {
           await this.plan.suites[suiteName].after_each_case_hook!();
         }
-
       }
 
       // Execute .afterAll() hook after all test cases

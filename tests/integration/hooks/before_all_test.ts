@@ -8,7 +8,6 @@ let suite_val = "Ed";
 let case_val = 22;
 
 Rhum.testPlan(() => {
-
   // This hook should run before all test suites
   Rhum.beforeAll(() => {
     suite_val = "Eric";
@@ -23,7 +22,6 @@ Rhum.testPlan(() => {
 
   // Run the second test suite
   Rhum.testSuite("test suite 2", () => {
-
     // This hook should run before all test cases
     Rhum.beforeAll(() => {
       suite_val = "Ed";
