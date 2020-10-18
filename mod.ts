@@ -458,7 +458,10 @@ export class RhumRunner {
    * @param suiteName - The name of the suite.
    * @param filterValTestCase - (optional) Are we filtering out a test case?
    */
-  public async runSuite(suiteName: string, filterValTestCase?: string): Promise<void> {
+  public async runSuite(
+    suiteName: string,
+    filterValTestCase?: string,
+  ): Promise<void> {
     if (!filterValTestCase || filterValTestCase == "undefined") {
       Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
     }
@@ -507,7 +510,9 @@ export class RhumRunner {
     }
   }
 
-  protected async runHooksAfterSuitesAndCases(suiteName: string): Promise<void> {
+  protected async runHooksAfterSuitesAndCases(
+    suiteName: string,
+  ): Promise<void> {
     // Execute .afterAll() hook after all test cases
     if (this.plan.suites[suiteName].after_all_cases_hook) {
       await this.plan.suites[suiteName].after_all_cases_hook!();
@@ -526,7 +531,9 @@ export class RhumRunner {
     }
   }
 
-  protected async runHooksBeforeSuitesAndCases(suiteName: string): Promise<void> {
+  protected async runHooksBeforeSuitesAndCases(
+    suiteName: string,
+  ): Promise<void> {
     // Execute .beforeEach() hook before each test suite if it exists
     if (this.plan.before_each_suite_hook) {
       await this.plan.before_each_suite_hook();
@@ -541,7 +548,6 @@ export class RhumRunner {
   protected sendStats(): void {
     Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
   }
-
 }
 
 /**

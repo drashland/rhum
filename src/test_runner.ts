@@ -5,14 +5,17 @@ import {
   red,
   yellow,
 } from "https://deno.land/std@0.74.0/fmt/colors.ts";
-import { IStats, IFilters } from "./interfaces.ts";
+import { IFilters, IStats } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
 
 /**
  * Run all tests.
  */
-export async function runTests(dirOrFile: string, filters: IFilters = {}): Promise<void> {
+export async function runTests(
+  dirOrFile: string,
+  filters: IFilters = {},
+): Promise<void> {
   console.log();
   logInfo("Starting Rhum");
 
@@ -31,7 +34,9 @@ export async function runTests(dirOrFile: string, filters: IFilters = {}): Promi
   try {
     testFiles = getTestFiles(dirOrFile);
   } catch (error) {
-    logError("Please specify a valid directory or test file. See rhum --help for more information.");
+    logError(
+      "Please specify a valid directory or test file. See rhum --help for more information.",
+    );
     Deno.exit(0);
   }
 
@@ -45,7 +50,7 @@ export async function runTests(dirOrFile: string, filters: IFilters = {}): Promi
         "-A",
         Deno.realPathSync("./" + path),
         filters.test_case as string,
-        filters.test_suite as string
+        filters.test_suite as string,
       ],
       stdout: "piped",
       stderr: "piped",

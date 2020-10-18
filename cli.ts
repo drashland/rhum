@@ -35,7 +35,9 @@ if (Deno.args.length > 1) {
 
   if (filters.test_case && filters.test_suite) {
     console.log();
-    logError("You cannot specify both --filter-test-case and --filter-test-suite in one command. See --help for more information.");
+    logError(
+      "You cannot specify both --filter-test-case and --filter-test-suite in one command. See --help for more information.",
+    );
     Deno.exit(0);
   }
 }
