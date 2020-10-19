@@ -59,9 +59,9 @@ export async function runTests(
     const stderr = decoder.decode(await p.stderrOutput());
     if (stderr) {
       if (
-        stderr.includes("Uncaught")
-        || stderr.includes("TypeError")
-        || stderr.match(/TS[0-9]+/)
+        stderr.includes("Uncaught") ||
+        stderr.includes("TypeError") ||
+        stderr.match(/TS[0-9].+\[/) // e.g., TS2345 [ERROR]
       ) {
         console.log(stderr);
       } else {
