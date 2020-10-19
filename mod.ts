@@ -369,9 +369,9 @@ export class RhumRunner {
    *       });
    *     });
    *
-   *     Rhum.skip(() => {
-   *       Rhum.testSuite("My SUite 1", () => { // will not run
-   *         Rhum.testCase("My Test Case In Suite 1", () => {}); // will not run
+   *     Rhum.skip(() => { // will not run this block
+   *       Rhum.testSuite("My SUite 1", () => {
+   *         Rhum.testCase("My Test Case In Suite 1", () => {});
    *       });
    *     });
    */
