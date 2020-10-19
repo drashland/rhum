@@ -128,7 +128,6 @@ export class RhumRunner {
     }
   }
 
-
   /**
    * Used to define a hook that will execute before each test suite or test
    * case. If this is used inside of a test plan, then it will execute before
