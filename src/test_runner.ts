@@ -1,10 +1,5 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import {
-  blue,
-  green,
-  red,
-  yellow,
-} from "https://deno.land/std@0.74.0/fmt/colors.ts";
+import { colors } from "../deps.ts";
 import { IFilters, ITestPlanResults } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
@@ -41,9 +36,6 @@ export async function runTests(
 
   logInfo("Running test(s)\n");
   for await (const path of testFiles) {
-    // Output the file being tested
-    console.log(path);
-
     // Run the test file
     const p = Deno.run({
       cmd: [
@@ -62,6 +54,10 @@ export async function runTests(
     const stderr = decoder.decode(await p.stderrOutput());
     if (stderr) {
       if (
+        stderr.includes(colors.red("error")) ||
+        stderr.includes("Expected") ||
+        stderr.includes("Expected") ||
+        stderr.includes("Unexpected") ||
         stderr.includes("Uncaught") ||
         stderr.includes("TypeError") ||
         stderr.match(/TS[0-9].+\[/) // e.g., TS2345 [ERROR]
@@ -75,6 +71,9 @@ export async function runTests(
           .replace(/\n|\r|\r\n|\n\r/g, "");
         console.log(stderrFormatted.replace("", path));
       }
+    } else {
+      // Output the file being tested
+      console.log(path);
     }
 
     // Output the results of the test file, but make sure to strip out the stats
@@ -103,9 +102,9 @@ export async function runTests(
 
   // Output the overall results
   console.log(
-    `\nTest Results: ${green(stats.passed.toString())} passed; ${
-      red(stats.failed.toString())
-    } failed; ${yellow(stats.skipped.toString())} skipped`,
+    `\nTest Results: ${colors.green(stats.passed.toString())} passed; ${
+      colors.red(stats.failed.toString())
+    } failed; ${colors.yellow(stats.skipped.toString())} skipped`,
   );
 }
 
@@ -145,7 +144,7 @@ function getTestFiles(dirOrFile: string): string[] {
  * @param message The message to log.
  */
 export function logDebug(message: string): void {
-  console.log(green("DEBUG") + " " + message);
+  console.log(colors.green("DEBUG") + " " + message);
 }
 
 /**
@@ -154,7 +153,7 @@ export function logDebug(message: string): void {
  * @param message The message to log.
  */
 export function logError(message: string): void {
-  console.log(red("ERROR") + " " + message);
+  console.log(colors.red("ERROR") + " " + message);
 }
 
 /**
@@ -163,5 +162,5 @@ export function logError(message: string): void {
  * @param message The message to log.
  */
 export function logInfo(message: string): void {
-  console.log(blue("INFO") + " " + message);
+  console.log(colors.blue("INFO") + " " + message);
 }
