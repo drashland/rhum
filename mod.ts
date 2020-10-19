@@ -43,13 +43,17 @@ export { MockBuilder } from "./src/mock_builder.ts";
  */
 export class RhumRunner {
   /**
-   * The asserts module from https://deno.land/std/testing, but attached to Rhum
-   * for accessibility.
+   * The asserts module from Deno Standard Module's testing module, but attached
+   * to Rhum for accessibility.
    *
    *     Rhum.asserts.assertEquals(true, true); // pass
    *     Rhum.asserts.assertEquals(true, false); // fail
    */
-  // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
+  // Reason for this is ignore: deno lint no longer allows `Function` and
+  // instead needs us to be explicit: `() => void`, but  because  we couldn't
+  // use that to type the properties (we would just be copying Deno's interfaces
+  // word for word), we have to deal with `Function
+  // deno-lint-ignore ban-types
   public asserts: { [key in assertions]: Function } = asserts;
 
   protected test_plan: ITestPlan = {
