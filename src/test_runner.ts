@@ -41,6 +41,9 @@ export async function runTests(
 
   logInfo("Running test(s)\n");
   for await (const path of testFiles) {
+    // Output the file being tested
+    console.log(path);
+
     // Run the test file
     const p = Deno.run({
       cmd: [
@@ -72,9 +75,6 @@ export async function runTests(
           .replace(/\n|\r|\r\n|\n\r/g, "");
         console.log(stderrFormatted.replace("", path));
       }
-    } else {
-      // Otherwise, just output the test file being run
-      console.log(path);
     }
 
     // Output the results of the test file, but make sure to strip out the stats
