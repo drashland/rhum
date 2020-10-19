@@ -28,7 +28,7 @@ Rhum.testPlan(() => {
       // beacuse we don't really care about that stuff. We care about the
       // output: PASS, FAIL, SKIP, and the Actual / Expected data.
       Rhum.asserts.assertEquals(
-        stdout.replace(/.+at.*\)/g, ""),
+        stdout.replace(/\n.+at.*\)/g, ""),
         output
       );
     });
@@ -73,13 +73,6 @@ AssertionError: Values are not equal:
 
 ${colors.red(colors.bold("-   false"))}
 ${colors.green(colors.bold("+   true"))}
-
-
-
-
-
-
-
 
 
 
