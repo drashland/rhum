@@ -1,5 +1,9 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import type { ITestCase, ITestPlan, ITestPlanResults } from "./src/interfaces.ts";
+import type {
+  ITestCase,
+  ITestPlan,
+  ITestPlanResults,
+} from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
@@ -56,10 +60,6 @@ export class RhumRunner {
   // deno-lint-ignore ban-types
   public asserts: { [key in assertions]: Function } = asserts;
 
-  protected test_plan: ITestPlan = {
-    suites: {},
-  };
-
   /**
    * A property to hold the currently running test suite.
    */
@@ -72,6 +72,14 @@ export class RhumRunner {
   protected current_test_suite_num_test_cases = 0;
 
   /**
+   * A property to hold the test plan which contains the test suites and test
+   * cases as well as any hooks that need to be executed in each.
+   */
+  protected test_plan: ITestPlan = {
+    suites: {},
+  };
+
+  /**
    * A property to hold the output results of the test plan.
    */
   protected test_plan_results: ITestPlanResults = {
@@ -82,6 +90,44 @@ export class RhumRunner {
   };
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+
+  /**
+   * Add a test suite to the test plan.
+   *
+   * @param suiteName - The name of the test suite.
+   * @param skip - Are we skipping this test suite?
+   * @param testCases - The callback function containing the test cases that
+   * will be executed.
+   */
+  public addTestSuiteToTestPlan(
+    suiteName: string,
+    skip: boolean,
+    testCases: () => void,
+  ): void {
+    // Set the name of the currently running test suite so that other methods
+    // know what test suite is running
+    this.setCurrentTestSuite(suiteName);
+
+    // If the test suite and its test cases are not yet tracked in the plan
+    // object, then add the required data so we can track the test suite and its
+    // test cases. We use this data when we call runTestPlan().
+    if (!this.test_plan.suites[suiteName]) {
+      this.test_plan.suites[suiteName] = {
+        cases: [],
+        skip: skip,
+      };
+    }
+
+    // Count how many test cases are in this test suite. We use this data in
+    // .skip() to make sure we don't accidentally execute test case .skip()
+    // logic on a test suite. We want to make sure we execute test suite .skip()
+    // logic on a test suite.
+    const matches = testCases.toString().match(/Rhum\.(skip|testCase)/g);
+    if (matches && matches.length) {
+      this.setCurrentTestSuiteNumTestCases(matches.length);
+    }
+  }
+
 
   /**
    * Used to define a hook that will execute before each test suite or test
@@ -108,11 +154,11 @@ export class RhumRunner {
    */
   public beforeEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.current_test_suite != "") {
+    if (this.getCurrentTestSuite() != "") {
       // is a before each inside a suite for every test case
-      this.test_plan.suites![this.current_test_suite].before_each_case_hook =
+      this.test_plan.suites![this.getCurrentTestSuite()].before_each_case_hook =
         cb;
-    } else if (this.current_test_suite == "") {
+    } else if (this.getCurrentTestSuite() == "") {
       // before each hooks for the suites
       this.test_plan.before_each_suite_hook = cb;
     }
@@ -143,10 +189,11 @@ export class RhumRunner {
    */
   public afterEach(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.current_test_suite != "") {
+    if (this.getCurrentTestSuite() != "") {
       // is a after each inside a suite for every test case
-      this.test_plan.suites![this.current_test_suite].after_each_case_hook = cb;
-    } else if (this.current_test_suite == "") {
+      this.test_plan.suites![this.getCurrentTestSuite()].after_each_case_hook =
+        cb;
+    } else if (this.getCurrentTestSuite() == "") {
       // after each hooks for the suites
       this.test_plan.after_each_suite_hook = cb;
     }
@@ -177,10 +224,11 @@ export class RhumRunner {
    */
   public afterAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.current_test_suite != "") {
+    if (this.getCurrentTestSuite() != "") {
       // is a before all inside a suite for every test case
-      this.test_plan.suites[this.current_test_suite].after_all_cases_hook = cb;
-    } else if (this.current_test_suite == "") {
+      this.test_plan.suites[this.getCurrentTestSuite()].after_all_cases_hook =
+        cb;
+    } else if (this.getCurrentTestSuite() == "") {
       // before all hooks for the suites
       this.test_plan.after_all_suites_hook = cb;
     }
@@ -211,10 +259,11 @@ export class RhumRunner {
    */
   public beforeAll(cb: () => void): void {
     // Check if the hook is for test cases inside of a suite
-    if (this.current_test_suite != "") {
+    if (this.getCurrentTestSuite() != "") {
       // is a before all inside a suite for every test case
-      this.test_plan.suites[this.current_test_suite].before_all_cases_hook = cb;
-    } else if (this.current_test_suite == "") {
+      this.test_plan.suites[this.getCurrentTestSuite()].before_all_cases_hook =
+        cb;
+    } else if (this.getCurrentTestSuite() == "") {
       // before all hooks for the suites
       this.test_plan.before_all_suites_hook = cb;
     }
@@ -223,6 +272,26 @@ export class RhumRunner {
   // public only(cb: Function): void {
   //   // Do something
   // }
+
+  public getCurrentTestSuite(): string {
+    return this.current_test_suite;
+  }
+
+  public getCurrentTestSuiteNumTestCases(): number {
+    return this.current_test_suite_num_test_cases;
+  }
+
+  public getTestPlan(): ITestPlan {
+    return this.test_plan;
+  }
+
+  public setCurrentTestSuite(val: string): void {
+    this.current_test_suite = val;
+  }
+
+  public setCurrentTestSuiteNumTestCases(val: number): void {
+    this.current_test_suite_num_test_cases = val;
+  }
 
   /**
    * Allows a test plan, suite, or case to be skipped when the tests run.
@@ -246,15 +315,15 @@ export class RhumRunner {
   public async skip(name: string, cb: () => void): Promise<void> {
     // If there is no current test suite, then we know we know this .skip() call
     // is attached to a test suite
-    if (this.current_test_suite == "") {
+    if (this.getCurrentTestSuite() == "") {
       this.skipTestSuite(name, cb);
       // Otherwise, if there is a current test suite, then we know this .skip()
       // call is attached to a test case
     } else {
       // If all of the test cases in a test suite have been set up, then this
       // .skip() call is for a test suite. Soooo recursion...
-      if (this.current_test_suite_num_test_cases <= 0) {
-        this.current_test_suite = "";
+      if (this.getCurrentTestSuiteNumTestCases() <= 0) {
+        this.setCurrentTestSuite("");
         this.skip(name, cb);
         return;
       }
@@ -270,7 +339,7 @@ export class RhumRunner {
    * @param testFn - The test to execute.
    */
   public async skipTestCase(name: string, testFn: () => void): Promise<void> {
-    this.addTestCaseToTestSuite(name, testFn, true, this.current_test_suite);
+    this.addTestCaseToTestSuite(name, testFn, true, this.getCurrentTestSuite());
   }
 
   /**
@@ -372,8 +441,8 @@ export class RhumRunner {
     this.addTestCaseToTestSuite(
       name,
       testFn,
-      this.test_plan.suites[this.current_test_suite].skip,
-      this.current_test_suite,
+      this.test_plan.suites[this.getCurrentTestSuite()].skip,
+      this.getCurrentTestSuite(),
     );
   }
 
@@ -564,9 +633,7 @@ export class RhumRunner {
     this.outputResults();
   }
 
-  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Add a test case to a test suite.
@@ -589,45 +656,9 @@ export class RhumRunner {
     });
 
     // Track that this case is ready to be executed
-    if (this.current_test_suite_num_test_cases > 0) {
-      this.current_test_suite_num_test_cases--;
-    }
-  }
-
-  /**
-   * Add a test suite to the test plan.
-   *
-   * @param suiteName - The name of the test suite.
-   * @param skip - Are we skipping this test suite?
-   * @param testCases - The callback function containing the test cases that
-   * will be executed.
-   */
-  protected addTestSuiteToTestPlan(
-    suiteName: string,
-    skip: boolean,
-    testCases: () => void,
-  ): void {
-    // Set the name of the currently running test suite so that other methods
-    // know what test suite is running
-    this.current_test_suite = suiteName;
-
-    // If the test suite and its test cases are not yet tracked in the plan
-    // object, then add the required data so we can track the test suite and its
-    // test cases. We use this data when we call runTestPlan().
-    if (!this.test_plan.suites[suiteName]) {
-      this.test_plan.suites[suiteName] = {
-        cases: [],
-        skip: skip,
-      };
-    }
-
-    // Count how many test cases are in this test suite. We use this data in
-    // .skip() to make sure we don't accidentally execute test case .skip()
-    // logic on a test suite. We want to make sure we execute test suite .skip()
-    // logic on a test suite.
-    const matches = testCases.toString().match(/Rhum\.(skip|testCase)/g);
-    if (matches && matches.length) {
-      this.current_test_suite_num_test_cases = matches.length;
+    const numTestCases = this.getCurrentTestSuiteNumTestCases();
+    if (numTestCases > 0) {
+      this.setCurrentTestSuiteNumTestCases(numTestCases - 1);
     }
   }
 

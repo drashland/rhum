@@ -58,12 +58,20 @@ export async function runTests(
 
     const stderr = decoder.decode(await p.stderrOutput());
     if (stderr) {
-      // Output the error, but remove the "Check file:///" line, and replace it
-      // with the test file being run
-      const stderrFormatted = stderr
-        .replace(/.+/, "\r")
-        .replace(/\n|\r|\r\n|\n\r/g, "");
-      console.log(stderrFormatted.replace("", path));
+      if (
+        stderr.includes("Uncaught")
+        || stderr.includes("TypeError")
+        || stderr.match(/TS[0-9]+/)
+      ) {
+        console.log(stderr);
+      } else {
+        // Output the error, but remove the "Check file:///" line, and replace it
+        // with the test file being run
+        const stderrFormatted = stderr
+          .replace(/.+/, "\r")
+          .replace(/\n|\r|\r\n|\n\r/g, "");
+        console.log(stderrFormatted.replace("", path));
+      }
     } else {
       // Otherwise, just output the test file being run
       console.log(path);
