@@ -131,76 +131,6 @@ export class RhumRunner {
   }
 
   /**
-   * Used to define a hook that will execute before each test suite or test
-   * case. If this is used inside of a test plan, then it will execute before
-   * each test suite. If this is used inside of a test suite, then it will
-   * execute before each test case.
-   *
-   * @param cb - The callback to invoke. Would contain the required logic you
-   * need to do what you want, before each test suite or case.
-   *
-   *     Rhum.testPlan("My Plan", () => {
-   *       Rhum.beforeEach(() => {
-   *         // Runs before each test suite in this test plan
-   *       });
-   *       Rhum.testSuite("My Suite 1", () => {
-   *         Rhum.beforeEach(() => {
-   *           // Runs before each test case in this test suite
-   *         });
-   *         Rhum.testCase("My Test Case 1", () => {
-   *           ...
-   *         });
-   *       });
-   *     });
-   */
-  public beforeEach(cb: () => void): void {
-    // Check if the hook is for test cases inside of a suite
-    if (this.getCurrentTestSuite() != "") {
-      // is a before each inside a suite for every test case
-      this.test_plan.suites![this.getCurrentTestSuite()].before_each_case_hook =
-        cb;
-    } else if (this.getCurrentTestSuite() == "") {
-      // before each hooks for the suites
-      this.test_plan.before_each_suite_hook = cb;
-    }
-  }
-
-  /**
-   * Used to define a hook that will execute after each test suite or test case.
-   * If this is used inside of a test plan, then it will execute after each test
-   * suite. If this is used inside of a test suite, then it will execute after
-   * each test case.
-   *
-   * @param cb - The callback to invoke. Would contain the required logic you
-   * need to do what you want, after each test suite or case.
-   *
-   *     Rhum.testPlan("My Plan", () => {
-   *       Rhum.afterEach(() => {
-   *         // Runs after each test suite in this test plan
-   *       });
-   *       Rhum.testSuite("My Suite 1", () => {
-   *         Rhum.afterEach(() => {
-   *           // Runs after each test case in this test suite
-   *         });
-   *         Rhum.testCase("My Test Case 1", () => {
-   *           ...
-   *         });
-   *       });
-   *     });
-   */
-  public afterEach(cb: () => void): void {
-    // Check if the hook is for test cases inside of a suite
-    if (this.getCurrentTestSuite() != "") {
-      // is a after each inside a suite for every test case
-      this.test_plan.suites![this.getCurrentTestSuite()].after_each_case_hook =
-        cb;
-    } else if (this.getCurrentTestSuite() == "") {
-      // after each hooks for the suites
-      this.test_plan.after_each_suite_hook = cb;
-    }
-  }
-
-  /**
    * Used to define a hook that will execute after all test suites or test
    * cases. If this is used inside of a test plan, then it will execute after
    * all test suites. If this is used inside of a test suite, then it will
@@ -209,7 +139,7 @@ export class RhumRunner {
    * @param cb - The callback to invoke. Would contain the required logic you
    * need to do what you want, after all test suites or cases.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       Rhum.afterAll(() => {
    *         // Runs once after all test suites in this test plan
    *       });
@@ -236,6 +166,41 @@ export class RhumRunner {
   }
 
   /**
+   * Used to define a hook that will execute after each test suite or test case.
+   * If this is used inside of a test plan, then it will execute after each test
+   * suite. If this is used inside of a test suite, then it will execute after
+   * each test case.
+   *
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, after each test suite or case.
+   *
+   *     Rhum.testPlan(() => {
+   *       Rhum.afterEach(() => {
+   *         // Runs after each test suite in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.afterEach(() => {
+   *           // Runs after each test case in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
+   */
+  public afterEach(cb: () => void): void {
+    // Check if the hook is for test cases inside of a suite
+    if (this.getCurrentTestSuite() != "") {
+      // is a after each inside a suite for every test case
+      this.test_plan.suites![this.getCurrentTestSuite()].after_each_case_hook =
+        cb;
+    } else if (this.getCurrentTestSuite() == "") {
+      // after each hooks for the suites
+      this.test_plan.after_each_suite_hook = cb;
+    }
+  }
+
+  /**
    * Used to define a hook that will execute before all test suites or test
    * cases. If this is used inside of a test plan, then it will execute before
    * all test suites. If this is used inside of a test suite, then it will
@@ -244,7 +209,7 @@ export class RhumRunner {
    * @param cb - The callback to invoke. Would contain the required logic you
    * need to do what you want, before all test suites or cases.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       Rhum.beforeAll(() => {
    *         // Runs once before all test suites in this test plan
    *       });
@@ -270,26 +235,123 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Used to define a hook that will execute before each test suite or test
+   * case. If this is used inside of a test plan, then it will execute before
+   * each test suite. If this is used inside of a test suite, then it will
+   * execute before each test case.
+   *
+   * @param cb - The callback to invoke. Would contain the required logic you
+   * need to do what you want, before each test suite or case.
+   *
+   *     Rhum.testPlan(() => {
+   *       Rhum.beforeEach(() => {
+   *         // Runs before each test suite in this test plan
+   *       });
+   *       Rhum.testSuite("My Suite 1", () => {
+   *         Rhum.beforeEach(() => {
+   *           // Runs before each test case in this test suite
+   *         });
+   *         Rhum.testCase("My Test Case 1", () => {
+   *           ...
+   *         });
+   *       });
+   *     });
+   */
+  public beforeEach(cb: () => void): void {
+    // Check if the hook is for test cases inside of a suite
+    if (this.getCurrentTestSuite() != "") {
+      // is a before each inside a suite for every test case
+      this.test_plan.suites![this.getCurrentTestSuite()].before_each_case_hook =
+        cb;
+    } else if (this.getCurrentTestSuite() == "") {
+      // before each hooks for the suites
+      this.test_plan.before_each_suite_hook = cb;
+    }
+  }
+
   // public only(cb: Function): void {
   //   // Do something
   // }
 
+  /**
+   * Get the current test suite.
+   *
+   * @returns The current test suite.
+   */
   public getCurrentTestSuite(): string {
     return this.current_test_suite;
   }
 
+  /**
+   * Get the current number of test cases in the current test suite.
+   *
+   * @returns The number of test cases in the current test suite.
+   */
   public getCurrentTestSuiteNumTestCases(): number {
     return this.current_test_suite_num_test_cases;
   }
 
+  /**
+   * Get the current test plan.
+   *
+   * @returns The test plan.
+   */
   public getTestPlan(): ITestPlan {
     return this.test_plan;
   }
 
+  /**
+   * Get the mock builder to mock classes.
+   *
+   * @param constructorFn - The constructor function of the object to mock.
+   *
+   * Returns an instance of the MockBuilder class.
+   *
+   *     class ToBeMocked { ... }
+   *
+   *     const mock = Rhum
+   *       .mock(ToBeMocked)
+   *       .withConstructorArgs("someArg") // if the class to be mocked has a constructor and it requires args
+   *       .create();
+   */
+  public mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
+    return new MockBuilder(constructorFn);
+  }
+
+  /**
+   * Run the test plan.
+   */
+  public async runTestPlan(): Promise<void> {
+    const filters = Deno.args;
+    const filterTestCase = filters[0];
+    const filterTestSuite = filters[1];
+
+    if (filterTestCase != "undefined") {
+      return await this.runCaseFiltered(filterTestCase);
+    }
+
+    if (filterTestSuite != "undefined") {
+      return await this.runSuiteFiltered(filterTestSuite);
+    }
+
+    await this.runAllSuitesAndCases();
+  }
+
+  /**
+   * Set the current test suite.
+   *
+   * @param val - The name of the test suite.
+   */
   public setCurrentTestSuite(val: string): void {
     this.current_test_suite = val;
   }
 
+  /**
+   * Set the current test suites number of test cases.
+   *
+   * @param val - The number of test cases.
+   */
   public setCurrentTestSuiteNumTestCases(val: number): void {
     this.current_test_suite_num_test_cases = val;
   }
@@ -297,19 +359,19 @@ export class RhumRunner {
   /**
    * Allows a test plan, suite, or case to be skipped when the tests run.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       Rhum.skip("My Suite 1", () => { // will not run this block
-   *         Rhum.testCase("My Test Case In Suite 1", () => {
-   *           ...
-   *         });
+   *         Rhum.testCase("My Test Case In Suite 1", () => {});
    *       });
    *       Rhum.testSuite("My Suite 2", () => {
-   *         Rhum.testCase("My Test Case In Suite 2", () => {
-   *           ...
-   *         });
-   *         Rhum.skip("My Other Test Case In Suite 2", () => { // will not run this block
-   *           ...
-   *         });
+   *         Rhum.testCase("My Test Case In Suite 2", () => {});
+   *         Rhum.skip("My Other Test Case In Suite 2", () => {}); // will not run this block
+   *       });
+   *     });
+   *
+   *     Rhum.skip(() => {
+   *       Rhum.testSuite("My SUite 1", () => { // will not run
+   *         Rhum.testCase("My Test Case In Suite 1", () => {}); // will not run
    *       });
    *     });
    */
@@ -385,24 +447,6 @@ export class RhumRunner {
   }
 
   /**
-   * Get the mock builder to mock classes.
-   *
-   * @param constructorFn - The constructor function of the object to mock.
-   *
-   * Returns an instance of the MockBuilder class.
-   *
-   *     class ToBeMocked { ... }
-   *
-   *     const mock = Rhum
-   *       .mock(ToBeMocked)
-   *       .withConstructorArgs("someArg") // if the class to be mocked has a constructor and it requires args
-   *       .create();
-   */
-  public mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
-    return new MockBuilder(constructorFn);
-  }
-
-  /**
    * A test case is grouped by a test suite and it is what makes the assertions
    * - it is the test. You can define multiple test cases under a test suite.
    * Test cases can also be asynchronous. Test cases can only be defined inside
@@ -411,7 +455,7 @@ export class RhumRunner {
    * @param name - The name of the test case.
    * @param testFn - The test to execute.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       Rhum.testSuite("My Suite 1", () => {
    *         Rhum.testCase("My Test Case 1", () => {
    *           Rhum.assert.assertEquals(something, true);
@@ -426,8 +470,8 @@ export class RhumRunner {
     this.addTestCaseToTestSuite(
       name,
       testFn,
-      this.test_plan.skip
-        || this.test_plan.suites[this.getCurrentTestSuite()].skip,
+      this.test_plan.skip ||
+        this.test_plan.suites[this.getCurrentTestSuite()].skip,
       this.getCurrentTestSuite(),
     );
   }
@@ -440,7 +484,7 @@ export class RhumRunner {
    * @param name - The name of the test plan.
    * @param testSuites - The test suites to execute.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       ...
    *     });
    */
@@ -459,7 +503,7 @@ export class RhumRunner {
    * @param testCases - The callback function containing the test cases that
    * will be executed.
    *
-   *     Rhum.testPlan("My Plan", () => {
+   *     Rhum.testPlan(() => {
    *       Rhum.testSuite("My Suite 1", () => {
    *         ...
    *       });
@@ -477,25 +521,6 @@ export class RhumRunner {
 
     // Execute the test cases in this test suite
     await testCases();
-  }
-
-  /**
-   * Run the test plan.
-   */
-  public async runTestPlan(): Promise<void> {
-    const filters = Deno.args;
-    const filterTestCase = filters[0];
-    const filterTestSuite = filters[1];
-
-    if (filterTestCase != "undefined") {
-      return await this.runCaseFiltered(filterTestCase);
-    }
-
-    if (filterTestSuite != "undefined") {
-      return await this.runSuiteFiltered(filterTestSuite);
-    }
-
-    await this.runAllSuitesAndCases();
   }
 
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
@@ -723,7 +748,10 @@ export class RhumRunner {
    * @param name - The name of the test case.
    * @param testFn - The test to execute.
    */
-  protected async skipTestCase(name: string, testFn: () => void): Promise<void> {
+  protected async skipTestCase(
+    name: string,
+    testFn: () => void,
+  ): Promise<void> {
     this.addTestCaseToTestSuite(name, testFn, true, this.getCurrentTestSuite());
   }
 

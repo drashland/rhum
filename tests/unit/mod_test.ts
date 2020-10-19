@@ -176,42 +176,45 @@ Rhum.testPlan(() => {
     Rhum.testCase("can skip a test plan", async () => {
       const p = Deno.run({
         cmd: [
-          "rhum", "tests/integration/skip_test_plan_test.ts"
+          "rhum",
+          "tests/integration/skip_test_plan_test.ts",
         ],
         stdout: "piped",
       });
       const stdout = decoder.decode(await p.output());
       Rhum.asserts.assertEquals(
         stdout,
-        data_skipTestPlan
+        data_skipTestPlan,
       );
     });
 
     Rhum.testCase("can skip a test suite", async () => {
       const p = Deno.run({
         cmd: [
-          "rhum", "tests/integration/skip_test_suite_test.ts"
+          "rhum",
+          "tests/integration/skip_test_suite_test.ts",
         ],
         stdout: "piped",
       });
       const stdout = decoder.decode(await p.output());
       Rhum.asserts.assertEquals(
         stdout,
-        data_skipTestSuite
+        data_skipTestSuite,
       );
     });
 
     Rhum.testCase("can skip a test case", async () => {
       const p = Deno.run({
         cmd: [
-          "rhum", "tests/integration/skip_test_case_test.ts"
+          "rhum",
+          "tests/integration/skip_test_case_test.ts",
         ],
         stdout: "piped",
       });
       const stdout = decoder.decode(await p.output());
       Rhum.asserts.assertEquals(
         stdout,
-        data_skipTestCase
+        data_skipTestCase,
       );
     });
   });
@@ -219,23 +222,25 @@ Rhum.testPlan(() => {
   Rhum.testSuite("stub", () => {
     Rhum.testCase("can stub an object", () => {
       class MyObj {
-        public hello() { return false; }
+        public hello() {
+          return false;
+        }
       }
       const stubbed = Rhum.stub(new MyObj());
       Rhum.asserts.assertEquals(
         stubbed.is_stubbed,
-        true
+        true,
       );
       Rhum.asserts.assertEquals(
         stubbed.hello(),
-        false
+        false,
       );
       stubbed.stub("hello", () => {
         return true;
       });
       Rhum.asserts.assertEquals(
         stubbed.hello(),
-        true
+        true,
       );
     });
   });
@@ -247,7 +252,7 @@ Rhum.testPlan(() => {
         .create();
       Rhum.asserts.assertEquals(
         mock.is_mock,
-        true
+        true,
       );
     });
 
@@ -263,11 +268,11 @@ Rhum.testPlan(() => {
         .create();
       Rhum.asserts.assertEquals(
         mock.is_mock,
-        true
+        true,
       );
       Rhum.asserts.assertEquals(
         mock.arg_1,
-        "some new value"
+        "some new value",
       );
     });
   });
@@ -277,7 +282,7 @@ Rhum.testPlan(() => {
       const cases = Rhum.getTestPlan().suites["testCase"].cases.length;
       Rhum.asserts.assertEquals(
         cases,
-        1
+        1,
       );
     });
   });
@@ -288,7 +293,7 @@ Rhum.testPlan(() => {
         Rhum.getTestPlan().name,
         // The test plan name is the name of the test file being tested. In this
         // case, its this file.
-        "tests/unit/mod_test.ts"
+        "tests/unit/mod_test.ts",
       );
     });
   });
@@ -337,7 +342,9 @@ tests/integration/skip_test_plan_test.ts
 
 
 
-Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${colors.yellow("15")} skipped
+Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
+  colors.yellow("15")
+} skipped
 `;
 
 const data_skipTestSuite = `
@@ -352,7 +359,9 @@ tests/integration/skip_test_suite_test.ts
 
 
 
-Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${colors.yellow("2")} skipped
+Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
+  colors.yellow("2")
+} skipped
 `;
 
 const data_skipTestCase = `
@@ -367,5 +376,7 @@ tests/integration/skip_test_case_test.ts
 
 
 
-Test Results: ${colors.green("1")} passed; ${colors.red("0")} failed; ${colors.yellow("1")} skipped
+Test Results: ${colors.green("1")} passed; ${colors.red("0")} failed; ${
+  colors.yellow("1")
+} skipped
 `;
