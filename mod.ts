@@ -110,7 +110,8 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.current_test_suite != "") {
       // is a before each inside a suite for every test case
-      this.test_plan.suites![this.current_test_suite].before_each_case_hook = cb;
+      this.test_plan.suites![this.current_test_suite].before_each_case_hook =
+        cb;
     } else if (this.current_test_suite == "") {
       // before each hooks for the suites
       this.test_plan.before_each_suite_hook = cb;
@@ -247,13 +248,12 @@ export class RhumRunner {
     // is attached to a test suite
     if (this.current_test_suite == "") {
       this.skipTestSuite(name, cb);
-    // Otherwise, if there is a current test suite, then we know this .skip()
-    // call is attached to a test case
+      // Otherwise, if there is a current test suite, then we know this .skip()
+      // call is attached to a test case
     } else {
-
       // If all of the test cases in a test suite have been set up, then this
       // .skip() call is for a test suite. Soooo recursion...
-      if (this.current_test_suite_num_test_cases <= 0 ) {
+      if (this.current_test_suite_num_test_cases <= 0) {
         this.current_test_suite = "";
         this.skip(name, cb);
         return;
@@ -265,6 +265,9 @@ export class RhumRunner {
 
   /**
    * Skip a test case.
+   *
+   * @param name - The name of the test case.
+   * @param testFn - The test to execute.
    */
   public async skipTestCase(name: string, testFn: () => void): Promise<void> {
     this.addTestCaseToTestSuite(name, testFn, true, this.current_test_suite);
@@ -272,10 +275,14 @@ export class RhumRunner {
 
   /**
    * Skip a test suite.
+   *
+   * @param name - The name of the test suite.
+   * @param testCases - The callback function containing the test cases that
+   * will be executed.
    */
   public async skipTestSuite(
     name: string,
-    testCases: () => void
+    testCases: () => void,
   ): Promise<void> {
     this.addTestSuiteToTestPlan(name, true, testCases);
 
@@ -366,7 +373,7 @@ export class RhumRunner {
       name,
       testFn,
       this.test_plan.suites[this.current_test_suite].skip,
-      this.current_test_suite
+      this.current_test_suite,
     );
   }
 
@@ -393,7 +400,8 @@ export class RhumRunner {
    * under a test plan. Test suites can only be defined inside of a test plan.
    *
    * @param name - The name of the test suite.
-   * @param testCases - The test cases to execute.
+   * @param testCases - The callback function containing the test cases that
+   * will be executed.
    *
    *     Rhum.testPlan("My Plan", () => {
    *       Rhum.testSuite("My Suite 1", () => {
@@ -564,7 +572,7 @@ export class RhumRunner {
    * Add a test case to a test suite.
    *
    * @param caseName - The name of the test case.
-   * @param testFn - The test that will be executed.
+   * @param testFn - The test to execute.
    * @param skip - Are we skipping this test?
    * @param suiteName - The name of the test suite this test case belongs to.
    */
@@ -572,7 +580,7 @@ export class RhumRunner {
     caseName: string,
     testFn: () => void,
     skip: boolean,
-    suiteName: string
+    suiteName: string,
   ): void {
     this.test_plan.suites[suiteName].cases.push({
       name: caseName,
@@ -597,7 +605,7 @@ export class RhumRunner {
   protected addTestSuiteToTestPlan(
     suiteName: string,
     skip: boolean,
-    testCases: () => void
+    testCases: () => void,
   ): void {
     // Set the name of the currently running test suite so that other methods
     // know what test suite is running
@@ -628,7 +636,9 @@ export class RhumRunner {
    * /path/to/rhum/src/test_runner.ts.
    */
   protected outputResults(): void {
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(this.test_plan_results)));
+    Deno.stdout.writeSync(
+      encoder.encode(JSON.stringify(this.test_plan_results)),
+    );
   }
 
   /**
