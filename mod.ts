@@ -748,10 +748,10 @@ export class RhumRunner {
    * @param name - The name of the test case.
    * @param testFn - The test to execute.
    */
-  protected async skipTestCase(
+  protected skipTestCase(
     name: string,
     testFn: () => void,
-  ): Promise<void> {
+  ): void {
     this.addTestCaseToTestSuite(name, testFn, true, this.getCurrentTestSuite());
   }
 
