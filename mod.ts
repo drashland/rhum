@@ -77,6 +77,8 @@ export class RhumRunner {
    */
   protected test_plan: ITestPlan = {
     suites: {},
+    skip: false,
+    name: "",
   };
 
   /**
@@ -311,7 +313,15 @@ export class RhumRunner {
    *       });
    *     });
    */
-  public async skip(name: string, cb: () => void): Promise<void> {
+  public skip(name: string | (() => void), cb: () => void = () => {}): void {
+    // If the name is a function, then we know we're skipping an entire test
+    // plan
+    if (typeof name == "function") {
+      // Execute the test plan's test suites, which is the `name` param
+      this.skipTestPlan(name);
+      return;
+    }
+
     // If there is no current test suite, then we know we know this .skip() call
     // is attached to a test suite
     if (this.getCurrentTestSuite() == "") {
@@ -332,33 +342,6 @@ export class RhumRunner {
   }
 
   /**
-   * Skip a test case.
-   *
-   * @param name - The name of the test case.
-   * @param testFn - The test to execute.
-   */
-  public async skipTestCase(name: string, testFn: () => void): Promise<void> {
-    this.addTestCaseToTestSuite(name, testFn, true, this.getCurrentTestSuite());
-  }
-
-  /**
-   * Skip a test suite.
-   *
-   * @param name - The name of the test suite.
-   * @param testCases - The callback function containing the test cases that
-   * will be executed.
-   */
-  public async skipTestSuite(
-    name: string,
-    testCases: () => void,
-  ): Promise<void> {
-    this.addTestSuiteToTestPlan(name, true, testCases);
-
-    // Execute the test cases in this test suite
-    await testCases();
-  }
-
-  /**
    * Stub a member of an object.
    *
    * @param obj -The object containing the member to stub.
@@ -374,15 +357,18 @@ export class RhumRunner {
    *     }
    *
    *     // Define the object that will have stubbed members as a stubbed object
-   *     const myStubbedObject = Rhum.stubbed(new MyObject());
+   *     const myStubbedObject = Rhum.stub(new MyObject());
    *
    *     // Stub the object's some_property property to a certain value
    *     myStubbedObject.stub("some_property", "this property is now stubbed");
    *
    *     // Assert that the property was stubbed
-   *     Rhum.asserts.assertEquals(myStubbedObject.some_property, "this property is now stubbed");
+   *     Rhum.asserts.assertEquals(
+   *       myStubbedObject.some_property,
+   *       "this property is now stubbed"
+   *     );
    */
-  public stubbed<T>(obj: T): Stubbed<T> {
+  public stub<T>(obj: T): Stubbed<T> {
     (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
     (obj as unknown as {
       [key: string]: (property: string, value: unknown) => void;
@@ -440,7 +426,8 @@ export class RhumRunner {
     this.addTestCaseToTestSuite(
       name,
       testFn,
-      this.test_plan.suites[this.getCurrentTestSuite()].skip,
+      this.test_plan.skip
+        || this.test_plan.suites[this.getCurrentTestSuite()].skip,
       this.getCurrentTestSuite(),
     );
   }
@@ -458,6 +445,7 @@ export class RhumRunner {
    *     });
    */
   public async testPlan(testSuites: () => void): Promise<void> {
+    this.test_plan.name = Deno.args[2];
     await testSuites();
     await this.runTestPlan();
   }
@@ -481,7 +469,11 @@ export class RhumRunner {
    *     });
    */
   public async testSuite(name: string, testCases: () => void): Promise<void> {
-    this.addTestSuiteToTestPlan(name, false, testCases);
+    this.addTestSuiteToTestPlan(
+      name,
+      this.test_plan.skip,
+      testCases,
+    );
 
     // Execute the test cases in this test suite
     await testCases();
@@ -506,16 +498,33 @@ export class RhumRunner {
     await this.runAllSuitesAndCases();
   }
 
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+
   /**
-   * Run all test suites and test cases in the test plan.
+   * Add a test case to a test suite.
+   *
+   * @param caseName - The name of the test case.
+   * @param testFn - The test to execute.
+   * @param skip - Are we skipping this test?
+   * @param suiteName - The name of the test suite this test case belongs to.
    */
-  public async runAllSuitesAndCases(): Promise<void> {
-    await this.runHooksBeforeSuites();
-    for (const suiteName in this.test_plan.suites) {
-      await this.runSuite(suiteName);
+  protected addTestCaseToTestSuite(
+    caseName: string,
+    testFn: () => void,
+    skip: boolean,
+    suiteName: string,
+  ): void {
+    this.test_plan.suites[suiteName].cases.push({
+      name: caseName,
+      test_fn: testFn,
+      skip: skip,
+    });
+
+    // Track that this case is ready to be executed
+    const numTestCases = this.getCurrentTestSuiteNumTestCases();
+    if (numTestCases > 0) {
+      this.setCurrentTestSuiteNumTestCases(numTestCases - 1);
     }
-    await this.runHooksAfterSuites();
-    this.outputResults();
   }
 
   /**
@@ -586,82 +595,6 @@ export class RhumRunner {
   }
 
   /**
-   * Run a test suite.
-   *
-   * @param suiteName - The name of the suite.
-   * @param filterValTestCase - (optional) Are we filtering out a test case?
-   */
-  public async runSuite(
-    suiteName: string,
-    filterValTestCase?: string,
-  ): Promise<void> {
-    if (!filterValTestCase || filterValTestCase == "undefined") {
-      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-    }
-
-    await this.runHooksBeforeSuitesAndCases(suiteName);
-
-    for (const testCase of this.test_plan.suites[suiteName].cases) {
-      if (filterValTestCase) {
-        if (testCase.name != filterValTestCase) {
-          continue;
-        }
-        Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
-      }
-      await this.runCase(testCase, suiteName);
-    }
-
-    await this.runHooksAfterSuitesAndCases(suiteName);
-  }
-
-  /**
-   * Run a test suite with the --filter-test-suite option being specified.
-   *
-   * @param filterVal - The name specified as the filter's value.
-   */
-  public async runSuiteFiltered(filterVal: string): Promise<void> {
-    await this.runHooksBeforeSuites();
-
-    for (const suiteName in this.test_plan.suites) {
-      if (suiteName == filterVal) {
-        await this.runSuite(suiteName);
-      }
-    }
-
-    await this.runHooksAfterSuites();
-    this.outputResults();
-  }
-
-  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
-
-  /**
-   * Add a test case to a test suite.
-   *
-   * @param caseName - The name of the test case.
-   * @param testFn - The test to execute.
-   * @param skip - Are we skipping this test?
-   * @param suiteName - The name of the test suite this test case belongs to.
-   */
-  protected addTestCaseToTestSuite(
-    caseName: string,
-    testFn: () => void,
-    skip: boolean,
-    suiteName: string,
-  ): void {
-    this.test_plan.suites[suiteName].cases.push({
-      name: caseName,
-      test_fn: testFn,
-      skip: skip,
-    });
-
-    // Track that this case is ready to be executed
-    const numTestCases = this.getCurrentTestSuiteNumTestCases();
-    if (numTestCases > 0) {
-      this.setCurrentTestSuiteNumTestCases(numTestCases - 1);
-    }
-  }
-
-  /**
    * Output the test plan's results. This data is used by the
    * /path/to/rhum/src/test_runner.ts.
    */
@@ -669,6 +602,18 @@ export class RhumRunner {
     Deno.stdout.writeSync(
       encoder.encode(JSON.stringify(this.test_plan_results)),
     );
+  }
+
+  /**
+   * Run all test suites and test cases in the test plan.
+   */
+  public async runAllSuitesAndCases(): Promise<void> {
+    await this.runHooksBeforeSuites();
+    for (const suiteName in this.test_plan.suites) {
+      await this.runSuite(suiteName);
+    }
+    await this.runHooksAfterSuites();
+    this.outputResults();
   }
 
   /**
@@ -723,6 +668,86 @@ export class RhumRunner {
     if (this.test_plan.suites[suiteName].before_all_cases_hook) {
       await this.test_plan.suites[suiteName].before_all_cases_hook!();
     }
+  }
+
+  /**
+   * Run a test suite.
+   *
+   * @param suiteName - The name of the suite.
+   * @param filterValTestCase - (optional) Are we filtering out a test case?
+   */
+  public async runSuite(
+    suiteName: string,
+    filterValTestCase?: string,
+  ): Promise<void> {
+    if (!filterValTestCase || filterValTestCase == "undefined") {
+      Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+    }
+
+    await this.runHooksBeforeSuitesAndCases(suiteName);
+
+    for (const testCase of this.test_plan.suites[suiteName].cases) {
+      if (filterValTestCase) {
+        if (testCase.name != filterValTestCase) {
+          continue;
+        }
+        Deno.stdout.writeSync(encoder.encode("    " + suiteName + "\n"));
+      }
+      await this.runCase(testCase, suiteName);
+    }
+
+    await this.runHooksAfterSuitesAndCases(suiteName);
+  }
+
+  /**
+   * Run a test suite with the --filter-test-suite option being specified.
+   *
+   * @param filterVal - The name specified as the filter's value.
+   */
+  public async runSuiteFiltered(filterVal: string): Promise<void> {
+    await this.runHooksBeforeSuites();
+
+    for (const suiteName in this.test_plan.suites) {
+      if (suiteName == filterVal) {
+        await this.runSuite(suiteName);
+      }
+    }
+
+    await this.runHooksAfterSuites();
+    this.outputResults();
+  }
+
+  /**
+   * Skip a test case.
+   *
+   * @param name - The name of the test case.
+   * @param testFn - The test to execute.
+   */
+  protected async skipTestCase(name: string, testFn: () => void): Promise<void> {
+    this.addTestCaseToTestSuite(name, testFn, true, this.getCurrentTestSuite());
+  }
+
+  protected async skipTestPlan(testSuites: () => void): Promise<void> {
+    this.test_plan.skip = true;
+    await testSuites();
+    await this.runTestPlan();
+  }
+
+  /**
+   * Skip a test suite.
+   *
+   * @param name - The name of the test suite.
+   * @param testCases - The callback function containing the test cases that
+   * will be executed.
+   */
+  protected async skipTestSuite(
+    name: string,
+    testCases: () => void,
+  ): Promise<void> {
+    this.addTestSuiteToTestPlan(name, true, testCases);
+
+    // Execute the test cases in this test suite
+    await testCases();
   }
 }
 

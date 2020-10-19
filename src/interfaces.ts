@@ -45,6 +45,8 @@ export interface ITestPlan {
   after_each_suite_hook?: () => void;
   before_all_suites_hook?: () => void;
   before_each_suite_hook?: () => void;
+  skip: boolean;
+  name: string;
 }
 
 export interface ITestPlanResults {

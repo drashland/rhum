@@ -87,11 +87,15 @@ export async function runTests(
     // Store the results from the test file in the stats. We want to keep track
     // of these stats because we want to display the overall test results when
     // Rhum is done running through all of the tests.
-    const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
-    stats.passed += testPlanResults.passed;
-    stats.failed += testPlanResults.failed;
-    stats.skipped += testPlanResults.skipped;
-    stats.errors += testPlanResults.errors;
+    try {
+      const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
+      stats.passed += testPlanResults.passed;
+      stats.failed += testPlanResults.failed;
+      stats.skipped += testPlanResults.skipped;
+      stats.errors += testPlanResults.errors;
+    } catch (error) {
+      logError("An error ocurred while executing the tests.\n\n" + error.stack);
+    }
   }
 
   // Output the errors
@@ -133,6 +137,15 @@ function getTestFiles(dirOrFile: string): string[] {
   }
 
   return testFiles;
+}
+
+/**
+ * Log a debug message.
+ *
+ * @param message The message to log.
+ */
+export function logDebug(message: string): void {
+  console.log(green("DEBUG") + " " + message);
 }
 
 /**

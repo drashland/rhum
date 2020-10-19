@@ -14,13 +14,13 @@ class Server {
 Rhum.testPlan(() => {
   Rhum.testSuite("stub()", () => {
     Rhum.testCase("can stub a property", () => {
-      const server = Rhum.stubbed(new Server());
+      const server = Rhum.stub(new Server());
       server.stub("greeting", "you got changed");
       Rhum.asserts.assertEquals(server.greeting, "you got changed");
     });
 
     Rhum.testCase("can stub a method", () => {
-      const server = Rhum.stubbed(new Server());
+      const server = Rhum.stub(new Server());
       server.stub("methodThatLogs", () => {
         return "don't run the console.log()";
       });
