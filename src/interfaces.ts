@@ -37,7 +37,7 @@ export interface ICase {
   skip: boolean;
 }
 
-export interface IPlan {
+export interface ITestPlan {
   suites: {
     [key: string]: ISuite;
   };

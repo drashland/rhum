@@ -1,5 +1,5 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import type { ICase, IPlan, ITestPlanResults } from "./src/interfaces.ts";
+import type { ICase, ITestPlan, ITestPlanResults } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
@@ -52,7 +52,7 @@ export class RhumRunner {
   // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
   public asserts: { [key in assertions]: Function } = asserts;
 
-  protected plan: IPlan = {
+  protected test_plan: ITestPlan = {
     suites: {},
   };
 
@@ -106,10 +106,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.current_test_suite != "") {
       // is a before each inside a suite for every test case
-      this.plan.suites![this.current_test_suite].before_each_case_hook = cb;
+      this.test_plan.suites![this.current_test_suite].before_each_case_hook = cb;
     } else if (this.current_test_suite == "") {
       // before each hooks for the suites
-      this.plan.before_each_suite_hook = cb;
+      this.test_plan.before_each_suite_hook = cb;
     }
   }
 
@@ -140,10 +140,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.current_test_suite != "") {
       // is a after each inside a suite for every test case
-      this.plan.suites![this.current_test_suite].after_each_case_hook = cb;
+      this.test_plan.suites![this.current_test_suite].after_each_case_hook = cb;
     } else if (this.current_test_suite == "") {
       // after each hooks for the suites
-      this.plan.after_each_suite_hook = cb;
+      this.test_plan.after_each_suite_hook = cb;
     }
   }
 
@@ -174,10 +174,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.current_test_suite != "") {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.current_test_suite].after_all_cases_hook = cb;
+      this.test_plan.suites[this.current_test_suite].after_all_cases_hook = cb;
     } else if (this.current_test_suite == "") {
       // before all hooks for the suites
-      this.plan.after_all_suites_hook = cb;
+      this.test_plan.after_all_suites_hook = cb;
     }
   }
 
@@ -208,10 +208,10 @@ export class RhumRunner {
     // Check if the hook is for test cases inside of a suite
     if (this.current_test_suite != "") {
       // is a before all inside a suite for every test case
-      this.plan.suites[this.current_test_suite].before_all_cases_hook = cb;
+      this.test_plan.suites[this.current_test_suite].before_all_cases_hook = cb;
     } else if (this.current_test_suite == "") {
       // before all hooks for the suites
-      this.plan.before_all_suites_hook = cb;
+      this.test_plan.before_all_suites_hook = cb;
     }
   }
 
@@ -361,7 +361,7 @@ export class RhumRunner {
     this.addTestCaseToTestSuite(
       name,
       testFn,
-      this.plan.suites[this.current_test_suite].skip,
+      this.test_plan.suites[this.current_test_suite].skip,
       this.current_test_suite
     );
   }
@@ -431,7 +431,7 @@ export class RhumRunner {
    */
   public async runAllSuitesAndCases(): Promise<void> {
     await this.runHooksBeforeSuites();
-    for (const suiteName in this.plan.suites) {
+    for (const suiteName in this.test_plan.suites) {
       await this.runSuite(suiteName);
     }
     await this.runHooksAfterSuites();
@@ -458,8 +458,8 @@ export class RhumRunner {
     }
 
     // Execute .beforeEach() hook before each test case if it exists
-    if (this.plan.suites[suiteName].before_each_case_hook) {
-      await this.plan.suites[suiteName].before_each_case_hook!();
+    if (this.test_plan.suites[suiteName].before_each_case_hook) {
+      await this.test_plan.suites[suiteName].before_each_case_hook!();
     }
 
     // Execute the test
@@ -482,8 +482,8 @@ export class RhumRunner {
     }
 
     // Execute .afterEach() hook after each test case if it exists
-    if (this.plan.suites[suiteName].after_each_case_hook) {
-      await this.plan.suites[suiteName].after_each_case_hook!();
+    if (this.test_plan.suites[suiteName].after_each_case_hook) {
+      await this.test_plan.suites[suiteName].after_each_case_hook!();
     }
   }
 
@@ -495,7 +495,7 @@ export class RhumRunner {
   public async runCaseFiltered(filterVal: string): Promise<void> {
     await this.runHooksBeforeSuites();
 
-    for (const suiteName in this.plan.suites) {
+    for (const suiteName in this.test_plan.suites) {
       await this.runHooksBeforeSuitesAndCases(suiteName);
       await this.runSuite(suiteName, filterVal);
       await this.runHooksAfterSuitesAndCases(suiteName);
@@ -521,7 +521,7 @@ export class RhumRunner {
 
     await this.runHooksBeforeSuitesAndCases(suiteName);
 
-    for (const testCase of this.plan.suites[suiteName].cases) {
+    for (const testCase of this.test_plan.suites[suiteName].cases) {
       if (filterValTestCase) {
         if (testCase.name != filterValTestCase) {
           continue;
@@ -542,7 +542,7 @@ export class RhumRunner {
   public async runSuiteFiltered(filterVal: string): Promise<void> {
     await this.runHooksBeforeSuites();
 
-    for (const suiteName in this.plan.suites) {
+    for (const suiteName in this.test_plan.suites) {
       if (suiteName == filterVal) {
         await this.runSuite(suiteName);
       }
@@ -570,7 +570,7 @@ export class RhumRunner {
     skip: boolean,
     suiteName: string
   ): void {
-    this.plan.suites[suiteName].cases.push({
+    this.test_plan.suites[suiteName].cases.push({
       name: caseName,
       test_fn: testFn,
       skip: skip,
@@ -602,8 +602,8 @@ export class RhumRunner {
     // If the test suite and its test cases are not yet tracked in the plan
     // object, then add the required data so we can track the test suite and its
     // test cases. We use this data when we call runTestPlan().
-    if (!this.plan.suites[suiteName]) {
-      this.plan.suites[suiteName] = {
+    if (!this.test_plan.suites[suiteName]) {
+      this.test_plan.suites[suiteName] = {
         cases: [],
         skip: skip,
       };
@@ -632,8 +632,8 @@ export class RhumRunner {
    */
   protected async runHooksAfterSuites(): Promise<void> {
     // Execute .afterAll() hook after all test suites
-    if (this.plan.after_all_suites_hook) {
-      await this.plan.after_all_suites_hook();
+    if (this.test_plan.after_all_suites_hook) {
+      await this.test_plan.after_all_suites_hook();
     }
   }
 
@@ -644,13 +644,13 @@ export class RhumRunner {
     suiteName: string,
   ): Promise<void> {
     // Execute .afterAll() hook after all test cases
-    if (this.plan.suites[suiteName].after_all_cases_hook) {
-      await this.plan.suites[suiteName].after_all_cases_hook!();
+    if (this.test_plan.suites[suiteName].after_all_cases_hook) {
+      await this.test_plan.suites[suiteName].after_all_cases_hook!();
     }
 
     // Execute .afterEach() hook after each test suite if it exists
-    if (this.plan.after_each_suite_hook) {
-      await this.plan.after_each_suite_hook();
+    if (this.test_plan.after_each_suite_hook) {
+      await this.test_plan.after_each_suite_hook();
     }
   }
 
@@ -659,8 +659,8 @@ export class RhumRunner {
    */
   protected async runHooksBeforeSuites(): Promise<void> {
     // Execute .beforeAll() hook before all test suites
-    if (this.plan.before_all_suites_hook) {
-      await this.plan.before_all_suites_hook();
+    if (this.test_plan.before_all_suites_hook) {
+      await this.test_plan.before_all_suites_hook();
     }
   }
 
@@ -671,13 +671,13 @@ export class RhumRunner {
     suiteName: string,
   ): Promise<void> {
     // Execute .beforeEach() hook before each test suite if it exists
-    if (this.plan.before_each_suite_hook) {
-      await this.plan.before_each_suite_hook();
+    if (this.test_plan.before_each_suite_hook) {
+      await this.test_plan.before_each_suite_hook();
     }
 
     // Execute .beforeAll() hook before all test cases
-    if (this.plan.suites[suiteName].before_all_cases_hook) {
-      await this.plan.suites[suiteName].before_all_cases_hook!();
+    if (this.test_plan.suites[suiteName].before_all_cases_hook) {
+      await this.test_plan.suites[suiteName].before_all_cases_hook!();
     }
   }
 }
