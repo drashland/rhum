@@ -1,5 +1,5 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import type { ICase, IPlan, IStats } from "./src/interfaces.ts";
+import type { ICase, IPlan, ITestPlanResults } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
@@ -7,15 +7,6 @@ import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
 export const version = "v1.1.4";
 
 const encoder = new TextEncoder();
-
-const skipped: string[] = [];
-
-const stats: IStats = {
-  passed: 0,
-  failed: 0,
-  skipped: 0,
-  errors: "",
-};
 
 export type { Constructor, Stubbed } from "./src/types.ts";
 export { MockBuilder } from "./src/mock_builder.ts";
@@ -75,6 +66,16 @@ export class RhumRunner {
    * data to keep track of how many test cases have been set up in a test suite.
    */
   protected current_test_suite_num_test_cases = 0;
+
+  /**
+   * A property to hold the output results of the test plan.
+   */
+  protected test_plan_results: ITestPlanResults = {
+    passed: 0,
+    failed: 0,
+    skipped: 0,
+    errors: "",
+  };
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
@@ -434,7 +435,7 @@ export class RhumRunner {
       await this.runSuite(suiteName);
     }
     await this.runHooksAfterSuites();
-    this.sendStats();
+    this.outputResults();
   }
 
   /**
@@ -452,7 +453,7 @@ export class RhumRunner {
           "        " + yellow("SKIP") + " " + testCase.name + "\n",
         ),
       );
-      stats.skipped++;
+      this.test_plan_results.skipped++;
       return;
     }
 
@@ -469,15 +470,15 @@ export class RhumRunner {
           "        " + green("PASS") + " " + testCase.name + "\n",
         ),
       );
-      stats.passed++;
+      this.test_plan_results.passed++;
     } catch (error) {
       Deno.stdout.writeSync(
         encoder.encode(
           "        " + red("FAIL") + " " + testCase.name + "\n",
         ),
       );
-      stats.failed++;
-      stats.errors += ("\n" + error.stack + "\n");
+      this.test_plan_results.failed++;
+      this.test_plan_results.errors += ("\n" + error.stack + "\n");
     }
 
     // Execute .afterEach() hook after each test case if it exists
@@ -501,7 +502,7 @@ export class RhumRunner {
     }
 
     await this.runHooksAfterSuites();
-    this.sendStats();
+    this.outputResults();
   }
 
   /**
@@ -548,13 +549,21 @@ export class RhumRunner {
     }
 
     await this.runHooksAfterSuites();
-    this.sendStats();
+    this.outputResults();
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Add a test case to a test suite.
+   *
+   * @param caseName - The name of the test case.
+   * @param testFn - The test that will be executed.
+   * @param skip - Are we skipping this test?
+   * @param suiteName - The name of the test suite this test case belongs to.
+   */
   protected addTestCaseToTestSuite(
     caseName: string,
     testFn: () => void,
@@ -573,6 +582,14 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Add a test suite to the test plan.
+   *
+   * @param suiteName - The name of the test suite.
+   * @param skip - Are we skipping this test suite?
+   * @param testCases - The callback function containing the test cases that
+   * will be executed.
+   */
   protected addTestSuiteToTestPlan(
     suiteName: string,
     skip: boolean,
@@ -602,6 +619,17 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Output the test plan's results. This data is used by the
+   * /path/to/rhum/src/test_runner.ts.
+   */
+  protected outputResults(): void {
+    Deno.stdout.writeSync(encoder.encode(JSON.stringify(this.test_plan_results)));
+  }
+
+  /**
+   * Run hooks after all test suites.
+   */
   protected async runHooksAfterSuites(): Promise<void> {
     // Execute .afterAll() hook after all test suites
     if (this.plan.after_all_suites_hook) {
@@ -609,6 +637,9 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Run hooks after all test suites and test cases.
+   */
   protected async runHooksAfterSuitesAndCases(
     suiteName: string,
   ): Promise<void> {
@@ -623,6 +654,9 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Run hooks before all test suites.
+   */
   protected async runHooksBeforeSuites(): Promise<void> {
     // Execute .beforeAll() hook before all test suites
     if (this.plan.before_all_suites_hook) {
@@ -630,6 +664,9 @@ export class RhumRunner {
     }
   }
 
+  /**
+   * Run hooks before each test suite or before each test case.
+   */
   protected async runHooksBeforeSuitesAndCases(
     suiteName: string,
   ): Promise<void> {
@@ -642,10 +679,6 @@ export class RhumRunner {
     if (this.plan.suites[suiteName].before_all_cases_hook) {
       await this.plan.suites[suiteName].before_all_cases_hook!();
     }
-  }
-
-  protected sendStats(): void {
-    Deno.stdout.writeSync(encoder.encode(JSON.stringify(stats)));
   }
 }
 

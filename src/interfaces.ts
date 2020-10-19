@@ -54,7 +54,7 @@ export interface ICaseResult {
   errors?: string;
 }
 
-export interface IStats {
+export interface ITestPlanResults {
   passed: number;
   failed: number;
   skipped: number;

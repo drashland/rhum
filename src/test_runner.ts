@@ -5,7 +5,7 @@ import {
   red,
   yellow,
 } from "https://deno.land/std@0.74.0/fmt/colors.ts";
-import { IFilters, IStats } from "./interfaces.ts";
+import { IFilters, ITestPlanResults } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
 
@@ -19,9 +19,8 @@ export async function runTests(
   console.log();
   logInfo("Starting Rhum");
 
-  // Define the object that will keep a running total of all the stats we care
-  // about.
-  const stats: IStats = {
+  // Define the variable that will keep track of all tests' results
+  const stats: ITestPlanResults = {
     passed: 0,
     failed: 0,
     skipped: 0,
