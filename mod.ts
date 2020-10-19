@@ -1,5 +1,5 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import type { ICase, ITestPlan, ITestPlanResults } from "./src/interfaces.ts";
+import type { ITestCase, ITestPlan, ITestPlanResults } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 import { green, red, yellow } from "https://deno.land/std@0.74.0/fmt/colors.ts";
@@ -457,7 +457,7 @@ export class RhumRunner {
    * and the test function to execute.
    * @param suiteName - The name of the test suite this test case belongs to.
    */
-  public async runCase(testCase: ICase, suiteName: string): Promise<void> {
+  public async runCase(testCase: ITestCase, suiteName: string): Promise<void> {
     // SKIP THAT SHIT
     if (testCase.skip) {
       Deno.stdout.writeSync(

@@ -1,6 +1,6 @@
 /**
  * cases?
- *     An array of objects matching the ICase interface.
+ *     An array of objects matching the ITestCase interface.
  *
  * after_all_cases_hook?
  *     A callback function to execute after all test cases.
@@ -14,8 +14,8 @@
  * before_each_case_hook?
  *     A callback function to execute before each test case.
  */
-export interface ISuite {
-  cases: ICase[];
+export interface ITestSuite {
+  cases: ITestCase[];
   after_all_cases_hook?: () => void;
   after_each_case_hook?: () => void;
   before_all_cases_hook?: () => void;
@@ -31,7 +31,7 @@ export interface ISuite {
  *     The test function. Ultimately, this gets passed as the second
  *     argument of Deno.test().
  */
-export interface ICase {
+export interface ITestCase {
   name: string;
   test_fn: () => void;
   skip: boolean;
@@ -39,19 +39,12 @@ export interface ICase {
 
 export interface ITestPlan {
   suites: {
-    [key: string]: ISuite;
+    [key: string]: ITestSuite;
   };
   after_all_suites_hook?: () => void;
   after_each_suite_hook?: () => void;
   before_all_suites_hook?: () => void;
   before_each_suite_hook?: () => void;
-}
-
-export interface ICaseResult {
-  name: string;
-  pass: boolean;
-  suite: string;
-  errors?: string;
 }
 
 export interface ITestPlanResults {
