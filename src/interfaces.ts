@@ -20,7 +20,7 @@ export interface ISuite {
   after_each_case_hook?: () => void;
   before_all_cases_hook?: () => void;
   before_each_case_hook?: () => void;
-  skip?: boolean;
+  skip: boolean;
 }
 
 /**

@@ -1,5 +1,9 @@
 import { Rhum } from "../../mod.ts";
 
+// This file should have 5 passed tests
+// This file should have 0 failed tests
+// This file should have 10 skipped tests
+
 Rhum.testPlan(() => {
   Rhum.skip("testSuite skipped 1", () => {
     Rhum.testCase("skipped", () => {
