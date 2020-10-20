@@ -58,7 +58,7 @@ export function createHelpMenu(data: IHelpMenuData): string {
 /**
  * Word wrap a string. Thanks https://j11y.io/snippets/wordwrap-for-javascript/.
  */
-function wrap(str: string, indent: number = 0, width: number = 80): string {
+export function wrap(str: string, indent: number = 0, width: number = 80): string {
   const brk = "\n" + (indent > 0 ? " ".repeat(indent - 1) : "");
   const regex = ".{1," + width + "}(\s|$)" + ("|\S+?(\s|$)");
   const ret = str.match( RegExp(regex, "g") )!.join( brk );
