@@ -75,8 +75,7 @@ export class MockBuilder<T> {
 
       if (nativeMethods.indexOf(method) == -1) {
 
-        // Define an object to track how many times this method was called and
-        // with what arguments it was last called with
+        // Define an object to track data for assertions
         if (!mock.methods[method]) {
           mock.methods[method] = {
             num_calls: 0,
@@ -102,7 +101,7 @@ export class MockBuilder<T> {
             ...params: unknown[]
           ) => unknown)(...args);
 
-          // Track what this method returned
+          // Track what this method last returned
           mock.methods[method].lastReturned = function (input: unknown) {
             return input == ret;
           }
