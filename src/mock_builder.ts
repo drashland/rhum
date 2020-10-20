@@ -46,7 +46,6 @@ export class MockBuilder<T> {
   public create(): Mocked<T> {
     // deno-lint-ignore no-explicit-any
     const mock: Mocked<any> = {
-      calls: {},
       methods: {},
       is_mock: true,
     };
