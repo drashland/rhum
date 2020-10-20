@@ -1,11 +1,8 @@
 import { IFilters } from "./src/interfaces.ts";
-import {
-  commandIs,
-  commandRequiresArgs,
-} from "./src/cli/services/command_service.ts";
-import { logError, logInfo, runTests } from "./src/test_runner.ts";
-import { showHelp } from "./src/cli/options/help.ts";
-import { showVersion } from "./src/cli/options/version.ts";
+import { commandIs, commandRequiresArgs, logError, logInfo } from "./deps.ts";
+import { runTests } from "./src/test_runner.ts";
+import { showHelp } from "./src/cli/commands/help.ts";
+import { showVersion } from "./src/cli/commands/version.ts";
 import { testTemplate } from "./src/cli/services/make_service.ts";
 
 const input = Deno.args[Deno.args.length - 1];
@@ -45,7 +42,7 @@ if (args.length >= 1) {
   }
 }
 
-function getFilterTestCaseValue(arg: string): string|null {
+function getFilterTestCaseValue(arg: string): string | null {
   const match = arg.match(/--filter-test-case=.+/);
   if (match) {
     return match[0].split("=")[1];
@@ -53,7 +50,7 @@ function getFilterTestCaseValue(arg: string): string|null {
   return null;
 }
 
-function getFilterTestSuiteValue(arg: string): string|null {
+function getFilterTestSuiteValue(arg: string): string | null {
   const match = arg.match(/--filter-test-suite=.+/);
   if (match) {
     return match[0].split("=")[1];
@@ -104,7 +101,9 @@ async function test(args: string[]): Promise<void> {
   });
 
   if (filters.test_case && filters.test_suite) {
-    logError("You cannot use --filter-test-case and --filter-test-suite together. Please specify one option.");
+    logError(
+      "You cannot use --filter-test-case and --filter-test-suite together. Please specify one option.",
+    );
     Deno.exit();
   }
 

@@ -1,4 +1,4 @@
-import { createHelpMenu } from "../services/help_menu_service.ts";
+import { createHelpMenu } from "../../../deps.ts";
 import { version } from "../../../mod.ts";
 
 export function showHelp() {
