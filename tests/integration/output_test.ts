@@ -40,6 +40,7 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 example_tests/test.ts
     testSuite 1: skipped
         ${colors.yellow("SKIP")} skipped
@@ -63,7 +64,6 @@ example_tests/test.ts
         ${colors.green("PASS")} testCase
         ${colors.yellow("SKIP")} skipped
         ${colors.red("FAIL")} fail
-
 
 AssertionError: Values are not equal:
 

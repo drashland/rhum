@@ -316,6 +316,7 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 tests/integration/skip_test_plan_test.ts
     testSuite skipped 1
         ${colors.yellow("SKIP")} skipped
@@ -351,6 +352,7 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 tests/integration/skip_test_suite_test.ts
     skipped
         ${colors.yellow("SKIP")} skipped
@@ -366,6 +368,7 @@ const data_skipTestCase = `
 ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
+
 
 tests/integration/skip_test_case_test.ts
     testSuite
