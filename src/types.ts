@@ -13,8 +13,8 @@ export type Mocked<T> = T & {
       lastReturned: (input: unknown) => boolean;
       wasLastCalledWith: (...input: unknown[]) => boolean;
       wasCalledTimes: (input: number) => boolean;
-    }
-  }
+    };
+  };
   is_mock: true;
 };
 

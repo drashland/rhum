@@ -91,7 +91,6 @@ export async function runTests(
     //     console.log(stderrFormatted.replace("", path));
     //   }
     // }
-
   }
 
   // Output the errors

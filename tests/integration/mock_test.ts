@@ -82,11 +82,11 @@ Rhum.testPlan(() => {
         .create();
       mockMathService.add(1, 1);
       Rhum.asserts.assert(
-        mockMathService.methods.add.wasLastCalledWith([1, 1])
+        mockMathService.methods.add.wasLastCalledWith([1, 1]),
       );
       mockMathService.add(2, 1);
       Rhum.asserts.assert(
-        mockMathService.methods.add.wasLastCalledWith([2, 1])
+        mockMathService.methods.add.wasLastCalledWith([2, 1]),
       );
     });
 
@@ -96,13 +96,12 @@ Rhum.testPlan(() => {
         .create();
       mockMathService.add(1, 1);
       Rhum.asserts.assert(
-        mockMathService.methods.add.lastReturned(2)
+        mockMathService.methods.add.lastReturned(2),
       );
       mockMathService.add(2, 1);
       Rhum.asserts.assert(
-        mockMathService.methods.add.lastReturned(3)
+        mockMathService.methods.add.lastReturned(3),
       );
     });
-
   });
 });

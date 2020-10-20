@@ -6,9 +6,10 @@ Rhum.testPlan(() => {
     Rhum.testCase("output shows as expected", async () => {
       const p = Deno.run({
         cmd: [
-          "rhum", "example_tests/test.ts"
+          "rhum",
+          "example_tests/test.ts",
         ],
-        stdout: "piped"
+        stdout: "piped",
       });
       const stdout = new TextDecoder().decode(await p.output());
 
@@ -29,7 +30,7 @@ Rhum.testPlan(() => {
       // output: PASS, FAIL, SKIP, and the Actual / Expected data.
       Rhum.asserts.assertEquals(
         stdout.replace(/\n.+at.*\)/g, ""),
-        output
+        output,
       );
     });
   });
@@ -68,7 +69,9 @@ example_tests/test.ts
 AssertionError: Values are not equal:
 
 
-    ${colors.gray(colors.bold("[Diff]"))} ${colors.red(colors.bold("Actual"))} / ${colors.green(colors.bold("Expected"))}
+    ${colors.gray(colors.bold("[Diff]"))} ${
+  colors.red(colors.bold("Actual"))
+} / ${colors.green(colors.bold("Expected"))}
 
 
 ${colors.red(colors.bold("-   false"))}
@@ -76,5 +79,7 @@ ${colors.green(colors.bold("+   true"))}
 
 
 
-Test Results: ${colors.green("4")} passed; ${colors.red("1")} failed; ${colors.yellow("10")} skipped
+Test Results: ${colors.green("4")} passed; ${colors.red("1")} failed; ${
+  colors.yellow("10")
+} skipped
 `;
