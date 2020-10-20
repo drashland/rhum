@@ -63,7 +63,7 @@ Rhum.testPlan(() => {
       );
     });
 
-    Rhum.testCase("count() for outside function is tracked", () => {
+    Rhum.testCase("wasCalledTimes() tracks external function calls", () => {
       const mockMathService = Rhum
         .mock(MathService)
         .create();
