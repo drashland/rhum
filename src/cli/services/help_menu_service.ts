@@ -20,10 +20,11 @@ interface IExampleUsageData {
 export function createHelpMenu(data: IHelpMenuData): string {
 
   let output = "\n";
+  let currentInput = "";
 
   for (const key in data) {
     if (key == "description") {
-      output += data[key];
+      output += wrap(data[key]);
     }
 
     if (key == "usage") {
@@ -37,7 +38,7 @@ export function createHelpMenu(data: IHelpMenuData): string {
       output += `\n\nOPTIONS\n`;
       for (const option in data[key]) {
         output += (`\n    ${option}\n`);
-        output += (`        ${data[key][option]}\n`);
+        output += (`${wrap(`        ${data[key][option]}`)}\n`);
       }
     }
 
@@ -53,4 +54,15 @@ export function createHelpMenu(data: IHelpMenuData): string {
   }
 
   return output;
+}
+
+/**
+ * Word wrap a string. Thanks https://j11y.io/snippets/wordwrap-for-javascript/.
+ */
+function wrap(str: string): string {
+  const brk = '\n       ';
+  const width = 80;
+  const cut = false;
+  const regex = '.{1,' +width+ '}(\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\S+?(\s|$)');
+  return str.match( RegExp(regex, 'g') )!.join( brk );
 }
