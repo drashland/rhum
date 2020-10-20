@@ -1,11 +1,11 @@
 interface IHelpMenuData {
-  commands: {[key: string]: string};
+  commands: { [key: string]: string };
   description: string;
-  example_usage: IExampleUsageData[]
+  example_usage: IExampleUsageData[];
   options: {
     [key: string]: {
-      [key: string]: string
-    }
+      [key: string]: string;
+    };
   };
   usage: string[];
 }
@@ -23,7 +23,6 @@ interface IExampleUsageData {
  * @returns The help menu output.
  */
 export function createHelpMenu(data: IHelpMenuData): string {
-
   let output = "\n";
 
   for (const key in data) {
@@ -32,7 +31,7 @@ export function createHelpMenu(data: IHelpMenuData): string {
     }
 
     if (key == "usage") {
-      output += `\n\nUSAGE\n\n`
+      output += `\n\nUSAGE\n\n`;
       data[key].forEach((usageLine: string) => {
         output += ("    " + usageLine + "\n");
       });
@@ -52,7 +51,8 @@ export function createHelpMenu(data: IHelpMenuData): string {
         output += (`\n    ${command}\n`);
         for (const option in data[key][command]) {
           output += (`        ${option}\n`);
-          output += (`${wordWrap(`            ${data[key][command][option]}`, 12)}\n`);
+          output +=
+            (`${wordWrap(`            ${data[key][command][option]}`, 12)}\n`);
         }
       }
     }
@@ -74,7 +74,7 @@ export function createHelpMenu(data: IHelpMenuData): string {
 /**
  * Word wrap a string. Thanks https://j11y.io/snippets/wordwrap-for-javascript/.
  */
-export function wordWrap(str: string, indent: number = 0): string {
+export function wordWrap(str: string, indent = 0): string {
   const brk = "\n" + (indent > 0 ? " ".repeat(indent) : "");
   const regex = new RegExp(/.{1,80}(\s|$)/, "g");
   const ret = str.match(regex);
