@@ -1,4 +1,4 @@
-import { version } from "../../mod.ts";
+import { version } from "../../../mod.ts";
 
 export function showVersion() {
   console.log("Rhum " + version);

@@ -1,35 +1,43 @@
-import { showHelp } from "./src/options/help.ts";
-import { showVersion } from "./src/options/version.ts";
-import { runTests } from "./src/test_runner.ts";
+import { showHelp } from "./src/cli/options/help.ts";
+import { showVersion } from "./src/cli/options/version.ts";
+import { logInfo, logError, runTests } from "./src/test_runner.ts";
 import { IFilters } from "./src/interfaces.ts";
-import { logError } from "./src/test_runner.ts";
 
-const dirOrFile = Deno.args[Deno.args.length - 1];
+const input = Deno.args[Deno.args.length - 1];
+const args = Deno.args;
+const filters: IFilters = {};
 
-if (!dirOrFile) {
+if (!input) {
   showHelp();
   Deno.exit(0);
 }
 
-if (dirOrFile) {
-  if (dirOrFile.includes("--")) {
-    if (dirOrFile.trim() == "--version") {
+if (input) {
+  if (input.includes("--")) {
+    if (input.trim() == "--version") {
       showVersion();
       Deno.exit(0);
     }
-    if (dirOrFile.trim() == "--help") {
+    if (input.trim() == "--help") {
       showHelp();
       Deno.exit(0);
     }
     showHelp();
     Deno.exit(0);
   }
+
+  if (input.trim().includes("make:test")) {
+    logError("You must specify a test file. See --help for more information.");
+    if (Deno.args.length <= 1) {
+      Deno.exit(0);
+    }
+    logInfo("Creating test file");
+    Deno.exit(0);
+  }
 }
 
-const filters: IFilters = {};
-
-if (Deno.args.length > 1) {
-  Deno.args.forEach((arg: string) => {
+if (args.length > 1) {
+  args.forEach((arg: string) => {
     if (arg.includes("--filter-test-case")) {
       filters.test_case = getFilterTestCaseValue(arg);
     }
@@ -57,4 +65,4 @@ function getFilterTestSuiteValue(arg: string): string {
   return match![0].split("=")[1];
 }
 
-runTests(dirOrFile, filters);
+runTests(input, filters);
