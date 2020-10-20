@@ -1,11 +1,6 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import {
-  blue,
-  green,
-  red,
-  yellow,
-} from "https://deno.land/std@0.74.0/fmt/colors.ts";
-import { IFilters, IStats } from "./interfaces.ts";
+import { colors } from "../deps.ts";
+import { IFilters, ITestPlanResults } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
 
@@ -19,9 +14,8 @@ export async function runTests(
   console.log();
   logInfo("Starting Rhum");
 
-  // Define the object that will keep a running total of all the stats we care
-  // about.
-  const stats: IStats = {
+  // Define the variable that will keep track of all tests' results
+  const stats: ITestPlanResults = {
     passed: 0,
     failed: 0,
     skipped: 0,
@@ -51,6 +45,7 @@ export async function runTests(
         Deno.realPathSync("./" + path),
         filters.test_case as string,
         filters.test_suite as string,
+        path,
       ],
       stdout: "piped",
       stderr: "piped",
@@ -58,14 +53,26 @@ export async function runTests(
 
     const stderr = decoder.decode(await p.stderrOutput());
     if (stderr) {
-      // Output the error, but remove the "Check file:///" line, and replace it
-      // with the test file being run
-      const stderrFormatted = stderr
-        .replace(/.+/, "\r")
-        .replace(/\n|\r|\r\n|\n\r/g, "");
-      console.log(stderrFormatted.replace("", path));
+      if (
+        stderr.includes(colors.red("error")) ||
+        stderr.includes("Expected") ||
+        stderr.includes("Expected") ||
+        stderr.includes("Unexpected") ||
+        stderr.includes("Uncaught") ||
+        stderr.includes("TypeError") ||
+        stderr.match(/TS[0-9].+\[/) // e.g., TS2345 [ERROR]
+      ) {
+        console.log(stderr);
+      } else {
+        // Output the error, but remove the "Check file:///" line, and replace it
+        // with the test file being run
+        const stderrFormatted = stderr
+          .replace(/.+/, "\r")
+          .replace(/\n|\r|\r\n|\n\r/g, "");
+        console.log(stderrFormatted.replace("", path));
+      }
     } else {
-      // Otherwise, just output the test file being run
+      // Output the file being tested
       console.log(path);
     }
 
@@ -79,11 +86,15 @@ export async function runTests(
     // Store the results from the test file in the stats. We want to keep track
     // of these stats because we want to display the overall test results when
     // Rhum is done running through all of the tests.
-    const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
-    stats.passed += testPlanResults.passed;
-    stats.failed += testPlanResults.failed;
-    stats.skipped += testPlanResults.skipped;
-    stats.errors += testPlanResults.errors;
+    try {
+      const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
+      stats.passed += testPlanResults.passed;
+      stats.failed += testPlanResults.failed;
+      stats.skipped += testPlanResults.skipped;
+      stats.errors += testPlanResults.errors;
+    } catch (error) {
+      logError("An error ocurred while executing the tests.\n\n" + error.stack);
+    }
   }
 
   // Output the errors
@@ -91,9 +102,9 @@ export async function runTests(
 
   // Output the overall results
   console.log(
-    `\nTest Results: ${green(stats.passed.toString())} passed; ${
-      red(stats.failed.toString())
-    } failed; ${yellow(stats.skipped.toString())} skipped`,
+    `\nTest Results: ${colors.green(stats.passed.toString())} passed; ${
+      colors.red(stats.failed.toString())
+    } failed; ${colors.yellow(stats.skipped.toString())} skipped`,
   );
 }
 
@@ -128,12 +139,21 @@ function getTestFiles(dirOrFile: string): string[] {
 }
 
 /**
+ * Log a debug message.
+ *
+ * @param message The message to log.
+ */
+export function logDebug(message: string): void {
+  console.log(colors.green("DEBUG") + " " + message);
+}
+
+/**
  * Log an error message.
  *
  * @param message The message to log.
  */
 export function logError(message: string): void {
-  console.log(red("ERROR") + " " + message);
+  console.log(colors.red("ERROR") + " " + message);
 }
 
 /**
@@ -142,5 +162,5 @@ export function logError(message: string): void {
  * @param message The message to log.
  */
 export function logInfo(message: string): void {
-  console.log(blue("INFO") + " " + message);
+  console.log(colors.blue("INFO") + " " + message);
 }
