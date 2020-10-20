@@ -38,7 +38,6 @@ if (args.length >= 1) {
     default:
       showHelp();
       Deno.exit();
-      break;
   }
 }
 
