@@ -1,8 +1,13 @@
 interface IHelpMenuData {
+  commands: {[key: string]: string};
   description: string;
-  usage: string[];
-  options: {[key: string]: string};
   example_usage: IExampleUsageData[]
+  options: {
+    [key: string]: {
+      [key: string]: string
+    }
+  };
+  usage: string[];
 }
 
 interface IExampleUsageData {
@@ -23,7 +28,7 @@ export function createHelpMenu(data: IHelpMenuData): string {
 
   for (const key in data) {
     if (key == "description") {
-      output += wrap(data[key]);
+      output += wordWrap(data[key]);
     }
 
     if (key == "usage") {
@@ -33,18 +38,29 @@ export function createHelpMenu(data: IHelpMenuData): string {
       });
     }
 
+    if (key == "commands") {
+      output += `\n\nCOMMANDS\n`;
+      for (const command in data[key]) {
+        output += (`\n    ${command}\n`);
+        output += (`        ${wordWrap(`${data[key][command]}`, 8)}\n`);
+      }
+    }
+
     if (key == "options") {
-      output += `\n\nOPTIONS\n`;
-      for (const option in data[key]) {
-        output += (`\n    ${option}\n`);
-        output += (`        ${wrap(`${data[key][option]}`, 8)}\n`);
+      output += `\n\nOPTIONS\n\n    Options are categorized by command.\n`;
+      for (const command in data[key]) {
+        output += (`\n    ${command}\n`);
+        for (const option in data[key][command]) {
+          output += (`        ${option}\n`);
+          output += (`${wordWrap(`            ${data[key][command][option]}`, 12)}\n`);
+        }
       }
     }
 
     if (key == "example_usage") {
       output += `\n\nEXAMPLE USAGE\n`;
       data[key].forEach((exampleUsageData: IExampleUsageData) => {
-        output += (`\n    ${wrap(exampleUsageData.description, 4)}\n`);
+        output += (`\n    ${wordWrap(exampleUsageData.description, 4)}\n`);
         exampleUsageData.examples.forEach((example: string) => {
           output += (`        ${example}\n`);
         });
@@ -58,9 +74,15 @@ export function createHelpMenu(data: IHelpMenuData): string {
 /**
  * Word wrap a string. Thanks https://j11y.io/snippets/wordwrap-for-javascript/.
  */
-export function wrap(str: string, indent: number = 0, width: number = 80): string {
-  const brk = "\n" + (indent > 0 ? " ".repeat(indent - 1) : "");
-  const regex = ".{1," + width + "}(\s|$)" + ("|\S+?(\s|$)");
-  const ret = str.match( RegExp(regex, "g") )!.join( brk );
-  return ret;
+export function wordWrap(str: string, indent: number = 0): string {
+  const brk = "\n" + (indent > 0 ? " ".repeat(indent) : "");
+  const regex = new RegExp(/.{1,80}(\s|$)/, "g");
+  const ret = str.match(regex);
+  if (!ret) {
+    throw new Error("Error loading help menu.");
+  }
+  ret.map((item: string) => {
+    return item.trim();
+  });
+  return ret.join(brk);
 }
