@@ -63,7 +63,7 @@ Rhum.testPlan(() => {
       );
     });
 
-    Rhum.testCase("call count for outside function is increased", () => {
+    Rhum.testCase("count() for outside function is tracked", () => {
       const mockMathService = Rhum
         .mock(MathService)
         .create();
@@ -88,6 +88,20 @@ Rhum.testPlan(() => {
     mockMathService.add(2, 1);
     Rhum.asserts.assert(
       mockMathService.methods.add.wasLastCalledWith([2, 1])
+    );
+  });
+
+  Rhum.testCase("lastReturned() returns the expected return value", () => {
+    const mockMathService = Rhum
+      .mock(MathService)
+      .create();
+    mockMathService.add(1, 1);
+    Rhum.asserts.assert(
+      mockMathService.methods.add.lastReturned(2)
+    );
+    mockMathService.add(2, 1);
+    Rhum.asserts.assert(
+      mockMathService.methods.add.lastReturned(3)
     );
   });
 });

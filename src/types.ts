@@ -10,6 +10,7 @@ export type Mocked<T> = T & {
   methods: {
     [k: string]: {
       num_calls: number;
+      lastReturned: (input: unknown) => boolean;
       wasLastCalledWith: (...input: unknown[]) => boolean;
       wasCalledTimes: (input: number) => boolean;
     }

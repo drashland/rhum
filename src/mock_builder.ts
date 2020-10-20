@@ -98,10 +98,16 @@ export class MockBuilder<T> {
             return i == a;
           }
 
-          return (original[method as keyof T] as unknown as (
+          const ret = (original[method as keyof T] as unknown as (
             ...params: unknown[]
-          ) => unknown)();
+          ) => unknown)(...args);
 
+          // Track what this method returned
+          mock.methods[method].lastReturned = function (input: unknown) {
+            return input == ret;
+          }
+
+          return ret;
         };
       } else {
         // copy nativeMethod directly without mocking
