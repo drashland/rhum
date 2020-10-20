@@ -10,7 +10,14 @@ interface IExampleUsageData {
   examples: string[];
 }
 
-export function createHelpMenu(data: IHelpMenuData) {
+/**
+ * Create the help menu.
+ *
+ * @param data - The data to use to create the help menu.
+ *
+ * @returns The help menu output.
+ */
+export function createHelpMenu(data: IHelpMenuData): string {
 
   let output = "\n";
 
