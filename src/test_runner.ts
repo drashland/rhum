@@ -29,7 +29,7 @@ export async function runTests(
     testFiles = getTestFiles(dirOrFile);
   } catch (error) {
     logError(
-      "Please specify a valid directory or test file. See rhum --help for more information.",
+      "Please specify a valid directory or test file.",
     );
     Deno.exit(0);
   }

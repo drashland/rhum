@@ -1,14 +1,15 @@
 import { createHelpMenu } from "../services/help_menu_service.ts";
+import { version } from "../../../mod.ts";
 
 export function showHelp() {
   console.log(
     createHelpMenu({
-      description: "Rhum - A lightweight testing framework for Deno.",
+      description: `Rhum ${version} - A lightweight testing framework for Deno.`,
       usage: [
         "rhum [command]"
       ],
       commands: {
-        "make:test /path/to/test/file_test.ts": "Make a test file.",
+        "make /path/to/test/file_test.ts": "Make a test file.",
         "test [options] /path/to/tests or /path/to/test/file_test.ts": "Run tests by specifying a test directory or test file.",
         "help": "Show the help menu.",
         "version": "Show Rhum version.",
@@ -37,19 +38,19 @@ export function showHelp() {
         {
           description: "Make a test file at /my/project/tests/my_test.ts",
           examples: [
-            "rhum make:test /my/project/tests/my_test.ts"
+            "rhum make /my/project/tests/my_test.ts"
           ],
         },
         {
           description: "Show the help menu.",
           examples: [
-            "rhum --help",
+            "rhum help",
           ]
         },
         {
           description: "Show the Rhum version.",
           examples: [
-            "rhum --version",
+            "rhum version",
           ]
         }
       ]
