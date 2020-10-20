@@ -341,7 +341,6 @@ tests/integration/skip_test_plan_test.ts
         ${colors.yellow("SKIP")} skipped
 
 
-
 Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
   colors.yellow("15")
 } skipped
@@ -358,7 +357,6 @@ tests/integration/skip_test_suite_test.ts
         ${colors.yellow("SKIP")} skipped
 
 
-
 Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
   colors.yellow("2")
 } skipped
@@ -373,7 +371,6 @@ tests/integration/skip_test_case_test.ts
     testSuite
         ${colors.yellow("SKIP")} skipped
         ${colors.green("PASS")} testCase
-
 
 
 Test Results: ${colors.green("1")} passed; ${colors.red("0")} failed; ${
