@@ -47,6 +47,7 @@ export class MockBuilder<T> {
     // deno-lint-ignore no-explicit-any
     const mock: Mocked<any> = {
       calls: {},
+      methods: {},
       is_mock: true,
     };
     const original = new this.constructor_fn(...this.constructor_args);
@@ -74,14 +75,34 @@ export class MockBuilder<T> {
       ];
 
       if (nativeMethods.indexOf(method) == -1) {
-        if (!mock.calls[method]) {
-          mock.calls[method] = 0;
+
+        // Define an object to track how many times this method was called and
+        // with what arguments it was last called with
+        if (!mock.methods[method]) {
+          mock.methods[method] = {
+            num_calls: 0,
+            wasCalledTimes: function (input: number) {
+              return input == this.num_calls;
+            }
+          }
         }
-        mock[method] = function () {
-          mock.calls[method]++;
+
+        mock[method] = function (...args: unknown[]) {
+
+          // Count how many times this method was called
+          mock.methods[method].num_calls++;
+
+          // Track the last arguments that this method was called with
+          mock.methods[method].wasLastCalledWith = function (input: unknown[]) {
+            const i = JSON.stringify(input);
+            const a = JSON.stringify(args);
+            return i == a;
+          }
+
           return (original[method as keyof T] as unknown as (
             ...params: unknown[]
           ) => unknown)();
+
         };
       } else {
         // copy nativeMethod directly without mocking

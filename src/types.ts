@@ -8,6 +8,13 @@ export type Constructor<T extends unknown> = new (...args: any[]) => T;
 
 export type Mocked<T> = T & {
   calls: { [k in keyof T]: T[k] extends () => void ? number : never };
+  methods: {
+    [k: string]: {
+      num_calls: number;
+      wasLastCalledWith: (...input: unknown[]) => boolean;
+      wasCalledTimes: (input: number) => boolean;
+    }
+  }
   is_mock: true;
 };
 

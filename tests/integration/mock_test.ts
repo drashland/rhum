@@ -71,9 +71,23 @@ Rhum.testPlan(() => {
         .mock(TestObject)
         .withConstructorArgs("has mocked math service", mockMathService)
         .create();
-      Rhum.asserts.assertEquals(mockMathService.calls.add, 0);
+      Rhum.asserts.assert(mockMathService.methods.add.wasCalledTimes(0));
       mockTestObject.sum(1, 1);
-      Rhum.asserts.assertEquals(mockMathService.calls.add, 1);
+      Rhum.asserts.assert(mockMathService.methods.add.wasCalledTimes(1));
     });
+  });
+
+  Rhum.testCase("lastCalledWith() returns the expected args", () => {
+    const mockMathService = Rhum
+      .mock(MathService)
+      .create();
+    mockMathService.add(1, 1);
+    Rhum.asserts.assert(
+      mockMathService.methods.add.wasLastCalledWith([1, 1])
+    );
+    mockMathService.add(2, 1);
+    Rhum.asserts.assert(
+      mockMathService.methods.add.wasLastCalledWith([2, 1])
+    );
   });
 });
