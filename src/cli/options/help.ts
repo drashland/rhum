@@ -29,16 +29,16 @@ export function showHelp() {
           description:
             "Execute the matching test case in the file(s) being tested.",
           examples: [
-            `rhum test --filter-test-case="myTestCase" test_file.ts`,
-            `rhum test --filter-test-case="myTestCase" some_dir/`,
+            `rhum test --filter-test-case="my test case" test_file.ts`,
+            `rhum test --filter-test-case="my test case" some_dir/`,
           ],
         },
         {
           description:
             "Execute the matching test case in the file(s) being tested.",
           examples: [
-            `rhum test --filter-test-suite="myTestSuite" test_file.ts`,
-            `rhum test --filter-test-suite="myTestSuite" some_dir/`,
+            `rhum test --filter-test-suite="my test suite" test_file.ts`,
+            `rhum test --filter-test-suite="my test suite" some_dir/`,
           ],
         },
         {
