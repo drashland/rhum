@@ -12,27 +12,36 @@ const input = Deno.args[Deno.args.length - 1];
 const args = Deno.args.slice();
 const filters: IFilters = {};
 
+const commands = [
+  "help",
+  "make",
+  "test",
+  "version",
+];
+
 if (!input) {
   showHelp();
   Deno.exit(0);
 }
 
 if (args.length >= 1) {
-  if (commandIs("help")) {
-    showHelp();
-    Deno.exit();
-  }
-  if (commandIs("make")) {
-    make(args);
-    Deno.exit();
-  }
-  if (commandIs("test")) {
-    await test(args);
-    Deno.exit();
-  }
-  if (commandIs("version")) {
-    showVersion();
-    Deno.exit();
+  switch (true) {
+    case commandIs("help"):
+      showHelp();
+      Deno.exit();
+    case commandIs("make"):
+      make(args);
+      Deno.exit();
+    case commandIs("test"):
+      await test(args);
+      Deno.exit();
+    case commandIs("version"):
+      showVersion();
+      Deno.exit();
+    default:
+      showHelp();
+      Deno.exit();
+      break;
   }
 }
 

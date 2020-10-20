@@ -7,6 +7,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
+          "test",
           "example_tests/test.ts",
         ],
         stdout: "piped",
