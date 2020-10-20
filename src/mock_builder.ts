@@ -74,19 +74,17 @@ export class MockBuilder<T> {
       ];
 
       if (nativeMethods.indexOf(method) == -1) {
-
         // Define an object to track data for assertions
         if (!mock.methods[method]) {
           mock.methods[method] = {
             num_calls: 0,
             wasCalledTimes: function (input: number) {
               return input == this.num_calls;
-            }
-          }
+            },
+          };
         }
 
         mock[method] = function (...args: unknown[]) {
-
           // Count how many times this method was called
           mock.methods[method].num_calls++;
 
@@ -95,7 +93,7 @@ export class MockBuilder<T> {
             const i = JSON.stringify(input);
             const a = JSON.stringify(args);
             return i == a;
-          }
+          };
 
           const ret = (original[method as keyof T] as unknown as (
             ...params: unknown[]
@@ -104,7 +102,7 @@ export class MockBuilder<T> {
           // Track what this method last returned
           mock.methods[method].lastReturned = function (input: unknown) {
             return input == ret;
-          }
+          };
 
           return ret;
         };

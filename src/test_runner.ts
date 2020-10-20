@@ -1,5 +1,5 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { colors } from "../deps.ts";
+import { colors, readLines } from "../deps.ts";
 import { IFilters, ITestPlanResults } from "./interfaces.ts";
 
 const decoder = new TextDecoder();
@@ -51,50 +51,46 @@ export async function runTests(
       stderr: "piped",
     });
 
-    const stderr = decoder.decode(await p.stderrOutput());
-    if (stderr) {
-      if (
-        stderr.includes(colors.red("error")) ||
-        stderr.includes("Expected") ||
-        stderr.includes("Expected") ||
-        stderr.includes("Unexpected") ||
-        stderr.includes("Uncaught") ||
-        stderr.includes("TypeError") ||
-        stderr.match(/TS[0-9].+\[/) // e.g., TS2345 [ERROR]
-      ) {
-        console.log(stderr);
-      } else {
-        // Output the error, but remove the "Check file:///" line, and replace it
-        // with the test file being run
-        const stderrFormatted = stderr
-          .replace(/.+/, "\r")
-          .replace(/\n|\r|\r\n|\n\r/g, "");
-        console.log(stderrFormatted.replace("", path));
+    console.log("\n" + path);
+
+    for await (const line of readLines(p.stdout)) {
+      try {
+        // Store the results from the test file in the stats. We want to keep
+        // track of these stats because we want to display the overall test
+        // results when Rhum is done running through all of the tests.
+        const testPlanResults = JSON.parse(line);
+        stats.passed += testPlanResults.passed;
+        stats.failed += testPlanResults.failed;
+        stats.skipped += testPlanResults.skipped;
+        stats.errors += testPlanResults.errors;
+      } catch (error) {
+        // If the line is not the test plan results line, then we know it's just
+        // a test suite or a test case line. So, we just console log this.
+        console.log(line);
       }
-    } else {
-      // Output the file being tested
-      console.log(path);
     }
 
-    // Output the results of the test file, but make sure to strip out the stats
-    // string
-    const stdout = decoder.decode(await p.output());
-    // Define the stats string so that we can strip it out of the stdout results
-    const statsString = new RegExp(/\{\"passed.*failed.*skipped.*/, "g");
-    console.log(stdout.replace(statsString, ""));
-
-    // Store the results from the test file in the stats. We want to keep track
-    // of these stats because we want to display the overall test results when
-    // Rhum is done running through all of the tests.
-    try {
-      const testPlanResults = JSON.parse(stdout.match(statsString)![0]);
-      stats.passed += testPlanResults.passed;
-      stats.failed += testPlanResults.failed;
-      stats.skipped += testPlanResults.skipped;
-      stats.errors += testPlanResults.errors;
-    } catch (error) {
-      logError("An error ocurred while executing the tests.\n\n" + error.stack);
-    }
+    // const stderr = decoder.decode(await p.stderrOutput());
+    // if (stderr) {
+    //   if (
+    //     stderr.includes(colors.red("error")) ||
+    //     stderr.includes("Expected") ||
+    //     stderr.includes("Expected") ||
+    //     stderr.includes("Unexpected") ||
+    //     stderr.includes("Uncaught") ||
+    //     stderr.includes("TypeError") ||
+    //     stderr.match(/TS[0-9].+\[/) // e.g., TS2345 [ERROR]
+    //   ) {
+    //     console.log(stderr);
+    //   } else {
+    //     // Output the error, but remove the "Check file:///" line, and replace it
+    //     // with the test file being run
+    //     const stderrFormatted = stderr
+    //       .replace(/.+/, "\r")
+    //       .replace(/\n|\r|\r\n|\n\r/g, "");
+    //     console.log(stderrFormatted.replace("", path));
+    //   }
+    // }
   }
 
   // Output the errors

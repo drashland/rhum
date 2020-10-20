@@ -316,6 +316,7 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 tests/integration/skip_test_plan_test.ts
     testSuite skipped 1
         ${colors.yellow("SKIP")} skipped
@@ -341,7 +342,6 @@ tests/integration/skip_test_plan_test.ts
         ${colors.yellow("SKIP")} skipped
 
 
-
 Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
   colors.yellow("15")
 } skipped
@@ -352,11 +352,11 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 tests/integration/skip_test_suite_test.ts
     skipped
         ${colors.yellow("SKIP")} skipped
         ${colors.yellow("SKIP")} skipped
-
 
 
 Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
@@ -369,11 +369,11 @@ ${colors.blue("INFO")} Starting Rhum
 ${colors.blue("INFO")} Checking test file(s)
 ${colors.blue("INFO")} Running test(s)
 
+
 tests/integration/skip_test_case_test.ts
     testSuite
         ${colors.yellow("SKIP")} skipped
         ${colors.green("PASS")} testCase
-
 
 
 Test Results: ${colors.green("1")} passed; ${colors.red("0")} failed; ${
