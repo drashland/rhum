@@ -20,7 +20,6 @@ interface IExampleUsageData {
 export function createHelpMenu(data: IHelpMenuData): string {
 
   let output = "\n";
-  let currentInput = "";
 
   for (const key in data) {
     if (key == "description") {
@@ -38,14 +37,14 @@ export function createHelpMenu(data: IHelpMenuData): string {
       output += `\n\nOPTIONS\n`;
       for (const option in data[key]) {
         output += (`\n    ${option}\n`);
-        output += (`${wrap(`        ${data[key][option]}`)}\n`);
+        output += (`        ${wrap(`${data[key][option]}`, 8)}\n`);
       }
     }
 
     if (key == "example_usage") {
       output += `\n\nEXAMPLE USAGE\n`;
       data[key].forEach((exampleUsageData: IExampleUsageData) => {
-        output += (`\n    ${exampleUsageData.description}\n`);
+        output += (`\n    ${wrap(exampleUsageData.description, 4)}\n`);
         exampleUsageData.examples.forEach((example: string) => {
           output += (`        ${example}\n`);
         });
@@ -59,10 +58,9 @@ export function createHelpMenu(data: IHelpMenuData): string {
 /**
  * Word wrap a string. Thanks https://j11y.io/snippets/wordwrap-for-javascript/.
  */
-function wrap(str: string): string {
-  const brk = '\n       ';
-  const width = 80;
-  const cut = false;
-  const regex = '.{1,' +width+ '}(\s|$)' + (cut ? '|.{' +width+ '}|.+$' : '|\S+?(\s|$)');
-  return str.match( RegExp(regex, 'g') )!.join( brk );
+function wrap(str: string, indent: number = 0, width: number = 80): string {
+  const brk = "\n" + (indent > 0 ? " ".repeat(indent - 1) : "");
+  const regex = ".{1," + width + "}(\s|$)" + ("|\S+?(\s|$)");
+  const ret = str.match( RegExp(regex, "g") )!.join( brk );
+  return ret;
 }
