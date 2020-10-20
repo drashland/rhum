@@ -51,7 +51,7 @@ export async function runTests(
       stderr: "piped",
     });
 
-    console.log(path);
+    console.log("\n" + path);
 
     for await (const line of readLines(p.stdout)) {
       try {
