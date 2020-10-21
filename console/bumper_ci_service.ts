@@ -6,8 +6,8 @@ if (BumperService.isForPreRelease()) {
   b.bump([
     {
       filename: "./README.md",
-      replaceTheRegex: /dmm@v[0-9\.]+[0-9\.]+[0-9\.]/g,
-      replaceWith: `dmm@v{{ thisModulesLatestVersion }}`,
+      replaceTheRegex: /rhum@v[0-9\.]+[0-9\.]+[0-9\.]/g,
+      replaceWith: `rhum@v{{ thisModulesLatestVersion }}`,
     },
     {
       filename: "./egg.json",
