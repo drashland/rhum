@@ -13,8 +13,8 @@ export function help() {
         "make /path/to/test/file_test.ts": "Make a test file.",
         "test [options] /path/to/tests or /path/to/test/file_test.ts":
           "Run tests by specifying a test directory or test file.",
-        "help": "Show the help menu.",
-        "version": "Show Rhum version.",
+        "help, --help": "Show the help menu.",
+        "version, --version": "Show Rhum version.",
       },
       options: {
         "test": {
