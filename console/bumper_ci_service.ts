@@ -22,9 +22,9 @@ if (BumperService.isForPreRelease()) {
     {
       filename: "./src/cli/commands/make.ts",
       replaceTheRegex:
-        /import \{ Rhum \} from "https\:\/\/deno.land\/x\/rhum\@v[0-0]\.[0-9]\.[0-9]\/mod.ts"/g,
+        /rhum\@v.+mod.ts"/g,
       replaceWith:
-        `import { Rhum } from "https://deno.land/x/rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
+        `rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
     },
     {
       filename: "./src/commands/version.ts",
