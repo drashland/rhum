@@ -8,14 +8,18 @@ let fileContent = "";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
-const fetchResDeno = await fetch("https://cdn.deno.land/deno/meta/versions.json");
+const fetchResDeno = await fetch(
+  "https://cdn.deno.land/deno/meta/versions.json",
+);
 const denoVersions: {
   latest: string;
   versions: string[];
 } = await fetchResDeno.json(); // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
 const latestDenoVersion = denoVersions.latest.replace("v", "");
 
-const fetchResRhum = await fetch("https://cdn.deno.land/rhum/meta/versions.json");
+const fetchResRhum = await fetch(
+  "https://cdn.deno.land/rhum/meta/versions.json",
+);
 const rhumVersions: {
   latest: string;
   versions: string[];
@@ -48,7 +52,6 @@ await Deno.writeFile(
   encoder.encode(fileContent),
 );
 
-
 // mod.ts
 fileContent = decoder.decode(
   await Deno.readFile("./mod.ts"),
@@ -61,7 +64,6 @@ await Deno.writeFile(
   "./mod.ts",
   encoder.encode(fileContent),
 );
-
 
 // src/cli/commands/make.ts
 fileContent = decoder.decode(
