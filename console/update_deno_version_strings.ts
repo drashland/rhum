@@ -7,12 +7,20 @@
 let fileContent = "";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
-const fetchRes = await fetch("https://cdn.deno.land/deno/meta/versions.json");
-const versions: {
+
+const fetchResDeno = await fetch("https://cdn.deno.land/deno/meta/versions.json");
+const denoVersions: {
   latest: string;
   versions: string[];
-} = await fetchRes.json(); // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
-const latestDenoVersion = versions.latest.replace("v", "");
+} = await fetchResDeno.json(); // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
+const latestDenoVersion = denoVersions.latest.replace("v", "");
+
+const fetchResRhum = await fetch("https://cdn.deno.land/rhum/meta/versions.json");
+const rhumVersions: {
+  latest: string;
+  versions: string[];
+} = await fetchResRhum.json(); // eg { latest: "v1.3.3", versions: ["v1.3.2", ...] }
+const latestRhumVersion = denoVersions.latest;
 
 // Master workflow
 fileContent = decoder.decode(
@@ -37,5 +45,18 @@ fileContent = fileContent.replace(
 );
 await Deno.writeFile(
   "./.github/workflows/bumper.yml",
+  encoder.encode(fileContent),
+);
+
+// mod.ts
+fileContent = decoder.decode(
+  await Deno.readFile("./mod.ts"),
+);
+fileContent = fileContent.replace(
+  /version = ".+"/,
+  `version = "${latestRhumVersion}"`,
+);
+await Deno.writeFile(
+  "./mod.ts",
   encoder.encode(fileContent),
 );
