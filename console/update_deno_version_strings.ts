@@ -48,6 +48,7 @@ await Deno.writeFile(
   encoder.encode(fileContent),
 );
 
+
 // mod.ts
 fileContent = decoder.decode(
   await Deno.readFile("./mod.ts"),
@@ -58,5 +59,19 @@ fileContent = fileContent.replace(
 );
 await Deno.writeFile(
   "./mod.ts",
+  encoder.encode(fileContent),
+);
+
+
+// src/cli/commands/make.ts
+fileContent = decoder.decode(
+  await Deno.readFile("./src/cli/commands/make.ts"),
+);
+fileContent = fileContent.replace(
+  `import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts`,
+  `import { Rhum } from "https://deno.land/x/rhum@${latestRhumVersion}/mod.ts"`,
+);
+await Deno.writeFile(
+  "./src/cli/commands/make.ts",
   encoder.encode(fileContent),
 );
