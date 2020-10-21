@@ -52,7 +52,7 @@ export async function runTests(
     console.log("\n" + path);
 
     for await (const line of readLines(p.stderr)) {
-      if (!line.includes("file:///")) {
+      if (!line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///")) {
         console.log(line);
       }
     }
