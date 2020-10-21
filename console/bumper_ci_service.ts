@@ -2,7 +2,7 @@ import { BumperService } from "https://raw.githubusercontent.com/drashland/servi
 
 const b = new BumperService("rhum", Deno.args);
 
-if (BumperService.isForPreRelease) {
+if (BumperService.isForPreRelease()) {
   b.bump([
     {
       filename: "./README.md",
