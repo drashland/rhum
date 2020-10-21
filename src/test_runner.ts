@@ -1,5 +1,5 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { colors, logError, logInfo, readLines } from "../deps.ts";
+import { colors, LoggerService, readLines } from "../deps.ts";
 import { IFilters, ITestPlanResults } from "./interfaces.ts";
 
 /**
@@ -10,7 +10,7 @@ export async function runTests(
   filters: IFilters = {},
 ): Promise<void> {
   console.log();
-  logInfo("Starting Rhum");
+  LoggerService.logInfo("Starting Rhum");
 
   // Define the variable that will keep track of all tests' results
   const stats: ITestPlanResults = {
@@ -20,19 +20,19 @@ export async function runTests(
     errors: "",
   };
 
-  logInfo("Checking test file(s)");
+  LoggerService.logInfo("Checking test file(s)");
 
   let testFiles: string[];
   try {
     testFiles = getTestFiles(dirOrFile);
   } catch (error) {
-    logError(
+    LoggerService.logError(
       "Please specify a valid directory or test file.",
     );
     Deno.exit(0);
   }
 
-  logInfo("Running test(s)\n");
+  LoggerService.logInfo("Running test(s)\n");
   for await (const path of testFiles) {
     // Run the test file
     const p = Deno.run({
@@ -50,6 +50,12 @@ export async function runTests(
     });
 
     console.log("\n" + path);
+
+    for await (const line of readLines(p.stderr)) {
+      if (!line.includes("file:///")) {
+        console.log(line);
+      }
+    }
 
     for await (const line of readLines(p.stdout)) {
       try {

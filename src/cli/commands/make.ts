@@ -1,4 +1,4 @@
-import { logError, logInfo } from "../../../deps.ts";
+import { LoggerService } from "../../../deps.ts";
 
 const encoder = new TextEncoder();
 
@@ -19,7 +19,7 @@ export function make(args: string[]) {
   let testFileToCreate = args[0];
 
   if (!testFileToCreate.includes(".ts")) {
-    logError(
+    LoggerService.logError(
       `Test files require a .ts extension. You passed in "${testFileToCreate}" as the test file.`,
     );
     Deno.exit();
@@ -29,14 +29,14 @@ export function make(args: string[]) {
     // If we can't read the file, then that means it doesn't exist. That also
     // means we can create the file in the catch block below.
     Deno.readFileSync(testFileToCreate);
-    logError(`"${testFileToCreate}" already exists`);
+    LoggerService.logError(`"${testFileToCreate}" already exists`);
   } catch (error) {
     // Try to create the file
-    logInfo(`Creating "${testFileToCreate}"`);
+    LoggerService.logInfo(`Creating "${testFileToCreate}"`);
     try {
       createFile(testFileToCreate);
     } catch (error) {
-      logError(error.stack);
+      LoggerService.logError(error.stack);
     }
   }
 }
@@ -46,5 +46,5 @@ function createFile(testFileToCreate: string) {
   pathToTestFile.pop();
   Deno.mkdirSync(pathToTestFile.join("/"), { recursive: true });
   Deno.writeFileSync(testFileToCreate, testTemplate);
-  logInfo(`Test file "${testFileToCreate} created`);
+  LoggerService.logInfo(`Test file "${testFileToCreate} created`);
 }

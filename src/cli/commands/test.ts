@@ -1,6 +1,6 @@
 import { runTests } from "../../test_runner.ts";
 import { IFilters } from "../../interfaces.ts";
-import { logError } from "../../../deps.ts";
+import { LoggerService } from "../../../deps.ts";
 
 const filters: IFilters = {};
 
@@ -15,7 +15,7 @@ export async function test(args: string[]): Promise<void> {
   });
 
   if (filters.test_case && filters.test_suite) {
-    logError(
+    LoggerService.logError(
       "You cannot use --filter-test-case and --filter-test-suite together. Please specify one option.",
     );
     Deno.exit();
@@ -24,7 +24,7 @@ export async function test(args: string[]): Promise<void> {
   const testFileOrDir = args[args.length - 1];
 
   if (testFileOrDir.includes("--")) {
-    logError("Please specify a test file or directory.");
+    LoggerService.logError("Please specify a test file or directory.");
     Deno.exit();
   }
 

@@ -21,8 +21,10 @@ if (BumperService.is_for_pre_release) {
     },
     {
       filename: "./src/cli/commands/make.ts",
-      replaceTheRegex: `import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts`,
-      replaceWith: `import { Rhum } from "https://deno.land/x/rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
+      replaceTheRegex:
+        `import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts`,
+      replaceWith:
+        `import { Rhum } from "https://deno.land/x/rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
     },
     {
       filename: "./src/commands/version.ts",
