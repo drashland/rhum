@@ -1,5 +1,5 @@
-import { version } from "../../../mod.ts";
+import { version as v } from "../../../mod.ts";
 
-export function showVersion() {
-  console.log("Rhum " + version);
+export function version() {
+  console.log("Rhum " + v);
 }

@@ -1,7 +1,7 @@
 import { createHelpMenu } from "../../../deps.ts";
 import { version } from "../../../mod.ts";
 
-export function showHelp() {
+export function help() {
   console.log(
     createHelpMenu({
       description:

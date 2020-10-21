@@ -1,8 +1,6 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { colors, logDebug, logError, logInfo, readLines } from "../deps.ts";
+import { colors, logError, logInfo, readLines } from "../deps.ts";
 import { IFilters, ITestPlanResults } from "./interfaces.ts";
-
-const decoder = new TextDecoder();
 
 /**
  * Run all tests.
