@@ -2,7 +2,7 @@ import { BumperService } from "https://raw.githubusercontent.com/drashland/servi
 
 const b = new BumperService("rhum", Deno.args);
 
-if (BumperService.is_for_pre_release) {
+if (BumperService.isForPreRelease) {
   b.bump([
     {
       filename: "./README.md",
@@ -22,7 +22,7 @@ if (BumperService.is_for_pre_release) {
     {
       filename: "./src/cli/commands/make.ts",
       replaceTheRegex:
-        `import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts`,
+        /import \{ Rhum \} from "https\:\/\/deno.land\/x\/rhum\@v[0-0]\.[0-9]\.[0-9]\/mod.ts"/g,
       replaceWith:
         `import { Rhum } from "https://deno.land/x/rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
     },
