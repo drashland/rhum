@@ -22,7 +22,7 @@ export function make(args: string[]) {
     LoggerService.logError(
       `Test files require a .ts extension. You passed in "${testFileToCreate}" as the test file.`,
     );
-    Deno.exit();
+    Deno.exit(1);
   }
 
   try {

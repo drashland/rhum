@@ -29,7 +29,7 @@ export async function runTests(
     LoggerService.logError(
       "Please specify a valid directory or test file.",
     );
-    Deno.exit(0);
+    Deno.exit(1);
   }
 
   LoggerService.logInfo("Running test(s)\n");

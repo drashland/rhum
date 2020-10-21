@@ -18,14 +18,14 @@ export async function test(args: string[]): Promise<void> {
     LoggerService.logError(
       "You cannot use --filter-test-case and --filter-test-suite together. Please specify one option.",
     );
-    Deno.exit();
+    Deno.exit(1);
   }
 
   const testFileOrDir = args[args.length - 1];
 
   if (testFileOrDir.includes("--")) {
     LoggerService.logError("Please specify a test file or directory.");
-    Deno.exit();
+    Deno.exit(1);
   }
 
   await runTests(testFileOrDir, filters);
