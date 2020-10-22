@@ -592,7 +592,17 @@ export class RhumRunner {
         ),
       );
       this.test_plan_results.failed++;
-      this.test_plan_results.errors += ("\n" + error.stack + "\n");
+      let stack = error.stack.match(/test_fn.*/g);
+      if (stack) {
+        stack = stack[0].replace(/\(|\)/g, "")
+          .replace(/test_fn/g, "")
+          .replace(Deno.cwd(), "")
+          .replace("file:\/\/\/", "./");
+        const errorMessage = `\n${error}\nThe above assertion error occurred in:\n\n  ${stack}\n\n`
+        this.test_plan_results.errors += errorMessage;
+      } else {
+        this.test_plan_results.errors += ("\n" + error.stack + "\n");
+      }
     }
 
     // Execute .afterEach() hook after each test case if it exists
