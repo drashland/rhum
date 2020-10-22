@@ -78,6 +78,10 @@ AssertionError: Values are not equal:
 ${colors.red(colors.bold("-   false"))}
 ${colors.green(colors.bold("+   true"))}
 
+The above assertion error occurred in:
+
+   ./example_tests/test.ts:43:12
+
 
 
 Test Results: ${colors.green("4")} passed; ${colors.red("1")} failed; ${
