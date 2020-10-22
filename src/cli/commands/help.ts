@@ -4,7 +4,7 @@ import { version } from "../../../mod.ts";
 export const help = CliService.createHelpMenu({
   description: `Rhum ${version} - A lightweight testing framework for Deno.`,
   usage: [
-    "rhum [subcommand] [options]",
+    "rhum [subcommand] [options] [directory|file]",
   ],
   subcommands: {
     "make [file]": "Make a test file.",
