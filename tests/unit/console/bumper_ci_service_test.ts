@@ -2,7 +2,7 @@ import { Rhum } from "../../../mod.ts";
 import {
   denoVersionFiles,
   moduleVersionFiles,
-} from "../../../console/files.ts";
+} from "../../../console/bumper_ci_service_files.ts";
 import { BumperService } from "../../../deps.ts";
 
 // Not for pre-release
