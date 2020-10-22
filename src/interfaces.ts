@@ -57,6 +57,6 @@ export interface ITestPlanResults {
 }
 
 export interface IFilters {
-  test_case?: string;
-  test_suite?: string;
+  test_case?: string | null;
+  test_suite?: string | null;
 }

@@ -1,0 +1,24 @@
+workflow files
+
+deno: ["0.0.0"]
+deno: ["0.0.0"]
+
+-----
+
+import statements
+
+import { Rhum } from "https://deno.land/x/rhum@v0.0.0/mod.ts";
+import { Rhum } from "https://deno.land/x/rhum@v0.0.0/mod.ts";
+
+----
+
+consts
+
+export const version = "v0.0.0";
+export const version = "v0.0.0";
+
+----
+
+egg.json
+
+"version": "0.0.0",

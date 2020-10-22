@@ -1,8 +1,6 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { colors, readLines } from "../deps.ts";
+import { colors, LoggerService, readLines } from "../deps.ts";
 import { IFilters, ITestPlanResults } from "./interfaces.ts";
-
-const decoder = new TextDecoder();
 
 /**
  * Run all tests.
@@ -12,7 +10,7 @@ export async function runTests(
   filters: IFilters = {},
 ): Promise<void> {
   console.log();
-  logInfo("Starting Rhum");
+  LoggerService.logInfo("Starting Rhum");
 
   // Define the variable that will keep track of all tests' results
   const stats: ITestPlanResults = {
@@ -22,19 +20,19 @@ export async function runTests(
     errors: "",
   };
 
-  logInfo("Checking test file(s)");
+  LoggerService.logInfo("Checking test file(s)");
 
   let testFiles: string[];
   try {
     testFiles = getTestFiles(dirOrFile);
   } catch (error) {
-    logError(
-      "Please specify a valid directory or test file. See rhum --help for more information.",
+    LoggerService.logError(
+      "Please specify a valid directory or test file.",
     );
-    Deno.exit(0);
+    Deno.exit(1);
   }
 
-  logInfo("Running test(s)\n");
+  LoggerService.logInfo("Running test(s)\n");
   for await (const path of testFiles) {
     // Run the test file
     const p = Deno.run({
@@ -43,8 +41,8 @@ export async function runTests(
         "run",
         "-A",
         Deno.realPathSync("./" + path),
-        filters.test_case as string,
-        filters.test_suite as string,
+        filters.test_case ?? "undefined",
+        filters.test_suite ?? "undefined",
         path,
       ],
       stdout: "piped",
@@ -52,6 +50,19 @@ export async function runTests(
     });
 
     console.log("\n" + path);
+
+    for await (const stderrLine of readLines(p.stderr)) {
+      const line = stderrLine.trim();
+      if (
+        !line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///")
+        && line != ""
+        && line != "\n"
+        && line != "\r"
+        && JSON.stringify(line != '""')
+      ) {
+        console.log(line);
+      }
+    }
 
     for await (const line of readLines(p.stdout)) {
       try {
@@ -132,31 +143,4 @@ function getTestFiles(dirOrFile: string): string[] {
   }
 
   return testFiles;
-}
-
-/**
- * Log a debug message.
- *
- * @param message The message to log.
- */
-export function logDebug(message: string): void {
-  console.log(colors.green("DEBUG") + " " + message);
-}
-
-/**
- * Log an error message.
- *
- * @param message The message to log.
- */
-export function logError(message: string): void {
-  console.log(colors.red("ERROR") + " " + message);
-}
-
-/**
- * Log an info message.
- *
- * @param message The message to log.
- */
-export function logInfo(message: string): void {
-  console.log(colors.blue("INFO") + " " + message);
 }

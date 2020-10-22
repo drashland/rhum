@@ -1,60 +1,21 @@
-import { showHelp } from "./src/options/help.ts";
-import { showVersion } from "./src/options/version.ts";
-import { runTests } from "./src/test_runner.ts";
-import { IFilters } from "./src/interfaces.ts";
-import { logError } from "./src/test_runner.ts";
+import { help } from "./src/cli/commands/help.ts";
+import { make } from "./src/cli/commands/make.ts";
+import { test } from "./src/cli/commands/test.ts";
+import { version } from "./src/cli/commands/version.ts";
+import { CliService } from "./deps.ts";
 
-const dirOrFile = Deno.args[Deno.args.length - 1];
+const c = new CliService(Deno.args);
 
-if (!dirOrFile) {
-  showHelp();
-  Deno.exit(0);
-}
+c.addSubcommand(["help", "--help"], () => {
+  console.log(help);
+});
 
-if (dirOrFile) {
-  if (dirOrFile.includes("--")) {
-    if (dirOrFile.trim() == "--version") {
-      showVersion();
-      Deno.exit(0);
-    }
-    if (dirOrFile.trim() == "--help") {
-      showHelp();
-      Deno.exit(0);
-    }
-    showHelp();
-    Deno.exit(0);
-  }
-}
+c.addSubcommand(["version", "--version"], () => {
+  console.log(version);
+});
 
-const filters: IFilters = {};
+c.addSubcommand("make", make, { requires_args: true });
 
-if (Deno.args.length > 1) {
-  Deno.args.forEach((arg: string) => {
-    if (arg.includes("--filter-test-case")) {
-      filters.test_case = getFilterTestCaseValue(arg);
-    }
-    if (arg.includes("--filter-test-suite")) {
-      filters.test_suite = getFilterTestSuiteValue(arg);
-    }
-  });
+c.addSubcommand("test", test, { requires_args: true });
 
-  if (filters.test_case && filters.test_suite) {
-    console.log();
-    logError(
-      "You cannot specify both --filter-test-case and --filter-test-suite in one command. See --help for more information.",
-    );
-    Deno.exit(0);
-  }
-}
-
-function getFilterTestCaseValue(arg: string): string {
-  const match = arg.match(/--filter-test-case=.+/);
-  return match![0].split("=")[1];
-}
-
-function getFilterTestSuiteValue(arg: string): string {
-  const match = arg.match(/--filter-test-suite=.+/);
-  return match![0].split("=")[1];
-}
-
-runTests(dirOrFile, filters);
+c.run();

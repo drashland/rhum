@@ -7,6 +7,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
+          "test",
           "example_tests/test.ts",
         ],
         stdout: "piped",
@@ -76,6 +77,10 @@ AssertionError: Values are not equal:
 
 ${colors.red(colors.bold("-   false"))}
 ${colors.green(colors.bold("+   true"))}
+
+The above assertion error occurred in:
+
+   ./example_tests/test.ts:43:12
 
 
 
