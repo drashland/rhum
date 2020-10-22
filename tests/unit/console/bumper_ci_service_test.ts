@@ -14,6 +14,16 @@ const c = new BumperService("rhum", ["--version=1.2.3"]);
 const latestVersions = await b.getLatestVersions();
 
 Rhum.testPlan(async () => {
+
+  /**
+   * The test cases process as follows:
+   *
+   *   1. Take the file.
+   *   2. Switch out the file for the test file. This test file mocks different
+   *      patterns that the regex SHOULD match and replace.
+   *   3. Bump the file.
+   *   4. Assert that everything is as expected.
+   */
   await Rhum.testSuite(
     "bumper_ci_service.ts",
     () => {
