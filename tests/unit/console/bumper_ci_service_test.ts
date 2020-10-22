@@ -16,9 +16,9 @@ const latestVersions = await b.getLatestVersions();
 Rhum.testPlan(async () => {
 
   /**
-   * The test cases process as follows:
+   * The test cases in this test suite process as follows:
    *
-   *   1. Take the file.
+   *   1. Take a file.
    *   2. Switch out the file for the test file. This test file mocks different
    *      patterns that the regex SHOULD match and replace.
    *   3. Bump the file.
