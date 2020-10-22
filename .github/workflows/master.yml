@@ -31,25 +31,25 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: |
           export PATH="~/.deno/bin:$PATH"
-          rhum --ignore="tests/data/,tests/ignore" tests/unit
+          rhum test --ignore="tests/data/,tests/ignore" tests/unit
 
       - name: Run Integration Tests
         if: matrix.os != 'windows-latest'
         run: |
           export PATH="~/.deno/bin:$PATH"
-          rhum --ignore="tests/data/,tests/ignore" tests/integration
+          rhum test --ignore="tests/data/,tests/ignore" tests/integration
 
       - name: Run Unit Tests (windows)
         if: matrix.os == 'windows-latest'
         run: |
           $env:Path += ";C:\Users\runneradmin\.deno\bin"
-          rhum --ignore="tests/data/,tests/ignore" tests/unit
+          rhum test --ignore="tests/data/,tests/ignore" tests/unit
 
       - name: Run Integration Tests (windows)
         if: matrix.os == 'windows-latest'
         run: |
           $env:Path += ";C:\Users\runneradmin\.deno\bin"
-          rhum --ignore="tests/data/,tests/ignore" tests/integration
+          rhum test --ignore="tests/data/,tests/ignore" tests/integration
 
   linter:
     strategy:
