@@ -8,7 +8,7 @@ const c = new CliService(Deno.args);
 
 c.addCommand(["help", "--help"], () => {
   console.log(help);
-})
+});
 
 c.addCommand(["version", "--version"], () => {
   console.log(version);
