@@ -8,7 +8,7 @@ export const help = CliService.createHelpMenu({
   ],
   subcommands: {
     "make [file]": "Make a test file.",
-    "test [options] [director|file]":
+    "test [options] [directory|file]":
       "Run tests by specifying a test directory or test file.",
     "help, --help": "Display the help menu.",
     "version, --version": "Display Rhum version.",
