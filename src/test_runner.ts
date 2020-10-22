@@ -7,7 +7,7 @@ import { IOptions, ITestPlanResults } from "./interfaces.ts";
  */
 export async function runTests(
   dirOrFile: string,
-  options: IOptions = {}
+  options: IOptions = {},
 ): Promise<void> {
   console.log();
   LoggerService.logInfo("Starting Rhum");
@@ -18,6 +18,7 @@ export async function runTests(
     failed: 0,
     skipped: 0,
     errors: "",
+    ignored: options.ignore ? options.ignore.split(",") : undefined
   };
 
   LoggerService.logInfo("Checking test file(s)");
@@ -32,29 +33,28 @@ export async function runTests(
     Deno.exit(1);
   }
 
-  const ignored: string[] = [];
-
-  if (options.ignore) {
-    const split = options.ignore.split(",");
-    split.forEach((ignoredFileOrDirectory: string) => {
-      ignored.push(ignoredFileOrDirectory);
-    });
-  }
-
   LoggerService.logInfo("Running test(s)\n");
   for await (const path of testFiles) {
 
     let ignore = false;
 
-    ignored.forEach((ignoredFileOrDirectory: string) => {
-      if (path.match(ignoredFileOrDirectory)) {
-        ignore = true;
-      }
-    });
+    if (options && options.ignore) {
+      options.ignore.split(",").forEach((ignoredFileOrDirectory: string) => {
+        const match = ("./" + path).match(
+          ignoredFileOrDirectory,
+        );
+        if (match && match.length > 0) {
+          ignore = true;
+        }
+      });
+    }
 
     if (ignore) {
       continue;
     }
+
+    // Output what file is being tested
+    console.log("\n" + path);
 
     // Run the test file
     const p = Deno.run({
@@ -63,14 +63,12 @@ export async function runTests(
         "run",
         "-A",
         Deno.realPathSync("./" + path),
-        JSON.stringify(options),
-        path,
+        JSON.stringify(options), // Deno.args[0]
+        path, // Deno.args[1]
       ],
       stdout: "piped",
       stderr: "piped",
     });
-
-    console.log("\n" + path);
 
     for await (const stderrLine of readLines(p.stderr)) {
       const line = stderrLine.trim();
@@ -132,8 +130,20 @@ export async function runTests(
   console.log(
     `\nTest Results: ${colors.green(stats.passed.toString())} passed; ${
       colors.red(stats.failed.toString())
-    } failed; ${colors.yellow(stats.skipped.toString())} skipped`,
+    } failed; ${
+      colors.yellow(stats.skipped.toString())
+    } skipped`,
   );
+
+  // Output the files that were ignored
+  if (stats.ignored) {
+    console.log();
+    LoggerService.logInfo("Ignored files and/or directories");
+    console.log();
+    stats.ignored.forEach((path: string) => {
+      console.log(`- ${path}`);
+    });
+  }
 }
 
 /**

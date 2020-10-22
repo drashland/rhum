@@ -54,6 +54,7 @@ export interface ITestPlanResults {
   failed: number;
   skipped: number;
   errors: string;
+  ignored?: string[];
 }
 
 export interface IOptions {
