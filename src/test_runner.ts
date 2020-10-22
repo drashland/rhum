@@ -52,7 +52,13 @@ export async function runTests(
     console.log("\n" + path);
 
     for await (const line of readLines(p.stderr)) {
-      if (!line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///")) {
+      if (
+        !line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///")
+        && line.trim() != ""
+        && line.trim() != "\n"
+        && line.trim() != "\r"
+        && JSON.stringify(line.trim()) != '""'
+      ) {
         console.log(line);
       }
     }
