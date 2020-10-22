@@ -4,14 +4,14 @@ import { version } from "../../../mod.ts";
 export const help = CliService.createHelpMenu({
   description: `Rhum ${version} - A lightweight testing framework for Deno.`,
   usage: [
-    "rhum [command]",
+    "rhum [subcommand] [options]",
   ],
-  commands: {
-    "make /path/to/test/file_test.ts": "Make a test file.",
-    "test [options] /path/to/tests or /path/to/test/file_test.ts":
+  subcommands: {
+    "make [file]": "Make a test file.",
+    "test [options] [director|file]":
       "Run tests by specifying a test directory or test file.",
-    "help, --help": "Show the help menu.",
-    "version, --version": "Show Rhum version.",
+    "help, --help": "Display the help menu.",
+    "version, --version": "Display Rhum version.",
   },
   options: {
     "test": {
@@ -19,6 +19,8 @@ export const help = CliService.createHelpMenu({
         "Execute the matching test case in the file(s) being tested. This option cannot be used with --filter-test-suite.",
       "--filter-test-suite":
         "Execute the matching test suite in the file(s) being tested. This option cannot be used with --filter-test-case.",
+      "--ignore":
+        "Ignore a set of directories or files.",
     },
   },
   example_usage: [
@@ -39,19 +41,28 @@ export const help = CliService.createHelpMenu({
       ],
     },
     {
+      description: "Execute all tests, but ignore directories/files.",
+      examples: [
+        `rhum test --ignore=./tests/data tests/`,
+        `rhum test --ignore=./tests/data,./tests/ignore tests/`,
+        `rhum test --ignore=./tests/test_1.ts tests/`,
+        `rhum test --ignore=./tests/test_1.ts,./tests/test_2.ts tests/`,
+      ]
+    },
+    {
       description: "Make a test file at /my/project/tests/my_test.ts",
       examples: [
         "rhum make /my/project/tests/my_test.ts",
       ],
     },
     {
-      description: "Show the help menu.",
+      description: "Display the help menu.",
       examples: [
         "rhum help",
       ],
     },
     {
-      description: "Show the Rhum version.",
+      description: "Display the Rhum version.",
       examples: [
         "rhum version",
       ],

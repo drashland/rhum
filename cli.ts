@@ -6,16 +6,16 @@ import { CliService } from "./deps.ts";
 
 const c = new CliService(Deno.args);
 
-c.addCommand(["help", "--help"], () => {
+c.addSubcommand(["help", "--help"], () => {
   console.log(help);
 });
 
-c.addCommand(["version", "--version"], () => {
+c.addSubcommand(["version", "--version"], () => {
   console.log(version);
 });
 
-c.addCommand("make", make, { requires_args: true });
+c.addSubcommand("make", make, { requires_args: true });
 
-c.addCommand("test", test, { requires_args: true });
+c.addSubcommand("test", test, { requires_args: true });
 
 c.run();
