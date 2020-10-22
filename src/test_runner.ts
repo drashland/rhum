@@ -54,11 +54,11 @@ export async function runTests(
     for await (const stderrLine of readLines(p.stderr)) {
       const line = stderrLine.trim();
       if (
-        !line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///")
-        && line != ""
-        && line != "\n"
-        && line != "\r"
-        && JSON.stringify(line != '""')
+        !line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///") &&
+        line != "" &&
+        line != "\n" &&
+        line != "\r" &&
+        JSON.stringify(line != '""')
       ) {
         console.log(line);
       }

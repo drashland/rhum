@@ -19,8 +19,7 @@ export const help = CliService.createHelpMenu({
         "Execute the matching test case in the file(s) being tested. This option cannot be used with --filter-test-suite.",
       "--filter-test-suite":
         "Execute the matching test suite in the file(s) being tested. This option cannot be used with --filter-test-case.",
-      "--ignore":
-        "Ignore a set of directories or files.",
+      "--ignore": "Ignore a set of directories or files.",
     },
   },
   example_usage: [
@@ -47,7 +46,7 @@ export const help = CliService.createHelpMenu({
         `rhum test --ignore=./tests/data,./tests/ignore tests/`,
         `rhum test --ignore=./tests/test_1.ts tests/`,
         `rhum test --ignore=./tests/test_1.ts,./tests/test_2.ts tests/`,
-      ]
+      ],
     },
     {
       description: "Make a test file at /my/project/tests/my_test.ts",

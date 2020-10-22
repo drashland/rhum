@@ -14,7 +14,6 @@ const c = new BumperService("rhum", ["--version=1.2.3"]);
 const latestVersions = await b.getLatestVersions();
 
 Rhum.testPlan(async () => {
-
   /**
    * The test cases in this test suite process as follows:
    *

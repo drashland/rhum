@@ -16,7 +16,7 @@ Rhum.testPlan(() => {
 );
 
 export function make(args: string[]) {
-  let testFileToCreate = args[0];
+  const testFileToCreate = args[0];
 
   if (!testFileToCreate.includes(".ts")) {
     LoggerService.logError(
