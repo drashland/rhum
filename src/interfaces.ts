@@ -56,7 +56,8 @@ export interface ITestPlanResults {
   errors: string;
 }
 
-export interface IFilters {
+export interface IOptions {
   test_case?: string | null;
   test_suite?: string | null;
+  ignore?: string | null;
 }

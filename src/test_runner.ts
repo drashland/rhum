@@ -1,13 +1,13 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
 import { colors, LoggerService, readLines } from "../deps.ts";
-import { IFilters, ITestPlanResults } from "./interfaces.ts";
+import { IOptions, ITestPlanResults } from "./interfaces.ts";
 
 /**
  * Run all tests.
  */
 export async function runTests(
   dirOrFile: string,
-  filters: IFilters = {},
+  options: IOptions = {}
 ): Promise<void> {
   console.log();
   LoggerService.logInfo("Starting Rhum");
@@ -32,8 +32,30 @@ export async function runTests(
     Deno.exit(1);
   }
 
+  const ignored: string[] = [];
+
+  if (options.ignore) {
+    const split = options.ignore.split(",");
+    split.forEach((ignoredFileOrDirectory: string) => {
+      ignored.push(ignoredFileOrDirectory);
+    });
+  }
+
   LoggerService.logInfo("Running test(s)\n");
   for await (const path of testFiles) {
+
+    let ignore = false;
+
+    ignored.forEach((ignoredFileOrDirectory: string) => {
+      if (path.match(ignoredFileOrDirectory)) {
+        ignore = true;
+      }
+    });
+
+    if (ignore) {
+      continue;
+    }
+
     // Run the test file
     const p = Deno.run({
       cmd: [
@@ -41,8 +63,7 @@ export async function runTests(
         "run",
         "-A",
         Deno.realPathSync("./" + path),
-        filters.test_case ?? "undefined",
-        filters.test_suite ?? "undefined",
+        JSON.stringify(options),
         path,
       ],
       stdout: "piped",

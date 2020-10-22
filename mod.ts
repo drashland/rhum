@@ -323,16 +323,14 @@ export class RhumRunner {
    * Run the test plan.
    */
   public async runTestPlan(): Promise<void> {
-    const filters = Deno.args;
-    const filterTestCase = filters[0];
-    const filterTestSuite = filters[1];
+    const options = JSON.parse(Deno.args[0].slice());
 
-    if (filterTestCase != "undefined") {
-      return await this.runCaseFiltered(filterTestCase);
+    if (options.test_case) {
+      return await this.runCaseFiltered(options.test_case);
     }
 
-    if (filterTestSuite != "undefined") {
-      return await this.runSuiteFiltered(filterTestSuite);
+    if (options.test_suite) {
+      return await this.runSuiteFiltered(options.test_suite);
     }
 
     await this.runAllSuitesAndCases();
@@ -489,7 +487,7 @@ export class RhumRunner {
    *     });
    */
   public async testPlan(testSuites: () => void): Promise<void> {
-    this.test_plan.name = Deno.args[2];
+    this.test_plan.name = Deno.args[1];
     await testSuites();
     await this.runTestPlan();
   }
