@@ -321,7 +321,11 @@ export class RhumRunner {
    *
    * @returns The value of the non-public method when invoked.
    */
-  public invokeNonPublicMethod<T>(obj: T, method: string, args?: unknown[]): unknown {
+  public invokeNonPublicMethod<T>(
+    obj: T,
+    method: string,
+    args?: unknown[],
+  ): unknown {
     const fn = obj[method as keyof T];
     if (typeof fn == "function") {
       if (Array.isArray(args)) {
@@ -331,7 +335,6 @@ export class RhumRunner {
 
     throw new Error(`Protected method '${method}' does not exist.`);
   }
-
 
   /**
    * Get the mock builder to mock classes.

@@ -286,7 +286,10 @@ Rhum.testPlan(() => {
         protected protected_property = "this is protected";
       }
       const myObj = new MyObj();
-      const property = Rhum.getNonPublicPropertyValue(myObj, "protected_property");
+      const property = Rhum.getNonPublicPropertyValue(
+        myObj,
+        "protected_property",
+      );
       Rhum.asserts.assertEquals(
         property,
         "this is protected",
@@ -300,7 +303,10 @@ Rhum.testPlan(() => {
         }
       }
       const myObj = new MyObj();
-      const property = Rhum.getNonPublicPropertyValue(myObj, "private_property");
+      const property = Rhum.getNonPublicPropertyValue(
+        myObj,
+        "private_property",
+      );
       Rhum.asserts.assertEquals(
         property,
         "this cake is private",
@@ -316,7 +322,11 @@ Rhum.testPlan(() => {
         }
       }
       const myObj = new MyObj();
-      const val = Rhum.invokeNonPublicMethod(myObj, "protectedMethod", ["boyyyeeeee"]);
+      const val = Rhum.invokeNonPublicMethod(
+        myObj,
+        "protectedMethod",
+        ["boyyyeeeee"],
+      );
       Rhum.asserts.assertEquals(
         val,
         "boyyyeeeee",
@@ -333,7 +343,11 @@ Rhum.testPlan(() => {
         }
       }
       const myObj = new MyObj();
-      const val = Rhum.invokeNonPublicMethod(myObj, "privateMethod", ["boyyyeeeee"]);
+      const val = Rhum.invokeNonPublicMethod(
+        myObj,
+        "privateMethod",
+        ["boyyyeeeee"],
+      );
       Rhum.asserts.assertEquals(
         val,
         "boyyyeeeee",
