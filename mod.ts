@@ -333,7 +333,7 @@ export class RhumRunner {
       }
     }
 
-    throw new Error(`Protected method '${method}' does not exist.`);
+    throw new Error(`Non-public method '${method}' does not exist.`);
   }
 
   /**
