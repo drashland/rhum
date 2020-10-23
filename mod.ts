@@ -293,6 +293,18 @@ export class RhumRunner {
   }
 
   /**
+   * Get a non-public property.
+   *
+   * @param obj - The object containing the non-public property.
+   * @param property - The name of the non-public property.
+   *
+   * @returns The non-public property's value.
+   */
+  public getNonPublicProperty<T>(obj: T, property: string): unknown {
+    return obj[property as keyof T];
+  }
+
+  /**
    * Get the current test plan.
    *
    * @returns The test plan.
@@ -300,6 +312,26 @@ export class RhumRunner {
   public getTestPlan(): ITestPlan {
     return this.test_plan;
   }
+
+  /**
+   * Invoke a non-public method.
+   *
+   * @param obj - The object containing the non-public method.
+   * @param method - The name of the non-public method.
+   *
+   * @returns The value of the non-public method when invoked.
+   */
+  public invokeNonPublicMethod<T>(obj: T, method: string, args?: unknown[]): unknown {
+    const fn = obj[method as keyof T];
+    if (typeof fn == "function") {
+      if (Array.isArray(args)) {
+        return fn(...args);
+      }
+    }
+
+    throw new Error(`Protected method '${method}' does not exist.`);
+  }
+
 
   /**
    * Get the mock builder to mock classes.

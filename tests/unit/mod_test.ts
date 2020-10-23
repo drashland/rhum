@@ -280,6 +280,67 @@ Rhum.testPlan(() => {
     });
   });
 
+  Rhum.testSuite("getNonPublicProperty", () => {
+    Rhum.testCase("can access property public", () => {
+      class MyObj {
+        protected protected_property = "this is protected";
+      }
+      const myObj = new MyObj();
+      const property = Rhum.getNonPublicProperty(myObj, "protected_property");
+      Rhum.asserts.assertEquals(
+        property,
+        "this is protected",
+      );
+    });
+    Rhum.testCase("can access a private property", () => {
+      class MyObj {
+        private private_property = "this cake is private";
+        public something() {
+          return this.private_property;
+        }
+      }
+      const myObj = new MyObj();
+      const property = Rhum.getNonPublicProperty(myObj, "private_property");
+      Rhum.asserts.assertEquals(
+        property,
+        "this cake is private",
+      );
+    });
+  });
+
+  Rhum.testSuite("invokeNonPublicMethod", () => {
+    Rhum.testCase("can invoke a protected method", () => {
+      class MyObj {
+        protected protectedMethod(arg1: string): string {
+          return arg1;
+        }
+      }
+      const myObj = new MyObj();
+      const val = Rhum.invokeNonPublicMethod(myObj, "protectedMethod", ["boyyyeeeee"]);
+      Rhum.asserts.assertEquals(
+        val,
+        "boyyyeeeee",
+      );
+    });
+
+    Rhum.testCase("can invoke a private method", () => {
+      class MyObj {
+        private privateMethod(arg1: string): string {
+          return arg1;
+        }
+        public something() {
+          return this.privateMethod("hello");
+        }
+      }
+      const myObj = new MyObj();
+      const val = Rhum.invokeNonPublicMethod(myObj, "privateMethod", ["boyyyeeeee"]);
+      Rhum.asserts.assertEquals(
+        val,
+        "boyyyeeeee",
+      );
+    });
+  });
+
   Rhum.testSuite("testCase", () => {
     Rhum.testCase("adds a test case to a test suite", () => {
       const cases = Rhum.getTestPlan().suites["testCase"].cases.length;
