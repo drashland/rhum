@@ -300,7 +300,7 @@ export class RhumRunner {
    *
    * @returns The non-public property's value.
    */
-  public getNonPublicProperty<T>(obj: T, property: string): unknown {
+  public getNonPublicPropertyValue<T>(obj: T, property: string): unknown {
     return obj[property as keyof T];
   }
 

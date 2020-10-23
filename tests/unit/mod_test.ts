@@ -280,13 +280,13 @@ Rhum.testPlan(() => {
     });
   });
 
-  Rhum.testSuite("getNonPublicProperty", () => {
+  Rhum.testSuite("getNonPublicPropertyValue", () => {
     Rhum.testCase("can access property public", () => {
       class MyObj {
         protected protected_property = "this is protected";
       }
       const myObj = new MyObj();
-      const property = Rhum.getNonPublicProperty(myObj, "protected_property");
+      const property = Rhum.getNonPublicPropertyValue(myObj, "protected_property");
       Rhum.asserts.assertEquals(
         property,
         "this is protected",
@@ -300,7 +300,7 @@ Rhum.testPlan(() => {
         }
       }
       const myObj = new MyObj();
-      const property = Rhum.getNonPublicProperty(myObj, "private_property");
+      const property = Rhum.getNonPublicPropertyValue(myObj, "private_property");
       Rhum.asserts.assertEquals(
         property,
         "this cake is private",
