@@ -31,8 +31,16 @@
 
 ## Quick Start
 
+1. Install the Rhum CLI.
+
+```shell
+deno install --allow-write --allow-read -f --reload https://deno.land/x/rhum@v1.1.4/mod.ts
+```
+
+2. Create your test file.
+
 ```typescript
-// File: app_test.ts
+// File: tests/app_test.ts
 
 import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts";
 
@@ -47,10 +55,7 @@ async function close() {
   return value;
 }
 
-// 1. Define your test plan (usually the test file's name)
-// 2. Define your test suites (usually methods being tested)
-// 3. Define your test cases with assertions
-Rhum.testPlan("app_test.ts", () => {
+Rhum.testPlan(() => {
   Rhum.testSuite("run()", () => {
     Rhum.testCase("Returns true", () => {
       const result = run();
@@ -65,25 +70,37 @@ Rhum.testPlan("app_test.ts", () => {
   });
 });
 
-Rhum.run(); // <-- make sure to include this so that your tests run via `deno test`
 ```
 
+3. Run your tests.
+
 ```
-$ deno test --allow-env
+$ rhum test tests/
 
-Compile file:///.deno.test.ts
-running 2 tests
+INFO Starting Rhum
+INFO Checking test file(s)
+INFO Running tests
 
-app_test.ts
+tests/app_test.ts
     run()
-        Returns true ... ok (4ms)
+        PASS Returns true
     close()
-        Returns true ... ok (1ms)
+        PASS Returns true
+
+Test Results: 8 passed; 1 failed; 0 skipped
 ```
 
 ## Documentation
 
-[Full Documentation](https://drash.land/rhum)
+* [Full Documentation](https://drash.land/rhum)
+
+* [CLI](https://drash.land/rhum/#/cli)
+
+* [Lifecycle Diagram](https://drash.land/rhum/#/lifecycle-diagram)
+
+* Older Versions
+
+    * [v1.x](https://drash.land/rhum/#/archive/v1x)
 
 ## Features
 
