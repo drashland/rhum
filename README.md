@@ -25,6 +25,7 @@
 - [Documentation](#documentation)
 - [Features](#features)
 - [Why use Rhum?](#why-use-rhum)
+- [Mirrors](#mirrors)
 - [Articles](#articles)
 - [Contributing](#contributing)
 - [License](#license)
@@ -128,6 +129,10 @@ Rhum takes concepts from the following:
 * <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
 
 Rhum can be added directly into any project. All you need to do is import Rhum and you are ready to start writing tests -- whether it be migrating to Rhum or just using it for its assertion calls.
+
+## Mirrors
+
+* https://nest.land/package/rhum
 
 ## Articles
 
