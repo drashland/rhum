@@ -80,7 +80,7 @@ ${colors.green(colors.bold("+   true"))}
 
 The above assertion error occurred in:
 
-   ./example_tests/test.ts:43:12
+   test.ts:66:20
 
 
 
