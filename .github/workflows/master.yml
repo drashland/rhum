@@ -45,8 +45,8 @@ jobs:
         with:
           deno-version: ${{ matrix.deno }}
 
-      - name: Lint
-        run: deno lint --unstable
+      # - name: Lint
+      #   run: deno lint --unstable
 
       - name: Formatter
         run: deno fmt --check
