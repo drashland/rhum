@@ -1,12 +1,12 @@
-export { ServerRequest } from "https://deno.land/std@0.74.0/http/server.ts";
+export { ServerRequest } from "https://deno.land/std@0.75.0/http/server.ts";
 
-export { BufReader } from "https://deno.land/std@0.74.0/io/bufio.ts";
+export { BufReader } from "https://deno.land/std@0.75.0/io/bufio.ts";
 
-export { readLines } from "https://deno.land/std@0.74.0/io/mod.ts";
+export { readLines } from "https://deno.land/std@0.75.0/io/mod.ts";
 
-export * as StdAsserts from "https://deno.land/std@0.74.0/testing/asserts.ts";
+export * as StdAsserts from "https://deno.land/std@0.75.0/testing/asserts.ts";
 
-export * as colors from "https://deno.land/std@0.74.0/fmt/colors.ts";
+export * as colors from "https://deno.land/std@0.75.0/fmt/colors.ts";
 
 export { LoggerService } from "https://raw.githubusercontent.com/drashland/services/master/logger/logger_service.ts";
 

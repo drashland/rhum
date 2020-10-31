@@ -18,14 +18,14 @@ Rhum.testPlan(() => {
       const b = a;
       Rhum.asserts.assertStrictEquals(a, b);
     });
-    Rhum.testCase("assertStringContains", () => {
-      Rhum.asserts.assertStringContains("Test hello", "hello");
+    Rhum.testCase("assertStringIncludes", () => {
+      Rhum.asserts.assertStringIncludes("Test hello", "hello");
     });
     Rhum.testCase("assertMatch", () => {
       Rhum.asserts.assertMatch("Test hello", /hello/g);
     });
-    Rhum.testCase("assertArrayContains", () => {
-      Rhum.asserts.assertArrayContains(["t", "e", "s", "t"], ["t", "e"]);
+    Rhum.testCase("assertArrayIncludes", () => {
+      Rhum.asserts.assertArrayIncludes(["t", "e", "s", "t"], ["t", "e"]);
     });
     Rhum.testCase("assertThrows", () => {
       Rhum.asserts.assertThrows(() => {
