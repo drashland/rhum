@@ -21,6 +21,10 @@ import { StdAsserts } from "../deps.ts";
 //   unreachable: StdAsserts.unreachable
 // };
 
-export const asserts = { ...StdAsserts };
+export const asserts = {
+  ...StdAsserts,
+  assertArrayContains: StdAsserts.assertArrayIncludes,
+  assertStringContains: StdAsserts.assertStringIncludes,
+};
 
-export type assertions = keyof typeof StdAsserts;
+export type assertions = keyof typeof asserts;
