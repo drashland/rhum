@@ -1,20 +1,24 @@
 import { runTests } from "../../test_runner.ts";
-import { IFilters } from "../../interfaces.ts";
+import { IOptions } from "../../interfaces.ts";
 import { LoggerService } from "../../../deps.ts";
+import { getOptionValue } from "../../services/option_service.ts";
 
-const filters: IFilters = {};
+const options: IOptions = {};
 
 export async function test(args: string[]): Promise<void> {
   args.forEach((arg: string) => {
-    if (!filters.test_case) {
-      filters.test_case = getFilterTestCaseValue(arg);
+    if (!options.test_case) {
+      options.test_case = getOptionValue(arg, "--filter-test-case");
     }
-    if (!filters.test_suite) {
-      filters.test_suite = getFilterTestSuiteValue(arg);
+    if (!options.test_suite) {
+      options.test_suite = getOptionValue(arg, "--filter-test-suite");
+    }
+    if (!options.ignore) {
+      options.ignore = getOptionValue(arg, "--ignore");
     }
   });
 
-  if (filters.test_case && filters.test_suite) {
+  if (options.test_case && options.test_suite) {
     LoggerService.logError(
       "You cannot use --filter-test-case and --filter-test-suite together. Please specify one option.",
     );
@@ -28,22 +32,5 @@ export async function test(args: string[]): Promise<void> {
     Deno.exit(1);
   }
 
-  await runTests(testFileOrDir, filters);
-}
-
-function getFilterTestCaseValue(arg: string): string | null {
-  const match = arg.match(/--filter-test-case=.+/);
-  if (match) {
-    return match[0].split("=")[1];
-  }
-  return null;
-}
-
-function getFilterTestSuiteValue(arg: string): string | null {
-  const match = arg.match(/--filter-test-suite=.+/);
-  if (match) {
-    return match[0].split("=")[1];
-  }
-
-  return null;
+  await runTests(testFileOrDir, options);
 }

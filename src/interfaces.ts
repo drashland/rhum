@@ -54,9 +54,11 @@ export interface ITestPlanResults {
   failed: number;
   skipped: number;
   errors: string;
+  ignored?: string[];
 }
 
-export interface IFilters {
+export interface IOptions {
   test_case?: string | null;
   test_suite?: string | null;
+  ignore?: string | null;
 }
