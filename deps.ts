@@ -13,4 +13,3 @@ export { LoggerService } from "https://raw.githubusercontent.com/drashland/servi
 export { CliService } from "https://raw.githubusercontent.com/drashland/services/master/cli/cli_service.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/master/ci/bumper_service.ts";
-

@@ -18,7 +18,7 @@ export async function runTests(
     failed: 0,
     skipped: 0,
     errors: "",
-    ignored: options.ignore ? options.ignore.split(",") : undefined
+    ignored: options.ignore ? options.ignore.split(",") : undefined,
   };
 
   LoggerService.logInfo("Checking test file(s)");
@@ -35,7 +35,6 @@ export async function runTests(
 
   LoggerService.logInfo("Running test(s)\n");
   for await (const path of testFiles) {
-
     let ignore = false;
 
     if (options && options.ignore) {
@@ -130,9 +129,7 @@ export async function runTests(
   console.log(
     `\nTest Results: ${colors.green(stats.passed.toString())} passed; ${
       colors.red(stats.failed.toString())
-    } failed; ${
-      colors.yellow(stats.skipped.toString())
-    } skipped`,
+    } failed; ${colors.yellow(stats.skipped.toString())} skipped`,
   );
 
   // Output the files that were ignored
