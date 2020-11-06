@@ -60,7 +60,6 @@ export async function runTests(
     const cmd = [
       "deno",
       "run",
-      "--allow-read",
     ];
 
     const denoFlags = options.deno_flags.split(" ");

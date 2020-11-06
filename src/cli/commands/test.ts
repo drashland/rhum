@@ -21,7 +21,8 @@ export async function test(args: string[]): Promise<void> {
     if (
       arg == "--allow-run" ||
       arg == "--allow-net" ||
-      arg == "--allow-write"
+      arg == "--allow-write" ||
+      arg == "--allow-read"
     ) {
       options.deno_flags += (" " + arg);
     }

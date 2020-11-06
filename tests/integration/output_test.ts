@@ -8,6 +8,7 @@ Rhum.testPlan(() => {
         cmd: [
           "rhum",
           "test",
+          "--allow-read",
           "example_tests/test.ts",
         ],
         stdout: "piped",
