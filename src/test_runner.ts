@@ -8,7 +8,7 @@ import { IOptions, ITestPlanResults } from "./interfaces.ts";
 export async function runTests(
   dirOrFile: string,
   options: IOptions = {
-    deno_flags: ""
+    deno_flags: "",
   },
 ): Promise<void> {
   console.log();
@@ -60,7 +60,7 @@ export async function runTests(
     const cmd = [
       "deno",
       "run",
-      "--allow-read"
+      "--allow-read",
     ];
 
     const denoFlags = options.deno_flags.split(" ");
