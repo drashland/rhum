@@ -323,7 +323,7 @@ export class RhumRunner {
    * Run the test plan.
    */
   public async runTestPlan(): Promise<void> {
-    const options = JSON.parse(Deno.args[0].slice());
+    const options = JSON.parse(Deno.args[Deno.args.length - 1].slice());
 
     if (options.test_case) {
       return await this.runCaseFiltered(options.test_case);
@@ -487,7 +487,7 @@ export class RhumRunner {
    *     });
    */
   public async testPlan(testSuites: () => void): Promise<void> {
-    this.test_plan.name = Deno.args[1];
+    this.test_plan.name = Deno.args[Deno.args.length - 2];
     await testSuites();
     await this.runTestPlan();
   }

@@ -58,6 +58,7 @@ export interface ITestPlanResults {
 }
 
 export interface IOptions {
+  deno_flags: string;
   test_case?: string | null;
   test_suite?: string | null;
   ignore?: string | null;

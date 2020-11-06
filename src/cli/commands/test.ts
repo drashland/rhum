@@ -3,7 +3,9 @@ import { IOptions } from "../../interfaces.ts";
 import { LoggerService } from "../../../deps.ts";
 import { getOptionValue } from "../../services/option_service.ts";
 
-const options: IOptions = {};
+const options: IOptions = {
+  deno_flags: ""
+};
 
 export async function test(args: string[]): Promise<void> {
   args.forEach((arg: string) => {
@@ -15,6 +17,13 @@ export async function test(args: string[]): Promise<void> {
     }
     if (!options.ignore) {
       options.ignore = getOptionValue(arg, "--ignore");
+    }
+    if (
+      arg == "--allow-run"
+      || arg == "--allow-net"
+      || arg == "--allow-write"
+    ) {
+      options.deno_flags += (" " + arg);
     }
   });
 

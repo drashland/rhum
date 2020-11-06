@@ -7,7 +7,9 @@ import { IOptions, ITestPlanResults } from "./interfaces.ts";
  */
 export async function runTests(
   dirOrFile: string,
-  options: IOptions = {},
+  options: IOptions = {
+    deno_flags: ""
+  },
 ): Promise<void> {
   console.log();
   LoggerService.logInfo("Starting Rhum");
@@ -55,16 +57,25 @@ export async function runTests(
     // Output what file is being tested
     console.log("\n" + path);
 
+    const cmd = [
+      "deno",
+      "run",
+      "--allow-read"
+    ];
+
+    const denoFlags = options.deno_flags.split(" ");
+    denoFlags.shift();
+    denoFlags.forEach((arg: string) => {
+      cmd.push(arg);
+    });
+
+    cmd.push(Deno.realPathSync("./" + path));
+    cmd.push(path); // Deno.args[Deno.argslength - 1]
+    cmd.push(JSON.stringify(options)); // Deno.args[Deno.argslength - 1]
+
     // Run the test file
     const p = Deno.run({
-      cmd: [
-        "deno",
-        "run",
-        "-A",
-        Deno.realPathSync("./" + path),
-        JSON.stringify(options), // Deno.args[0]
-        path, // Deno.args[1]
-      ],
+      cmd: cmd,
       stdout: "piped",
       stderr: "piped",
     });
