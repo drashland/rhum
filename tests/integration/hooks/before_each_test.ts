@@ -8,14 +8,12 @@ let suite_val = "Ed";
 let case_val = 22;
 
 Rhum.testPlan("before_each_test.ts", () => {
-
   Rhum.beforeEach(() => {
     suite_val = "Eric";
   });
 
   // Run the first test suite
   Rhum.testSuite("test suite 1", () => {
-
     Rhum.beforeEach(() => {
       case_val = 2;
     });
@@ -38,7 +36,6 @@ Rhum.testPlan("before_each_test.ts", () => {
 
   // Run the second test suite
   Rhum.testSuite("test suite 2", () => {
-
     Rhum.beforeEach(() => {
       case_val = 0;
     });
@@ -57,7 +54,6 @@ Rhum.testPlan("before_each_test.ts", () => {
   });
 
   Rhum.testSuite("test suite 3", () => {
-
     let async_case_val = 5;
 
     Rhum.beforeEach(async () => {

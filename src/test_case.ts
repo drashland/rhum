@@ -31,7 +31,6 @@ export class TestCase {
     let executedAfterAllSuiteHook = false;
 
     Object.keys(this.plan.suites).forEach((suiteName) => {
-
       // Track the execution of hooks
       let executedBeforeEachSuiteHook = false;
       let executedAfterEachSuiteHook = false;
@@ -48,11 +47,16 @@ export class TestCase {
             await this.plan.before_all_suite_hook();
             executedBeforeAllSuiteHook = true;
           }
-          if (this.plan.before_each_suite_hook && !executedBeforeEachSuiteHook) {
+          if (
+            this.plan.before_each_suite_hook && !executedBeforeEachSuiteHook
+          ) {
             await this.plan.before_each_suite_hook();
             executedBeforeEachSuiteHook = true;
           }
-          if (this.plan.suites[suiteName].before_all_case_hook && !executedBeforeAllCaseHook) {
+          if (
+            this.plan.suites[suiteName].before_all_case_hook &&
+            !executedBeforeAllCaseHook
+          ) {
             await this.plan.suites[suiteName].before_all_case_hook!();
             executedBeforeAllCaseHook = true;
           }
@@ -65,8 +69,10 @@ export class TestCase {
           if (this.plan.suites[suiteName].after_each_case_hook) {
             await this.plan.suites[suiteName].after_each_case_hook!();
           }
-          if (this.plan.suites[suiteName].after_all_case_hook &&
-              !executedAfterAllCaseHook) {
+          if (
+            this.plan.suites[suiteName].after_all_case_hook &&
+            !executedAfterAllCaseHook
+          ) {
             await this.plan.suites[suiteName].after_all_case_hook!();
             executedAfterAllCaseHook = true;
           }

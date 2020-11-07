@@ -14,7 +14,6 @@ Rhum.testPlan("before_all_test.ts", () => {
 
   // Run the first test suite
   Rhum.testSuite("test suite 1", () => {
-
     Rhum.beforeAll(() => {
       case_val = 2;
     });
