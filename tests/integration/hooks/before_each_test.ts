@@ -10,7 +10,6 @@ let case_val = 22;
 Rhum.testPlan("before_each_test.ts", () => {
 
   Rhum.beforeEach(() => {
-    console.log("eric");
     suite_val = "Eric";
   });
 
