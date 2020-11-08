@@ -1,34 +1,24 @@
 export const regexes = {
-  import_statements: /rhum\@v.+mod.ts/g,
   const_statements: /version = ".+"/g,
-  yml_deno: /deno: \[".+"\]/g,
   egg_json: /"version": ".+"/,
+  import_export_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g,
+  yml_deno: /deno: \[".+"\]/g,
 };
 
-export const moduleVersionFiles = [
-  {
-    filename: "./README.md",
-    replaceTheRegex: regexes.import_statements,
-    replaceWith: `rhum@v{{ thisModulesLatestVersion }}/mod.ts`,
-  },
+export const preReleaseFiles = [
   {
     filename: "./egg.json",
     replaceTheRegex: regexes.egg_json,
     replaceWith: `"version": "{{ thisModulesLatestVersion }}"`,
   },
   {
-    filename: "./mod.ts",
-    replaceTheRegex: regexes.const_statements,
-    replaceWith: `version = "v{{ thisModulesLatestVersion }}"`,
-  },
-  {
-    filename: "./src/cli/commands/make.ts",
-    replaceTheRegex: regexes.import_statements,
-    replaceWith: `rhum@v{{ thisModulesLatestVersion }}/mod.ts"`,
+    filename: "./README.md",
+    replaceTheRegex: regexes.import_export_statements,
+    replaceWith: `rhum@v{{ thisModulesLatestVersion }}`,
   },
 ];
 
-export const denoVersionFiles = [
+export const bumperFiles = [
   {
     filename: "./.github/workflows/master.yml",
     replaceTheRegex: regexes.yml_deno,
