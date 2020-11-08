@@ -38,7 +38,7 @@
 1. Install the Rhum CLI.
 
 ```shell
-deno install --allow-write --allow-read -f --reload https://deno.land/x/rhum@v1.1.4/mod.ts
+deno install --allow-write --allow-read -f -n rhum --reload https://deno.land/x/rhum@v1.1.4/mod.ts
 ```
 
 2. Create your test file.
