@@ -1,7 +1,7 @@
 export const regexes = {
   const_statements: /version = ".+"/g,
   egg_json: /"version": ".+"/,
-  import_export_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g,
+  import_export_statements: /rhum@v[0-9\.]+[0-9\.]+[0-9\.]/g,
   yml_deno: /deno: \[".+"\]/g,
 };
 
