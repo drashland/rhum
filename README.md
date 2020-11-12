@@ -38,7 +38,7 @@
 ```typescript
 // File: app_test.ts
 
-import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts";
+import { Rhum } from "https://deno.land/x/rhum@v1.1.5/mod.ts";
 
 let value = false;
 
