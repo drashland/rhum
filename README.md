@@ -35,55 +35,7 @@
 
 ## Quick Start
 
-```typescript
-// File: app_test.ts
-
-import { Rhum } from "https://deno.land/x/rhum@v1.1.4/mod.ts";
-
-let value = false;
-
-function run() {
-  return true;
-}
-
-async function close() {
-  value = true;
-  return value;
-}
-
-// 1. Define your test plan (usually the test file's name)
-// 2. Define your test suites (usually methods being tested)
-// 3. Define your test cases with assertions
-Rhum.testPlan("app_test.ts", () => {
-  Rhum.testSuite("run()", () => {
-    Rhum.testCase("Returns true", () => {
-      const result = run();
-      Rhum.asserts.assertEquals(true, result);
-    });
-  });
-  Rhum.testSuite("close()", () => {
-    Rhum.testCase("Returns true", async () => {
-      const result = await close();
-      Rhum.asserts.assertEquals(true, result);
-    });
-  });
-});
-
-Rhum.run(); // <-- make sure to include this so that your tests run via `deno test`
-```
-
-```
-$ deno test --allow-env
-
-Compile file:///.deno.test.ts
-running 2 tests
-
-app_test.ts
-    run()
-        Returns true ... ok (4ms)
-    close()
-        Returns true ... ok (1ms)
-```
+Get started [here](https://drash.land/rhum/#/#quickstart) to build an example test using Rhum.
 
 ## Documentation
 
