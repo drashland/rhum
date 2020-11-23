@@ -23,25 +23,7 @@
 
 ---
 
-## Table of Contents
-- [Quick Start](#quick-start)
-- [Documentation](#documentation)
-- [Features](#features)
-- [Why use Rhum?](#why-use-rhum)
-- [Mirrors](#mirrors)
-- [Articles](#articles)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Quick Start
-
-Get started [here](https://drash.land/rhum/#/#quickstart) to build an example test using Rhum.
-
-## Documentation
-
-[Full Documentation](https://drash.land/rhum)
-
-## Features
+### Features
 
 - Descriptive naming for your tests
 - Lightweight
@@ -50,9 +32,14 @@ Get started [here](https://drash.land/rhum/#/#quickstart) to build an example te
 - Asynchronous support
 - Still uses `Deno.test` under the hood
 - Skip functionality
+- Mock requests
 - Hooks
 
-## Why Use Rhum?
+### Getting Started
+
+To add Rhum to your project, follow the quick start guide [here](https://drash.land/rhum/#/#quickstart).
+
+### Why Use Rhum?
 
 Rhum allows you to write tests in a very descriptive way -- from a code perspective or output perspective.
 
@@ -63,24 +50,11 @@ Rhum is designed to aid your testing efforts -- providing many utilities as wrap
 
 Rhum takes concepts from the following:
 
-* <a href="https://mochajs.org/" target="_BLANK">Mocha</a> &mdash; For how you write tests in Rhum, and the use of <a href="https://mochajs.org/#hooks" target="_BLANK">hooks</a>
-* <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
+- <a href="https://mochajs.org/" target="_BLANK">Mocha</a> &mdash; For how you write tests in Rhum, and the use of <a href="https://mochajs.org/#hooks" target="_BLANK">hooks</a>
+- <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
 
 Rhum can be added directly into any project. All you need to do is import Rhum and you are ready to start writing tests or bring your existing tests under Rhum.
 
-## Mirrors
+---
 
-* https://nest.land/package/rhum
-
-## Articles
-
-* [Why We Created Rhum For Testing Deno Projects](https://dev.to/crookse_/why-we-created-rhum-for-testing-deno-projects-33mf)
-
-## Contributing
-
-Contributors are welcomed!
-
-Please read through our [contributing guidelines](./.github/CONTRIBUTING.md). Included are directions for opening issues, coding standards, and notes on development.
-
-## License
-By contributing your code, you agree to license your contribution under the [MIT License](./LICENSE).
+Want to contribute? Follow the Contributing Guidelines [here](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md). All code is released under the [MIT License](./LICENSE).
