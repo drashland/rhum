@@ -1,5 +1,5 @@
 /**
- * Purpose of this test is to ensure a test using before_each succeeds
+ * Purpose of this test is to ensure a test using before_all succeeds
  */
 
 import { Rhum } from "../../../mod.ts";
