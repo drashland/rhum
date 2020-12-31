@@ -30,7 +30,7 @@ export class TestCase {
     let executedBeforeAllSuiteHook = false;
     let executedAfterAllSuiteHook = false;
 
-    Object.keys(this.plan.suites).forEach((suiteName) => {
+    Object.keys(this.plan.suites).forEach((suiteName, suiteIndex) => {
       // Track the execution of hooks
       let executedBeforeEachSuiteHook = false;
       let executedAfterEachSuiteHook = false;
@@ -38,7 +38,7 @@ export class TestCase {
       let executedAfterAllCaseHook = false;
 
       // Run cases
-      this.plan!.suites[suiteName].cases!.forEach(async (c: ITestCase) => {
+      this.plan!.suites[suiteName].cases!.forEach(async (c: ITestCase, caseIndex) => {
         // Run the case - required to run like this because the
         // hooks need to be ran inside the Deno.test call. Deno.test seems to queue
         // the tests, meaning all hooks are ran, and **then** the tests are ran
@@ -69,9 +69,10 @@ export class TestCase {
           if (this.plan.suites[suiteName].after_each_case_hook) {
             await this.plan.suites[suiteName].after_each_case_hook!();
           }
+          const isLastCase = (this.plan!.suites[suiteName].cases!.length - 1) == caseIndex;
           if (
             this.plan.suites[suiteName].after_all_case_hook &&
-            !executedAfterAllCaseHook
+            !executedAfterAllCaseHook && isLastCase
           ) {
             await this.plan.suites[suiteName].after_all_case_hook!();
             executedAfterAllCaseHook = true;
@@ -80,7 +81,8 @@ export class TestCase {
             await this.plan.after_each_suite_hook();
             executedAfterEachSuiteHook = true;
           }
-          if (this.plan.after_all_suite_hook && !executedAfterAllSuiteHook) {
+          const isLastSuite = (Object.keys(this.plan!.suites).length - 1) == suiteIndex;
+          if (this.plan.after_all_suite_hook && !executedAfterAllSuiteHook && isLastSuite) {
             await this.plan.after_all_suite_hook();
             executedAfterAllSuiteHook = true;
           }
