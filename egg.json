@@ -11,5 +11,10 @@
     "./README.md",
     "./logo.svg",
     "LICENSE"
-  ]
+  ],
+  "check": false,
+  "entry": "./mod.ts",
+  "homepage": "https://github.com/drashland/rhum",
+  "ignore": [],
+  "unlisted": false
 }
