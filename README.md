@@ -37,24 +37,35 @@
 
 ### Getting Started
 
-To add Rhum to your project, follow the quick start guide [here](https://drash.land/rhum/#/#quickstart).
+To add Rhum to your project, follow the quick start guide
+[here](https://drash.land/rhum/#/#quickstart).
 
 ### Why Use Rhum?
 
-Rhum allows you to write tests in a very descriptive way -- from a code perspective or output perspective.
+Rhum allows you to write tests in a very descriptive way -- from a code
+perspective or output perspective.
 
-Rhum is designed to aid your testing efforts -- providing many utilities as wrappers around Deno's existing `Deno.test`. Rhum is meant to improve the user experience when it comes to writing tests, such as:
+Rhum is designed to aid your testing efforts -- providing many utilities as
+wrappers around Deno's existing `Deno.test`. Rhum is meant to improve the user
+experience when it comes to writing tests, such as:
 
 - Readability for test cases
 - Features that aren't available in Deno yet (hooks)
 
 Rhum takes concepts from the following:
 
-- <a href="https://mochajs.org/" target="_BLANK">Mocha</a> &mdash; For how you write tests in Rhum, and the use of <a href="https://mochajs.org/#hooks" target="_BLANK">hooks</a>
-- <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash; Being minimalistic
+- <a href="https://mochajs.org/" target="_BLANK">Mocha</a> &mdash; For how you
+  write tests in Rhum, and the use of
+  <a href="https://mochajs.org/#hooks" target="_BLANK">hooks</a>
+- <a href="https://volument.com/baretest" target="_BLANK">Baretest</a> &mdash;
+  Being minimalistic
 
-Rhum can be added directly into any project. All you need to do is import Rhum and you are ready to start writing tests or bring your existing tests under Rhum.
+Rhum can be added directly into any project. All you need to do is import Rhum
+and you are ready to start writing tests or bring your existing tests under
+Rhum.
 
 ---
 
-Want to contribute? Follow the Contributing Guidelines [here](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md). All code is released under the [MIT License](./LICENSE).
+Want to contribute? Follow the Contributing Guidelines
+[here](https://github.com/drashland/.github/blob/master/CONTRIBUTING.md). All
+code is released under the [MIT License](./LICENSE).
