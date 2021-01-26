@@ -27,7 +27,7 @@
 
 - Descriptive naming for your tests
 - Lightweight
-- Zero dependencies
+- Zero 3rd party dependencies
 - Simple and easy to use
 - Asynchronous support
 - Still uses `Deno.test` under the hood
