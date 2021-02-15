@@ -1,7 +1,7 @@
 export const regexes = {
   const_statements: /version = ".+"/g,
   egg_json: /"version": ".+"/,
-  import_export_statements: /drash@v[0-9\.]+[0-9\.]+[0-9\.]/g,
+  import_export_statements: /rhum@v[0-9\.]+[0-9\.]+[0-9\.]/g,
   yml_deno: /deno: \[".+"\]/g,
 };
 
@@ -23,20 +23,4 @@ export const preReleaseFiles = [
   },
 ];
 
-export const bumperFiles = [
-  {
-    filename: "./.github/workflows/master.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/bumper.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-  {
-    filename: "./.github/workflows/pre_release.yml",
-    replaceTheRegex: regexes.yml_deno,
-    replaceWith: `deno: ["{{ latestDenoVersion }}"]`,
-  },
-];
+export const bumperFiles = [];

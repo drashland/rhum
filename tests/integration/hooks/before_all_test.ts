@@ -49,6 +49,7 @@ Rhum.testPlan(() => {
     });
 
     Rhum.testCase("beforeAll hook can be async", () => {
+      Rhum.asserts.assertEquals(suite_val, "Ed");
       Rhum.asserts.assertEquals(async_case_val, 15);
     });
   });
