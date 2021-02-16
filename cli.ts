@@ -1,21 +1,30 @@
-import { help } from "./src/cli/commands/help.ts";
-import { make } from "./src/cli/commands/make.ts";
-import { test } from "./src/cli/commands/test.ts";
-import { version } from "./src/cli/commands/version.ts";
-import { CliService } from "./deps.ts";
+import { Rhum } from "./mod.ts";
+(window as any).Rhum = Rhum;
 
-const c = new CliService(Deno.args);
+import { CliService, Subcommand, Option } from "./deps.ts";
+// import { runTests } from "../test_runner.ts";
+// import { run } from "./src/commands/run.ts";
 
-c.addSubcommand(["help", "--help"], () => {
-  console.log(help);
-});
+const service = new CliService("Rhum")
+  .description("A lightweight testing framework for Deno.")
+  .command("rhum");
 
-c.addSubcommand(["version", "--version"], () => {
-  console.log(version);
-});
+service
+  .subcommand(new Subcommand("run")
+    .description("Run tests.")
+    .handler(() => {
+      console.log("Running tests");
+    })
+    .option(new Option("--filter-test-case")
+      .description("Run tests cases that match the value of this option.")
+      .handler(() => {
+      })
+    )
+    .option(new Option("--filter-test-suite")
+      .description("Run tests suites that match the value of this option.")
+      .handler(() => {
+      })
+    )
+  );
 
-c.addSubcommand("make", make, { requires_args: true });
-
-c.addSubcommand("test", test, { requires_args: true });
-
-c.run();
+service.run();

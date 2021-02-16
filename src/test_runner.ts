@@ -1,18 +1,16 @@
 import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
-import { colors, LoggerService, readLines } from "../deps.ts";
-import { IOptions, ITestPlanResults } from "./interfaces.ts";
+import { colors, ConsoleLogger, readLines } from "../deps.ts";
+import { ITestPlanResults } from "./interfaces.ts";
 
 /**
  * Run all tests.
  */
 export async function runTests(
   dirOrFile: string,
-  options: IOptions = {
-    deno_flags: "",
-  },
+  denoFlags: string,
 ): Promise<void> {
   console.log();
-  LoggerService.logInfo("Starting Rhum");
+  ConsoleLogger.info("Starting Rhum");
 
   // Define the variable that will keep track of all tests' results
   const stats: ITestPlanResults = {
@@ -20,40 +18,22 @@ export async function runTests(
     failed: 0,
     skipped: 0,
     errors: "",
-    ignored: options.ignore ? options.ignore.split(",") : undefined,
   };
 
-  LoggerService.logInfo("Checking test file(s)");
+  ConsoleLogger.info("Checking test file(s)");
 
   let testFiles: string[];
   try {
     testFiles = getTestFiles(dirOrFile);
   } catch (error) {
-    LoggerService.logError(
+    ConsoleLogger.error(
       "Please specify a valid directory or test file.",
     );
     Deno.exit(1);
   }
 
-  LoggerService.logInfo("Running test(s)\n");
+  ConsoleLogger.info("Running test(s)\n");
   for await (const path of testFiles) {
-    let ignore = false;
-
-    if (options && options.ignore) {
-      options.ignore.split(",").forEach((ignoredFileOrDirectory: string) => {
-        const match = ("./" + path).match(
-          ignoredFileOrDirectory,
-        );
-        if (match && match.length > 0) {
-          ignore = true;
-        }
-      });
-    }
-
-    if (ignore) {
-      continue;
-    }
-
     // Output what file is being tested
     console.log("\n" + path);
 
@@ -62,11 +42,7 @@ export async function runTests(
       "run",
     ];
 
-    const denoFlags = options.deno_flags.split(" ");
-    denoFlags.shift();
-    denoFlags.forEach((arg: string) => {
-      cmd.push(arg);
-    });
+    cmd.concat(denoFlags.split(" "));
 
     cmd.push(Deno.realPathSync("./" + path));
     cmd.push(path); // Deno.args[Deno.argslength - 1]
@@ -145,7 +121,7 @@ export async function runTests(
   // Output the files that were ignored
   if (stats.ignored) {
     console.log();
-    LoggerService.logInfo("Ignored files and/or directories");
+    ConsoleLogger.info("Ignored files and/or directories");
     console.log();
     stats.ignored.forEach((path: string) => {
       console.log(`- ${path}`);

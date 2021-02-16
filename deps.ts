@@ -10,6 +10,11 @@ export * as colors from "https://deno.land/std@0.76.0/fmt/colors.ts";
 
 export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/loggers/console_logger.ts";
 
-export { CliService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
+export {
+  CliService,
+  Subcommand,
+  Option,
+// } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
+} from "../services/cli/cli_service.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/ci/bumper_service.ts";
