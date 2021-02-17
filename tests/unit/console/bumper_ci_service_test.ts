@@ -1,6 +1,5 @@
 import { Rhum } from "../../../mod.ts";
 import {
-  bumperFiles,
   preReleaseFiles,
 } from "../../../console/bumper_ci_service_files.ts";
 import { BumperService } from "../../../deps.ts";
@@ -23,16 +22,9 @@ Rhum.testPlan(async () => {
    *   3. Bump the file.
    *   4. Assert that everything is as expected.
    */
-  await Rhum.testSuite(
+  Rhum.testSuite(
     "bumper_ci_service.ts",
     () => {
-      Rhum.testCase("bumps deno versions in yml files correctly", async () => {
-        const file = bumperFiles[0];
-        file.filename = "./tests/data/pattern_types.txt";
-        const bumped = await b.bump([file], false);
-        Rhum.asserts.assertEquals(bumped[0], data_denoVersionsYml);
-      });
-
       Rhum.testCase("bumps import statements correctly", async () => {
         const file = preReleaseFiles[0];
         file.filename = "./tests/data/pattern_types.txt";

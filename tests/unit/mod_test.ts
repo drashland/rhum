@@ -177,7 +177,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
-          "test",
+          "run",
           "tests/integration/skip_test_plan_test.ts",
         ],
         stdout: "piped",
@@ -193,7 +193,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
-          "test",
+          "run",
           "tests/integration/skip_test_suite_test.ts",
         ],
         stdout: "piped",
@@ -209,7 +209,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
-          "test",
+          "run",
           "tests/integration/skip_test_case_test.ts",
         ],
         stdout: "piped",

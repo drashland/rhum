@@ -323,16 +323,6 @@ export class RhumRunner {
    * Run the test plan.
    */
   public async runTestPlan(): Promise<void> {
-    const options = JSON.parse(Deno.args[Deno.args.length - 1].slice());
-
-    if (options.test_case) {
-      return await this.runCaseFiltered(options.test_case);
-    }
-
-    if (options.test_suite) {
-      return await this.runSuiteFiltered(options.test_suite);
-    }
-
     await this.runAllSuitesAndCases();
   }
 
@@ -597,7 +587,7 @@ export class RhumRunner {
           .replace(Deno.cwd(), "")
           .replace("file:\/\/\/", "./");
         const errorMessage =
-          `\n${error}\nThe above assertion error occurred in:\n\n  ${stack}\n\n`;
+          `\n\n\nThe following error occurred in: \n  ${stack}\n\n${error}`;
         this.test_plan_results.errors += errorMessage;
       } else {
         this.test_plan_results.errors += ("\n" + error.stack + "\n");

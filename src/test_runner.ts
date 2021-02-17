@@ -1,4 +1,3 @@
-import { walkSync } from "https://deno.land/std@0.74.0/fs/walk.ts";
 import { colors, ConsoleLogger, readLines } from "../deps.ts";
 import { ITestPlanResults } from "./interfaces.ts";
 
@@ -6,8 +5,8 @@ import { ITestPlanResults } from "./interfaces.ts";
  * Run all tests.
  */
 export async function runTests(
-  dirOrFile: string,
-  denoFlags: string,
+  testFiles: string[],
+  denoFlags: string[],
 ): Promise<void> {
   console.log();
   ConsoleLogger.info("Starting Rhum");
@@ -20,33 +19,20 @@ export async function runTests(
     errors: "",
   };
 
-  ConsoleLogger.info("Checking test file(s)");
-
-  let testFiles: string[];
-  try {
-    testFiles = getTestFiles(dirOrFile);
-  } catch (error) {
-    ConsoleLogger.error(
-      "Please specify a valid directory or test file.",
-    );
-    Deno.exit(1);
-  }
-
   ConsoleLogger.info("Running test(s)\n");
+
   for await (const path of testFiles) {
     // Output what file is being tested
     console.log("\n" + path);
 
-    const cmd = [
+    let cmd = [
       "deno",
       "run",
     ];
 
-    cmd.concat(denoFlags.split(" "));
+    cmd = cmd.concat(denoFlags);
 
-    cmd.push(Deno.realPathSync("./" + path));
-    cmd.push(path); // Deno.args[Deno.argslength - 1]
-    cmd.push(JSON.stringify(options)); // Deno.args[Deno.argslength - 1]
+    cmd.push(Deno.realPathSync(path));
 
     // Run the test file
     const p = Deno.run({
@@ -55,7 +41,7 @@ export async function runTests(
       stderr: "piped",
     });
 
-    for await (const stderrLine of readLines(p.stderr)) {
+    for await (const stderrLine of readLines(p.stderr as Deno.Reader)) {
       const line = stderrLine.trim();
       if (
         !line.includes("\u001b[0m\u001b[32mCheck\u001b[0m file:///") &&
@@ -68,7 +54,7 @@ export async function runTests(
       }
     }
 
-    for await (const line of readLines(p.stdout)) {
+    for await (const line of readLines(p.stdout as Deno.Reader)) {
       try {
         // Store the results from the test file in the stats. We want to keep
         // track of these stats because we want to display the overall test
@@ -85,6 +71,7 @@ export async function runTests(
       }
     }
 
+    // Uncomment this block to debug errors within this test runner
     // const stderr = decoder.decode(await p.stderrOutput());
     // if (stderr) {
     //   if (
@@ -117,44 +104,4 @@ export async function runTests(
       colors.red(stats.failed.toString())
     } failed; ${colors.yellow(stats.skipped.toString())} skipped`,
   );
-
-  // Output the files that were ignored
-  if (stats.ignored) {
-    console.log();
-    ConsoleLogger.info("Ignored files and/or directories");
-    console.log();
-    stats.ignored.forEach((path: string) => {
-      console.log(`- ${path}`);
-    });
-  }
-}
-
-/**
- * Get the test files
- *
- * @param dirOrFile - The directory containing the tests or a test file.
- *
- * @returns An array of test files to execute using Deno.run().
- */
-function getTestFiles(dirOrFile: string): string[] {
-  const testFiles: string[] = [];
-
-  if (!dirOrFile.includes(".ts")) {
-    for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
-      if (
-        entry.path.includes("mock_builder_test") ||
-        entry.path.includes("basic_test")
-      ) {
-        continue;
-      }
-      testFiles.push(entry.path);
-    }
-  } else {
-    if (!Deno.readFileSync(dirOrFile)) {
-      throw new Error("Invalid test file.");
-    }
-    testFiles.push(dirOrFile);
-  }
-
-  return testFiles;
 }

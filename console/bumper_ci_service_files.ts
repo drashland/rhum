@@ -22,5 +22,3 @@ export const preReleaseFiles = [
     replaceWith: `rhum@v{{ thisModulesLatestVersion }}`,
   },
 ];
-
-export const bumperFiles = [];
