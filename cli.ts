@@ -8,7 +8,21 @@ const service = new CliService(
   "v2.0.0",
 );
 
-service.subcommand(
+service
+  .subcommand(
+    "make",
+    "Make test files."
+  )
+  .handler(make)
+  .option(
+    service.option(
+      "--num-test-suites",
+      "The number of test suites to make in the file. Each test suite will come with one test case."
+    )
+  );
+
+service
+  .subcommand(
     "run",
     "Run tests."
   )
@@ -24,6 +38,6 @@ service.subcommand(
       "--filter-test-suite",
       "Run tests suites that match the value of this option. This cannot be used with the --filter-test-case option."
     )
-  )
+  );
 
 service.run();
