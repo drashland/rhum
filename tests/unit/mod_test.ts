@@ -259,7 +259,9 @@ Rhum.testPlan(() => {
       );
     });
 
-    Rhum.testCase("can mock an object with constructor args", () => {
+    Rhum.testCase(
+      "can mock an object with constructor args",
+      () => {
       class MyObj {
         public arg_1 = "some value";
         constructor(arg1: string) {

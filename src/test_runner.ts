@@ -1,12 +1,18 @@
 import { colors, ConsoleLogger, readLines } from "../deps.ts";
 import { ITestPlanResults } from "./interfaces.ts";
 
+interface IOptions {
+  test_case?: string;
+  test_suite?: string;
+}
+
 /**
  * Run all tests.
  */
 export async function runTests(
   testFiles: string[],
   denoFlags: string[],
+  options: IOptions = {}
 ): Promise<void> {
   console.log();
   ConsoleLogger.info("Starting Rhum");
@@ -33,6 +39,8 @@ export async function runTests(
     cmd = cmd.concat(denoFlags);
 
     cmd.push(Deno.realPathSync(path));
+
+    cmd.push(JSON.stringify(options));
 
     // Run the test file
     const p = Deno.run({

@@ -16,7 +16,7 @@ export {
   CliService,
   Subcommand,
   Option,
-  Args,
+  Input,
 // } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
 } from "../services/cli/cli_service.ts";
 

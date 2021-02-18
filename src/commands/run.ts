@@ -1,6 +1,6 @@
 import {
   ConsoleLogger,
-  Args,
+  Input,
   Option,
   Subcommand,
   walkSync
@@ -10,31 +10,31 @@ import { runTests } from "../test_runner.ts";
 const decoder = new TextDecoder();
 
 /**
- * Get the deno flags (e.g., --allow-all) from the specified args.
+ * Get the deno flags (e.g., --allow-all) from the specified input.
  *
- * @param args -  The args containing (if any) Deno flags.
+ * @param input -  The input containing (if any) Deno flags.
  *
  * @returns An array of Deno flags.
  */
-function getDenoFlags(args: Args): string[] {
+function getDenoFlags(input: Input): string[] {
   let ret: string[] = [];
 
   if (
-    args.store.has("-A")
-    || args.store.has("--allow-all")
+    input.hasArg("-A")
+    || input.hasArg("--allow-all")
   ) {
     ret.push("--allow-all");
   } else {
-    if (args.store.has("--allow-net")) {
+    if (input.hasArg("--allow-net")) {
       ret.push("--allow-net");
     }
-    if (args.store.has("--allow-read")) {
+    if (input.hasArg("--allow-read")) {
       ret.push("--allow-read");
     }
-    if (args.store.has("--allow-run")) {
+    if (input.hasArg("--allow-run")) {
       ret.push("--allow-run");
     }
-    if (args.store.has("--allow-write")) {
+    if (input.hasArg("--allow-write")) {
       ret.push("--allow-write");
     }
   }
@@ -87,7 +87,7 @@ export function getTestFilesWithTestCase(
   if (!dirOrFile.includes(".ts")) {
     for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
       if (entry.path.includes(".ts")) {
-        const contents = decoder.decode(Deno.readFileSync(entry.path));
+        let contents = decoder.decode(Deno.readFileSync(entry.path));
         if (!contents.includes("Rhum")) {
           ConsoleLogger.error(
             `${entry.path} does not contain the Rhum namespace.
@@ -95,57 +95,81 @@ export function getTestFilesWithTestCase(
           );
           Deno.exit(1);
         }
-        if (contents.includes(`Rhum.testCase("${testCase}")`)) {
+        contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
+        if (contents.includes(`Rhum.testCase("${testCase}"`)) {
           testFiles.push(entry.path);
         }
       }
     }
   } else {
-    const contents = decoder.decode(Deno.readFileSync(dirOrFile));
+    let contents = decoder.decode(Deno.readFileSync(dirOrFile));
     if (!contents) {
       throw new Error("Invalid test file.");
     }
-    if (!contents.includes(`Rhum.testCase("${testCase}")`)) {
+    contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
+    if (contents.includes(`Rhum.testCase("${testCase}"`)) {
+      testFiles.push(dirOrFile);
     }
-    testFiles.push(dirOrFile);
   }
 
   return testFiles;
 }
 
-export async function run(
-  this: Subcommand,
-  args: Args
-): Promise<void> {
-  if (this.runWithOption("--filter-test-case")) {
-    return await runWithOptionFilterTestCase(
-      this.getOption("--filter-test-case"),
-      args
-    );
+export function getTestFilesWithTestSuite(
+  dirOrFile: string,
+  testSuite: string
+): string[] {
+  const testFiles: string[] = [];
+
+  if (!dirOrFile.includes(".ts")) {
+    for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
+      if (entry.path.includes(".ts")) {
+        let contents = decoder.decode(Deno.readFileSync(entry.path));
+        if (!contents.includes("Rhum")) {
+          ConsoleLogger.error(
+            `${entry.path} does not contain the Rhum namespace.
+            `
+          );
+          Deno.exit(1);
+        }
+        contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
+        if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
+          testFiles.push(entry.path);
+        }
+      }
+    }
+  } else {
+    let contents = decoder.decode(Deno.readFileSync(dirOrFile));
+    if (!contents) {
+      throw new Error("Invalid test file.");
+    }
+    contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
+    if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
+      testFiles.push(dirOrFile);
+    }
   }
 
-  if (this.runWithOption("--filter-test-suite")) {
-    return await runWithOptionFilterTestSuite(
-      this.getOption("--filter-test-suite"),
-      args
-    );
+  return testFiles;
+}
+
+export async function run(this: Subcommand): Promise<void> {
+  if (this.hasOptionSpecified("--filter-test-case")) {
+    return await runWithOptionFilterTestCase(this);
   }
 
-  await runDefault(this, args);
+  if (this.hasOptionSpecified("--filter-test-suite")) {
+    return await runWithOptionFilterTestSuite(this);
+  }
+
+  await runDefault(this);
 }
 
 async function runDefault(
-  context: Subcommand,
-  args: Args
+  subcommand: Subcommand
 ): Promise<void> {
   let testFiles: string[] = [];
 
-  const filepathArr = Array.from(args.store).pop();
-  if (!filepathArr) {
-    return context.showHelp();
-  }
-
-  const filepath = filepathArr[0];
+  const filepath = subcommand.cli.input.last();
 
   try {
     testFiles = getTestFiles(filepath);
@@ -153,32 +177,90 @@ async function runDefault(
   }
 
   if (testFiles.length <= 0) {
-    return context.showHelp();
+    return subcommand.showHelp();
   }
 
   await runTests(
     testFiles,
-    getDenoFlags(args)
+    getDenoFlags(subcommand.cli.input)
+  );
+}
+
+export async function runWithOptionFilterTestSuite(
+  subcommand: Subcommand,
+): Promise<void> {
+  const option = subcommand.getOption("--filter-test-suite")!;
+
+  const testSuite = option.value;
+
+  if (!testSuite) {
+    ConsoleLogger.error(`Missing "option value".`);
+    return option.showHelp();
+  }
+
+  const filepath = option.cli.input.last();
+
+  if (filepath.includes("--filter-test-suite")) {
+    return option.showHelp();
+  }
+
+  if (!isFilepath(filepath)) {
+    ConsoleLogger.error(
+      `Error reading [directory|file]. Input "${filepath}" is invalid.`
+    );
+    return option.showHelp();
+  }
+
+  let testFiles: string[] = [];
+
+  try {
+    testFiles = getTestFilesWithTestSuite(
+      filepath,
+      testSuite
+    );
+  } catch (error) {
+  }
+
+  if (testFiles.length <= 0) {
+    ConsoleLogger.warn(
+      `Test files in "${filepath}" do not contain a "${testSuite}" test case.`
+    );
+    return;
+  }
+
+  await runTests(
+    testFiles,
+    getDenoFlags(option.cli.input),
+    { test_suite: testSuite }
   );
 }
 
 export async function runWithOptionFilterTestCase(
-  context: Option,
-  args: Args
+  subcommand: Subcommand
 ): Promise<void> {
-  let testFiles: string[] = [];
+  const option = subcommand.getOption("--filter-test-case")!;
 
-  const testCase = context.value;
+  const testCase = option.value;
+
   if (!testCase) {
-    return context.showHelp();
+    ConsoleLogger.error(`Missing "option value".`);
+    return option.showHelp();
   }
 
-  const filepathArr = Array.from(args.store).pop();
-  if (!filepathArr) {
-    return context.showHelp();
+  const filepath = option.cli.input.last();
+
+  if (filepath.includes("--filter-test-case")) {
+    return option.showHelp();
   }
 
-  const filepath = filepathArr[0];
+  if (!isFilepath(filepath)) {
+    ConsoleLogger.error(
+      `Error reading [directory|file]. Input "${filepath}" is invalid.`
+    );
+    return option.showHelp();
+  }
+
+  let testFiles: string[] = [];
 
   try {
     testFiles = getTestFilesWithTestCase(
@@ -189,17 +271,31 @@ export async function runWithOptionFilterTestCase(
   }
 
   if (testFiles.length <= 0) {
-    return context.showHelp();
+    ConsoleLogger.warn(
+      `Test files in "${filepath}" do not contain a "${testCase}" test case.`
+    );
+    return;
   }
 
   await runTests(
     testFiles,
-    getDenoFlags(args)
+    getDenoFlags(option.cli.input),
+    { test_case: testCase }
   );
 }
 
-export async function runWithOptionFilterTestSuite(
-  context: Option,
-  args: Args
-): Promise<void> {
+function isFilepath(filepath: string): boolean {
+  try {
+    Deno.readFileSync(filepath);
+    return true;
+  } catch (error) {
+  }
+
+  try {
+    Deno.readDirSync(filepath);
+    return true;
+  } catch (error) {
+  }
+
+  return false;
 }
