@@ -1,4 +1,5 @@
 import { CliService } from "./deps.ts";
+import { make } from "./src/commands/make.ts";
 import { run } from "./src/commands/run.ts";
 
 const service = new CliService(

@@ -1,4 +1,7 @@
-import { ConsoleLogger } from "../../../deps.ts";
+import {
+  ConsoleLogger,
+  Subcommand
+} from "../../deps.ts";
 
 const encoder = new TextEncoder();
 
@@ -13,12 +16,19 @@ const testTemplate: Uint8Array = encoder.encode(
 `,
 );
 
-export function make(args: string[]) {
-  const testFileToCreate = args[0];
+export function make(
+  this: Subcommand
+) {
+  const input = this.cli.input.last();
 
-  if (!testFileToCreate.includes(".ts")) {
-    ConsoleLogger.logError(
-      `Test files require a .ts extension. You passed in "${testFileToCreate}" as the test file.`,
+  if (input == "make") {
+    this.showHelp();
+    return;
+  }
+
+  if (!input.includes(".ts")) {
+    ConsoleLogger.error(
+      `Test files require a .ts extension. You passed in "${input}" as the test file.`,
     );
     Deno.exit(1);
   }
@@ -26,23 +36,23 @@ export function make(args: string[]) {
   try {
     // If we can't read the file, then that means it doesn't exist. That also
     // means we can create the file in the catch block below.
-    Deno.readFileSync(testFileToCreate);
-    ConsoleLogger.logError(`"${testFileToCreate}" already exists`);
+    Deno.readFileSync(input);
+    ConsoleLogger.error(`"${input}" already exists`);
   } catch (error) {
     // Try to create the file
-    ConsoleLogger.logInfo(`Creating "${testFileToCreate}"`);
+    ConsoleLogger.info(`Creating "${input}"`);
     try {
-      createFile(testFileToCreate);
+      createFile(input);
     } catch (error) {
-      ConsoleLogger.logError(error.stack);
+      ConsoleLogger.error(error.stack);
     }
   }
 }
 
-function createFile(testFileToCreate: string) {
-  const pathToTestFile = testFileToCreate.split("/");
+function createFile(input: string) {
+  const pathToTestFile = input.split("/");
   pathToTestFile.pop();
   Deno.mkdirSync(pathToTestFile.join("/"), { recursive: true });
-  Deno.writeFileSync(testFileToCreate, testTemplate);
-  ConsoleLogger.logInfo(`Test file "${testFileToCreate} created`);
+  Deno.writeFileSync(input, testTemplate);
+  ConsoleLogger.info(`Test file "${input} created`);
 }

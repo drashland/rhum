@@ -10,39 +10,6 @@ import { runTests } from "../test_runner.ts";
 const decoder = new TextDecoder();
 
 /**
- * Get the deno flags (e.g., --allow-all) from the specified input.
- *
- * @param input -  The input containing (if any) Deno flags.
- *
- * @returns An array of Deno flags.
- */
-function getDenoFlags(input: Input): string[] {
-  let ret: string[] = [];
-
-  if (
-    input.hasArg("-A")
-    || input.hasArg("--allow-all")
-  ) {
-    ret.push("--allow-all");
-  } else {
-    if (input.hasArg("--allow-net")) {
-      ret.push("--allow-net");
-    }
-    if (input.hasArg("--allow-read")) {
-      ret.push("--allow-read");
-    }
-    if (input.hasArg("--allow-run")) {
-      ret.push("--allow-run");
-    }
-    if (input.hasArg("--allow-write")) {
-      ret.push("--allow-write");
-    }
-  }
-
-  return ret;
-}
-
-/**
  * Get the test files.
  *
  * @param dirOrFile - The directory containing the tests or a test file.
@@ -193,7 +160,7 @@ async function runDefault(
 
   await runTests(
     testFiles,
-    getDenoFlags(subcommand.cli.input)
+    subcommand.cli.getDenoFlags(subcommand.cli.input)
   );
 }
 
@@ -241,7 +208,7 @@ export async function runWithOptionFilterTestSuite(
 
   await runTests(
     testFiles,
-    getDenoFlags(option.cli.input),
+    subcommand.cli.getDenoFlags(option.cli.input),
     { test_suite: testSuite }
   );
 }
@@ -290,7 +257,7 @@ export async function runWithOptionFilterTestCase(
 
   await runTests(
     testFiles,
-    getDenoFlags(option.cli.input),
+    subcommand.cli.getDenoFlags(option.cli.input),
     { test_case: testCase }
   );
 }
