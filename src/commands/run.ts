@@ -153,6 +153,17 @@ export function getTestFilesWithTestSuite(
 }
 
 export async function run(this: Subcommand): Promise<void> {
+  if (
+    this.hasOptionSpecified("--filter-test-case")
+    && this.hasOptionSpecified("--filter-test-suite")
+  ) {
+    ConsoleLogger.error(
+      `--filter-test-case and --filter-test-suite cannot be used together.`
+    );
+    this.showHelp();
+    return;
+  }
+
   if (this.hasOptionSpecified("--filter-test-case")) {
     return await runWithOptionFilterTestCase(this);
   }

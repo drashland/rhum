@@ -16,13 +16,13 @@ service.subcommand(
   .option(
     service.option(
       "--filter-test-case",
-      "Run tests cases that match the value of this option."
+      "Run tests cases that match the value of this option. This cannot be used with the --filter-test-suite option."
     )
   )
   .option(
     service.option(
       "--filter-test-suite",
-      "Run tests suites that match the value of this option."
+      "Run tests suites that match the value of this option. This cannot be used with the --filter-test-case option."
     )
   )
 
