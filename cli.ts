@@ -12,33 +12,33 @@ const service = new CliService(
 service
   .subcommand(
     "make",
-    "Make test files."
+    "Make test files.",
   )
   .handler(make)
   .option(
     service.option(
       "--num-test-suites",
-      "The number of test suites to make in the file. Each test suite will come with one test case."
-    )
+      "The number of test suites to make in the file. Each test suite will come with one test case.",
+    ),
   );
 
 service
   .subcommand(
     "run",
-    "Run tests."
+    "Run tests.",
   )
   .handler(run)
   .option(
     service.option(
       "--filter-test-case",
-      "Run tests cases that match the value of this option. This cannot be used with the --filter-test-suite option."
-    )
+      "Run tests cases that match the value of this option. This cannot be used with the --filter-test-suite option.",
+    ),
   )
   .option(
     service.option(
       "--filter-test-suite",
-      "Run tests suites that match the value of this option. This cannot be used with the --filter-test-case option."
-    )
+      "Run tests suites that match the value of this option. This cannot be used with the --filter-test-case option.",
+    ),
   );
 
 service.run();

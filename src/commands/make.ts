@@ -1,12 +1,11 @@
-import {
-  ConsoleLogger,
-  Subcommand
-} from "../../deps.ts";
+import { ConsoleLogger, Subcommand } from "../../deps.ts";
 
 const encoder = new TextEncoder();
 
 const testTemplate: Uint8Array = encoder.encode(
-  `Rhum.testPlan(() => {
+  `import { Rhum } from "https://deno.land/x/rhum@v2.0.0/mod.ts";
+
+Rhum.testPlan(() => {
   Rhum.testSuite("my test suite", () => {
     Rhum.testCase("my test case", () => {
       Rhum.asserts.assertEquals(true, true);
@@ -17,7 +16,7 @@ const testTemplate: Uint8Array = encoder.encode(
 );
 
 export function make(
-  this: Subcommand
+  this: Subcommand,
 ) {
   const input = this.cli.input.last();
 
@@ -28,9 +27,9 @@ export function make(
 
   if (!input.includes(".ts")) {
     ConsoleLogger.error(
-      `Test files require a .ts extension. You passed in "${input}" as the test file.`,
+      `Test files require a .ts extension. "${input}" was specified.`,
     );
-    Deno.exit(1);
+    return;
   }
 
   try {

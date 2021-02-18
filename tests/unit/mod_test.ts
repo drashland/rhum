@@ -262,24 +262,25 @@ Rhum.testPlan(() => {
     Rhum.testCase(
       "can mock an object with constructor args",
       () => {
-      class MyObj {
-        public arg_1 = "some value";
-        constructor(arg1: string) {
-          this.arg_1 = arg1;
+        class MyObj {
+          public arg_1 = "some value";
+          constructor(arg1: string) {
+            this.arg_1 = arg1;
+          }
         }
-      }
-      const mock = Rhum.mock(MyObj)
-        .withConstructorArgs("some new value")
-        .create();
-      Rhum.asserts.assertEquals(
-        mock.is_mock,
-        true,
-      );
-      Rhum.asserts.assertEquals(
-        mock.arg_1,
-        "some new value",
-      );
-    });
+        const mock = Rhum.mock(MyObj)
+          .withConstructorArgs("some new value")
+          .create();
+        Rhum.asserts.assertEquals(
+          mock.is_mock,
+          true,
+        );
+        Rhum.asserts.assertEquals(
+          mock.arg_1,
+          "some new value",
+        );
+      },
+    );
   });
 
   Rhum.testSuite("testCase", () => {

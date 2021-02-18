@@ -12,7 +12,7 @@ interface IOptions {
 export async function runTests(
   testFiles: string[],
   denoFlags: string[],
-  options: IOptions = {}
+  options: IOptions = {},
 ): Promise<void> {
   console.log();
   ConsoleLogger.info("Starting Rhum");

@@ -14,10 +14,10 @@ export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/servi
 
 export {
   CliService,
-  Subcommand,
-  Option,
   Input,
-// } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
+  Option,
+  Subcommand,
+  // } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
 } from "../services/cli/cli_service.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/ci/bumper_service.ts";

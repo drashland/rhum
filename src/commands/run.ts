@@ -3,7 +3,7 @@ import {
   Input,
   Option,
   Subcommand,
-  walkSync
+  walkSync,
 } from "../../deps.ts";
 import { runTests } from "../test_runner.ts";
 
@@ -17,7 +17,7 @@ const decoder = new TextDecoder();
  * @returns An array of test files to execute using Deno.run().
  */
 export function getTestFiles(
-  dirOrFile: string
+  dirOrFile: string,
 ): string[] {
   const testFiles: string[] = [];
 
@@ -28,7 +28,7 @@ export function getTestFiles(
         if (!contents.includes("Rhum")) {
           ConsoleLogger.error(
             `${entry.path} does not contain the Rhum namespace.
-            `
+            `,
           );
           Deno.exit(1);
         }
@@ -47,7 +47,7 @@ export function getTestFiles(
 
 export function getTestFilesWithTestCase(
   dirOrFile: string,
-  testCase: string
+  testCase: string,
 ): string[] {
   const testFiles: string[] = [];
 
@@ -58,7 +58,7 @@ export function getTestFilesWithTestCase(
         if (!contents.includes("Rhum")) {
           ConsoleLogger.error(
             `${entry.path} does not contain the Rhum namespace.
-            `
+            `,
           );
           Deno.exit(1);
         }
@@ -84,7 +84,7 @@ export function getTestFilesWithTestCase(
 
 export function getTestFilesWithTestSuite(
   dirOrFile: string,
-  testSuite: string
+  testSuite: string,
 ): string[] {
   const testFiles: string[] = [];
 
@@ -95,7 +95,7 @@ export function getTestFilesWithTestSuite(
         if (!contents.includes("Rhum")) {
           ConsoleLogger.error(
             `${entry.path} does not contain the Rhum namespace.
-            `
+            `,
           );
           Deno.exit(1);
         }
@@ -121,11 +121,11 @@ export function getTestFilesWithTestSuite(
 
 export async function run(this: Subcommand): Promise<void> {
   if (
-    this.hasOptionSpecified("--filter-test-case")
-    && this.hasOptionSpecified("--filter-test-suite")
+    this.hasOptionSpecified("--filter-test-case") &&
+    this.hasOptionSpecified("--filter-test-suite")
   ) {
     ConsoleLogger.error(
-      `--filter-test-case and --filter-test-suite cannot be used together.`
+      `--filter-test-case and --filter-test-suite cannot be used together.`,
     );
     this.showHelp();
     return;
@@ -143,7 +143,7 @@ export async function run(this: Subcommand): Promise<void> {
 }
 
 async function runDefault(
-  subcommand: Subcommand
+  subcommand: Subcommand,
 ): Promise<void> {
   let testFiles: string[] = [];
 
@@ -160,7 +160,7 @@ async function runDefault(
 
   await runTests(
     testFiles,
-    subcommand.cli.getDenoFlags(subcommand.cli.input)
+    subcommand.cli.getDenoFlags(subcommand.cli.input),
   );
 }
 
@@ -184,7 +184,7 @@ export async function runWithOptionFilterTestSuite(
 
   if (!isFilepath(filepath)) {
     ConsoleLogger.error(
-      `Error reading [directory|file]. Input "${filepath}" is invalid.`
+      `Error reading [directory|file]. Input "${filepath}" is invalid.`,
     );
     return option.showHelp();
   }
@@ -194,14 +194,14 @@ export async function runWithOptionFilterTestSuite(
   try {
     testFiles = getTestFilesWithTestSuite(
       filepath,
-      testSuite
+      testSuite,
     );
   } catch (error) {
   }
 
   if (testFiles.length <= 0) {
     ConsoleLogger.warn(
-      `Test files in "${filepath}" do not contain a "${testSuite}" test case.`
+      `Test files in "${filepath}" do not contain a "${testSuite}" test case.`,
     );
     return;
   }
@@ -209,12 +209,12 @@ export async function runWithOptionFilterTestSuite(
   await runTests(
     testFiles,
     subcommand.cli.getDenoFlags(option.cli.input),
-    { test_suite: testSuite }
+    { test_suite: testSuite },
   );
 }
 
 export async function runWithOptionFilterTestCase(
-  subcommand: Subcommand
+  subcommand: Subcommand,
 ): Promise<void> {
   const option = subcommand.getOption("--filter-test-case")!;
 
@@ -233,7 +233,7 @@ export async function runWithOptionFilterTestCase(
 
   if (!isFilepath(filepath)) {
     ConsoleLogger.error(
-      `Error reading [directory|file]. Input "${filepath}" is invalid.`
+      `Error reading [directory|file]. Input "${filepath}" is invalid.`,
     );
     return option.showHelp();
   }
@@ -243,14 +243,14 @@ export async function runWithOptionFilterTestCase(
   try {
     testFiles = getTestFilesWithTestCase(
       filepath,
-      testCase
+      testCase,
     );
   } catch (error) {
   }
 
   if (testFiles.length <= 0) {
     ConsoleLogger.warn(
-      `Test files in "${filepath}" do not contain a "${testCase}" test case.`
+      `Test files in "${filepath}" do not contain a "${testCase}" test case.`,
     );
     return;
   }
@@ -258,7 +258,7 @@ export async function runWithOptionFilterTestCase(
   await runTests(
     testFiles,
     subcommand.cli.getDenoFlags(option.cli.input),
-    { test_case: testCase }
+    { test_case: testCase },
   );
 }
 
