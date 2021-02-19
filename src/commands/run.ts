@@ -1,7 +1,5 @@
 import {
   ConsoleLogger,
-  Input,
-  Option,
   Subcommand,
   walkSync,
 } from "../../deps.ts";
@@ -147,7 +145,7 @@ async function runDefault(
 ): Promise<void> {
   let testFiles: string[] = [];
 
-  const filepath = subcommand.cli.input.last();
+  const filepath = subcommand.cli.user_input.last();
 
   try {
     testFiles = getTestFiles(filepath);
@@ -160,7 +158,7 @@ async function runDefault(
 
   await runTests(
     testFiles,
-    subcommand.cli.getDenoFlags(subcommand.cli.input),
+    subcommand.cli.user_input.getDenoFlags(),
   );
 }
 
@@ -176,7 +174,7 @@ export async function runWithOptionFilterTestSuite(
     return option.showHelp();
   }
 
-  const filepath = option.cli.input.last();
+  const filepath = option.cli.user_input.last();
 
   if (filepath.includes("--filter-test-suite")) {
     return option.showHelp();
@@ -208,7 +206,7 @@ export async function runWithOptionFilterTestSuite(
 
   await runTests(
     testFiles,
-    subcommand.cli.getDenoFlags(option.cli.input),
+    subcommand.cli.user_input.getDenoFlags(),
     { test_suite: testSuite },
   );
 }
@@ -225,7 +223,7 @@ export async function runWithOptionFilterTestCase(
     return option.showHelp();
   }
 
-  const filepath = option.cli.input.last();
+  const filepath = option.cli.user_input.last();
 
   if (filepath.includes("--filter-test-case")) {
     return option.showHelp();
@@ -257,7 +255,7 @@ export async function runWithOptionFilterTestCase(
 
   await runTests(
     testFiles,
-    subcommand.cli.getDenoFlags(option.cli.input),
+    subcommand.cli.user_input.getDenoFlags(),
     { test_case: testCase },
   );
 }

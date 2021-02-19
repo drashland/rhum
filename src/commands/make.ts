@@ -18,7 +18,7 @@ Rhum.testPlan(() => {
 export function make(
   this: Subcommand,
 ) {
-  const input = this.cli.input.last();
+  const input = this.cli.user_input.last();
 
   if (input == "make") {
     this.showHelp();
