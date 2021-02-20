@@ -323,7 +323,9 @@ export class RhumRunner {
    * Run the test plan.
    */
   public async runTestPlan(): Promise<void> {
-    const options = JSON.parse(Deno.args[Deno.args.length - 1].slice());
+    let options = Deno.args[Deno.args.length - 1]
+      ? JSON.parse(Deno.args[Deno.args.length - 1].slice())
+      : JSON.parse("[]");
 
     if (options.test_case) {
       return await this.runCaseFiltered(options.test_case);
