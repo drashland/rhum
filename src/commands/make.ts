@@ -1,4 +1,4 @@
-import { ConsoleLogger, Subcommand } from "../../deps.ts";
+import { ConsoleLogger, Command } from "../../deps.ts";
 
 const encoder = new TextEncoder();
 
@@ -16,9 +16,9 @@ Rhum.testPlan(() => {
 );
 
 export function make(
-  this: Subcommand,
+  this: Command,
 ) {
-  const input = this.cli.user_input.last();
+  const input = this.user_input.last();
 
   if (input == "make") {
     this.showHelp();

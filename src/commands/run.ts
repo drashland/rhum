@@ -1,6 +1,6 @@
 import {
   ConsoleLogger,
-  Subcommand,
+  Command,
   walkSync,
 } from "../../deps.ts";
 import { runTests } from "../test_runner.ts";
@@ -117,18 +117,7 @@ export function getTestFilesWithTestSuite(
   return testFiles;
 }
 
-export async function run(this: Subcommand): Promise<void> {
-  if (
-    this.hasOptionSpecified("--filter-test-case") &&
-    this.hasOptionSpecified("--filter-test-suite")
-  ) {
-    ConsoleLogger.error(
-      `--filter-test-case and --filter-test-suite cannot be used together.`,
-    );
-    this.showHelp();
-    return;
-  }
-
+export async function run(this: Command): Promise<void> {
   if (this.hasOptionSpecified("--filter-test-case")) {
     return await runWithOptionFilterTestCase(this);
   }
@@ -141,11 +130,11 @@ export async function run(this: Subcommand): Promise<void> {
 }
 
 async function runDefault(
-  subcommand: Subcommand,
+  subcommand: Command,
 ): Promise<void> {
   let testFiles: string[] = [];
 
-  const filepath = subcommand.cli.user_input.last();
+  const filepath = subcommand.user_input.last();
 
   try {
     testFiles = getTestFiles(filepath);
@@ -158,14 +147,14 @@ async function runDefault(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
+    subcommand.user_input.getDenoFlagsFromDenoArgs(),
   );
 }
 
 export async function runWithOptionFilterTestSuite(
-  subcommand: Subcommand,
+  subcommand: Command,
 ): Promise<void> {
-  const option = subcommand.getOption("--filter-test-suite")!;
+  const option = subcommand.options["--filter-test-suite"];
 
   const testSuite = option.value;
 
@@ -174,7 +163,7 @@ export async function runWithOptionFilterTestSuite(
     return option.showHelp();
   }
 
-  const filepath = option.cli.user_input.last();
+  const filepath = option.command.user_input.last();
 
   if (filepath.includes("--filter-test-suite")) {
     return option.showHelp();
@@ -206,15 +195,15 @@ export async function runWithOptionFilterTestSuite(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
+    subcommand.user_input.getDenoFlagsFromDenoArgs(),
     { test_suite: testSuite },
   );
 }
 
 export async function runWithOptionFilterTestCase(
-  subcommand: Subcommand,
+  subcommand: Command,
 ): Promise<void> {
-  const option = subcommand.getOption("--filter-test-case")!;
+  const option = subcommand.options["--filter-test-case"];
 
   const testCase = option.value;
 
@@ -223,7 +212,7 @@ export async function runWithOptionFilterTestCase(
     return option.showHelp();
   }
 
-  const filepath = option.cli.user_input.last();
+  const filepath = option.command.user_input.last();
 
   if (filepath.includes("--filter-test-case")) {
     return option.showHelp();
@@ -255,7 +244,7 @@ export async function runWithOptionFilterTestCase(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
+    subcommand.user_input.getDenoFlagsFromDenoArgs(),
     { test_case: testCase },
   );
 }
