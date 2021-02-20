@@ -1,6 +1,6 @@
 import {
   ConsoleLogger,
-  Command,
+  Subcommand,
   walkSync,
 } from "../../deps.ts";
 import { runTests } from "../test_runner.ts";
@@ -117,7 +117,7 @@ export function getTestFilesWithTestSuite(
   return testFiles;
 }
 
-export async function run(this: Command): Promise<void> {
+export async function run(this: Subcommand): Promise<void> {
   if (this.hasOptionSpecified("--filter-test-case")) {
     return await runWithOptionFilterTestCase(this);
   }
@@ -130,7 +130,7 @@ export async function run(this: Command): Promise<void> {
 }
 
 async function runDefault(
-  subcommand: Command,
+  subcommand: Subcommand,
 ): Promise<void> {
   let testFiles: string[] = [];
 
@@ -141,8 +141,9 @@ async function runDefault(
   } catch (error) {
   }
 
-  if (testFiles.length <= 0) {
-    return subcommand.showHelp();
+  if (testFiles.length == 0) {
+    subcommand.command.cli.logger.warn(`"${filepath}" does not contain any tests.`);
+    Deno.exit(1);
   }
 
   await runTests(
@@ -152,7 +153,7 @@ async function runDefault(
 }
 
 export async function runWithOptionFilterTestSuite(
-  subcommand: Command,
+  subcommand: Subcommand,
 ): Promise<void> {
   const option = subcommand.options["--filter-test-suite"];
 
@@ -201,7 +202,7 @@ export async function runWithOptionFilterTestSuite(
 }
 
 export async function runWithOptionFilterTestCase(
-  subcommand: Command,
+  subcommand: Subcommand,
 ): Promise<void> {
   const option = subcommand.options["--filter-test-case"];
 
