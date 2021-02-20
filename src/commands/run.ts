@@ -158,7 +158,7 @@ async function runDefault(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlags(),
+    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
   );
 }
 
@@ -206,7 +206,7 @@ export async function runWithOptionFilterTestSuite(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlags(),
+    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
     { test_suite: testSuite },
   );
 }
@@ -255,7 +255,7 @@ export async function runWithOptionFilterTestCase(
 
   await runTests(
     testFiles,
-    subcommand.cli.user_input.getDenoFlags(),
+    subcommand.cli.user_input.getDenoFlagsFromDenoArgs(),
     { test_case: testCase },
   );
 }
