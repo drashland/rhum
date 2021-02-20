@@ -14,7 +14,10 @@ service
     "make",
     "Make test files.",
   )
-  .addHandler(make)
+  .addHandler(
+    make,
+    "<FILE: string>"
+  )
   .addOption(
     "--num-test-suites",
     "The number of test suites to make in the file. Each test suite will come with one test case.",
@@ -25,7 +28,10 @@ service
     "run",
     "Run tests.",
   )
-  .addHandler(run)
+  .addHandler(
+    run,
+    "<DIRECTORY: string | FILE: string>"
+  )
   .addOption(
     "--filter-test-case",
     "Run tests cases that match the value of this option.",
