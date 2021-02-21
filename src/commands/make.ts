@@ -20,11 +20,6 @@ export function make(
 ) {
   const input = this.user_input.last();
 
-  if (input == "make") {
-    this.showHelp();
-    return;
-  }
-
   if (!input.includes(".ts")) {
     ConsoleLogger.error(
       `Test files require a .ts extension. "${input}" was specified.`,

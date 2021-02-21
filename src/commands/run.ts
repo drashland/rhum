@@ -1,11 +1,23 @@
 import {
-  ConsoleLogger,
   Subcommand,
   walkSync,
 } from "../../deps.ts";
 import { runTests } from "../test_runner.ts";
 
 const decoder = new TextDecoder();
+
+interface IGetTestFileOptions {
+  test_case?: string;
+  test_suite?: string;
+}
+
+function fileContainsRhumNamespace(contents: string): boolean {
+  if (contents.includes("Rhum")) {
+    return true;
+  }
+
+  return false;
+}
 
 /**
  * Get the test files.
@@ -14,107 +26,45 @@ const decoder = new TextDecoder();
  *
  * @returns An array of test files to execute using Deno.run().
  */
-export function getTestFiles(
-  dirOrFile: string,
+export function getAllTestFiles(
+  input: string,
 ): string[] {
   const testFiles: string[] = [];
 
-  if (!dirOrFile.includes(".ts")) {
-    for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
-      if (entry.path.includes(".ts")) {
-        const contents = decoder.decode(Deno.readFileSync(entry.path));
-        if (!contents.includes("Rhum")) {
-          ConsoleLogger.error(
-            `${entry.path} does not contain the Rhum namespace.
-            `,
-          );
-          Deno.exit(1);
-        }
-        testFiles.push(entry.path);
-      }
+  if (input.includes(".ts")) {
+    try {
+      testFiles.push(validateFile(input));
+    } catch (error) {
+      console.log("1");
+      console.log(error);
+      throw new Error(error);
     }
-  } else {
-    if (!Deno.readFileSync(dirOrFile)) {
-      throw new Error("Invalid test file.");
-    }
-    testFiles.push(dirOrFile);
+
+    return testFiles;
   }
 
-  return testFiles;
-}
-
-export function getTestFilesWithTestCase(
-  dirOrFile: string,
-  testCase: string,
-): string[] {
-  const testFiles: string[] = [];
-
-  if (!dirOrFile.includes(".ts")) {
-    for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
-      if (entry.path.includes(".ts")) {
-        let contents = decoder.decode(Deno.readFileSync(entry.path));
-        if (!contents.includes("Rhum")) {
-          ConsoleLogger.error(
-            `${entry.path} does not contain the Rhum namespace.
-            `,
-          );
-          Deno.exit(1);
-        }
-        contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
-        if (contents.includes(`Rhum.testCase("${testCase}"`)) {
-          testFiles.push(entry.path);
-        }
+  for (const entry of walkSync(input, { includeDirs: false })) {
+    if (entry.path.includes(".ts")) {
+      try {
+        testFiles.push(validateFile(entry.path));
+      } catch (error) {
+        console.log("2");
+        console.log(error);
+        throw new Error(error);
       }
-    }
-  } else {
-    let contents = decoder.decode(Deno.readFileSync(dirOrFile));
-    if (!contents) {
-      throw new Error("Invalid test file.");
-    }
-    contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
-    if (contents.includes(`Rhum.testCase("${testCase}"`)) {
-      testFiles.push(dirOrFile);
     }
   }
 
   return testFiles;
 }
 
-export function getTestFilesWithTestSuite(
-  dirOrFile: string,
-  testSuite: string,
-): string[] {
-  const testFiles: string[] = [];
-
-  if (!dirOrFile.includes(".ts")) {
-    for (const entry of walkSync(dirOrFile, { includeDirs: false })) {
-      if (entry.path.includes(".ts")) {
-        let contents = decoder.decode(Deno.readFileSync(entry.path));
-        if (!contents.includes("Rhum")) {
-          ConsoleLogger.error(
-            `${entry.path} does not contain the Rhum namespace.
-            `,
-          );
-          Deno.exit(1);
-        }
-        contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
-        if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
-          testFiles.push(entry.path);
-        }
-      }
-    }
-  } else {
-    let contents = decoder.decode(Deno.readFileSync(dirOrFile));
-    if (!contents) {
-      throw new Error("Invalid test file.");
-    }
-    contents = contents.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
-    if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
-      testFiles.push(dirOrFile);
-    }
+function validateFile(filepath: string) {
+  const contents = decoder.decode(Deno.readFileSync(filepath));
+  if (!fileContainsRhumNamespace(contents)) {
+    throw new Error(`"${filepath}" does not contain any tests.`);
   }
 
-  return testFiles;
+  return filepath;
 }
 
 export async function run(this: Subcommand): Promise<void> {
@@ -136,10 +86,8 @@ async function runDefault(
 
   const filepath = subcommand.user_input.last();
 
-  try {
-    testFiles = getTestFiles(filepath);
-  } catch (error) {
-  }
+  testFiles = getAllTestFiles(filepath);
+  console.log(testFiles);
 
   if (testFiles.length == 0) {
     subcommand.command.cli.logger.warn(`"${filepath}" does not contain any tests.`);
@@ -152,95 +100,24 @@ async function runDefault(
   );
 }
 
-export async function runWithOptionFilterTestSuite(
-  subcommand: Subcommand,
-): Promise<void> {
-  const option = subcommand.options["--filter-test-suite"];
-
-  const testSuite = option.value;
-
-  if (!testSuite) {
-    ConsoleLogger.error(`Missing "option value".`);
-    return option.showHelp();
-  }
-
-  const filepath = option.command.user_input.last();
-
-  if (filepath.includes("--filter-test-suite")) {
-    return option.showHelp();
-  }
-
-  if (!isFilepath(filepath)) {
-    ConsoleLogger.error(
-      `Error reading [directory|file]. Input "${filepath}" is invalid.`,
-    );
-    return option.showHelp();
-  }
-
-  let testFiles: string[] = [];
-
-  try {
-    testFiles = getTestFilesWithTestSuite(
-      filepath,
-      testSuite,
-    );
-  } catch (error) {
-  }
-
-  if (testFiles.length <= 0) {
-    ConsoleLogger.warn(
-      `Test files in "${filepath}" do not contain a "${testSuite}" test case.`,
-    );
-    return;
-  }
-
-  await runTests(
-    testFiles,
-    subcommand.user_input.getDenoFlagsFromDenoArgs(),
-    { test_suite: testSuite },
-  );
-}
-
 export async function runWithOptionFilterTestCase(
   subcommand: Subcommand,
 ): Promise<void> {
   const option = subcommand.options["--filter-test-case"];
-
   const testCase = option.value;
 
-  if (!testCase) {
-    ConsoleLogger.error(`Missing "option value".`);
-    return option.showHelp();
-  }
+  const filepath = subcommand.user_input.last();
+  const testFiles = filterTestFilesByTestCase(
+    getAllTestFiles(filepath),
+    testCase,
+  );
 
-  const filepath = option.command.user_input.last();
-
-  if (filepath.includes("--filter-test-case")) {
-    return option.showHelp();
-  }
-
-  if (!isFilepath(filepath)) {
-    ConsoleLogger.error(
-      `Error reading [directory|file]. Input "${filepath}" is invalid.`,
+  if (testFiles.length == 0) {
+    const inputType = filepath.includes(".ts") ? "file" : "directory";
+    subcommand.command.cli.logger.error(
+      `The "${testCase}" test case could not be found in the "${filepath}" ${inputType}.`
     );
-    return option.showHelp();
-  }
-
-  let testFiles: string[] = [];
-
-  try {
-    testFiles = getTestFilesWithTestCase(
-      filepath,
-      testCase,
-    );
-  } catch (error) {
-  }
-
-  if (testFiles.length <= 0) {
-    ConsoleLogger.warn(
-      `Test files in "${filepath}" do not contain a "${testCase}" test case.`,
-    );
-    return;
+    Deno.exit(1);
   }
 
   await runTests(
@@ -250,18 +127,62 @@ export async function runWithOptionFilterTestCase(
   );
 }
 
-function isFilepath(filepath: string): boolean {
-  try {
-    Deno.readFileSync(filepath);
-    return true;
-  } catch (error) {
+export async function runWithOptionFilterTestSuite(
+  subcommand: Subcommand,
+): Promise<void> {
+  const option = subcommand.options["--filter-test-suite"];
+  const testSuite = option.value;
+
+  const filepath = subcommand.user_input.last();
+  const testFiles = filterTestFilesByTestSuite(
+    getAllTestFiles(filepath),
+    testSuite,
+  );
+
+  await runTests(
+    testFiles,
+    subcommand.user_input.getDenoFlagsFromDenoArgs(),
+    { test_case: testSuite },
+  );
+}
+
+function filterTestFilesByTestCase(
+  testFiles: string[],
+  testCase: string
+): string[] {
+  let ret: string[] = [];
+
+  for (const filepath of testFiles) {
+    const contents = minify(
+      decoder.decode(Deno.readFileSync(filepath))
+    );
+    if (contents.includes(`Rhum.testCase("${testCase}"`)) {
+      ret.push(filepath);
+    }
   }
 
-  try {
-    Deno.readDirSync(filepath);
-    return true;
-  } catch (error) {
+  return ret;
+}
+
+function filterTestFilesByTestSuite(
+  testFiles: string[],
+  testSuite: string,
+): string[] {
+
+  let ret: string[] = [];
+
+  for (const filepath in testFiles) {
+    const contents = minify(
+      decoder.decode(Deno.readFileSync(filepath))
+    );
+    if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
+      ret.push(filepath);
+    }
   }
 
-  return false;
+  return ret;
+}
+
+function minify(input: string): string {
+  return input.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
 }

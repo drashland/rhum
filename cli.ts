@@ -16,7 +16,7 @@ service
   )
   .addHandler(
     make,
-    "<FILE: string>"
+    "<FILE>"
   )
   .addOption(
     "--num-test-suites",
