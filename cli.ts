@@ -30,7 +30,7 @@ service
   )
   .addHandler(
     run,
-    "<DIRECTORY: string | FILE: string>"
+    "<DIRECTORY|FILE>"
   )
   .addOption(
     "--filter-test-case",
