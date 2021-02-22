@@ -1,4 +1,4 @@
-import { ConsoleLogger, Command } from "../../deps.ts";
+import { Command, ConsoleLogger } from "../../deps.ts";
 
 const encoder = new TextEncoder();
 

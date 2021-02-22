@@ -16,7 +16,7 @@ service
   )
   .addHandler(
     make,
-    "<FILE>"
+    "<FILE>",
   )
   .addOption(
     "--num-test-suites",
@@ -30,7 +30,7 @@ service
   )
   .addHandler(
     run,
-    "<DIRECTORY|FILE>"
+    "<DIRECTORY|FILE>",
   )
   .addOption(
     "--filter-test-case",
