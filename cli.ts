@@ -21,6 +21,7 @@ service
   .addOption(
     "--num-test-suites",
     "The number of test suites to make in the file. Each test suite will come with one test case.",
+    "<NUMBER OF TEST SUITES>"
   );
 
 service
@@ -35,6 +36,7 @@ service
   .addOption(
     "--filter-test-case",
     "Run tests cases that match the value of this option.",
+    "<TEST CASE NAME>"
   )
   .addOption(
     "--filter-test-suite",
