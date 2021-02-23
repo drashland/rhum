@@ -37,7 +37,23 @@ export async function run(this: Subcommand): Promise<void> {
  * @returns True if yes, false if no.
  */
 function contentsContainRhumNamespace(contents: string): boolean {
-  return contents.includes("Rhum");
+  if (contents.includes("Rhum")) {
+    if (contents.includes(".skip")) {
+      return true;
+    } else {
+      if (contents.includes(".testPlan")) {
+        return true;
+      }
+      if (contents.includes(".testSuite")) {
+        return true;
+      }
+      if (contents.includes(".testCase")) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -106,8 +122,9 @@ function getTestFiles(
 
   if (isFile(input)) {
     try {
-      validateFile(input)
-      testFiles.push(input);
+      if (validateFile(input)) {
+        testFiles.push(input);
+      }
     } catch (error) {
       throw new Error(`Error reading "${input}" file. See error stack below:\n${error.stack}`);
     }
@@ -121,8 +138,9 @@ function getTestFiles(
   for (const entry of walkSync(input, { includeDirs: false })) {
     if (isFile(entry.path)) {
       try {
-        validateFile(entry.path)
-        testFiles.push(entry.path);
+        if (validateFile(entry.path)) {
+          testFiles.push(entry.path);
+        }
       } catch (error) {
         throw new Error(`Error reading "${input}" file. See error stack below:\n${error.stack}`);
       }
@@ -334,14 +352,16 @@ function validateDirectory(filepath: string): void {
  *
  * @param filepath - The filepath in question.
  */
-function validateFile(filepath: string): void {
+function validateFile(filepath: string): boolean {
   const contents = Deno.readFileSync(filepath);
   if (!contents) {
-    throw new Error(`${filepath} does not exist.`);
+    return false;
   }
 
   let decoded = decoder.decode(contents);
   if (!contentsContainRhumNamespace(decoded)) {
-    throw new Error(`"${filepath}" does not contain any tests.`);
+    return false;
   }
+
+  return true;
 }
