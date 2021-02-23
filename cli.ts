@@ -41,6 +41,12 @@ service
   .addOption(
     "--filter-test-suite",
     "Run tests suites that match the value of this option.",
+    "<TEST SUITE NAME>"
+  )
+  .addOption(
+    "--ignore",
+    "Ignore directories or files.",
+    "<DIRECTORIES|FILES>"
   );
 
 service.run();
