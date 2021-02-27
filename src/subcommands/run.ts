@@ -1,8 +1,9 @@
 import { runTests } from "../test_runner.ts";
 import { mimeDb } from "../mime_db.ts";
-import { Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
+import { CliService, Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
 
 class FilterTestCase extends SubcommandOption {
+  public name = "--filter-test-case";
   public signature = "--filter-test-case [test case name]";
   public description = "Run only test cases that match the value of this option.";
 }
@@ -10,7 +11,6 @@ class FilterTestCase extends SubcommandOption {
 const decoder = new TextDecoder();
 
 export class RunSubcommand extends Subcommand {
-  public name = "run";
   public signature = "run [directory|file]";
   public description = "Run tests.";
   public options = [
@@ -22,8 +22,9 @@ export class RunSubcommand extends Subcommand {
   //////////////////////////////////////////////////////////////////////////////
 
   public async handle(): Promise<void> {
-    if (this.getOption("--filter-test-case")) {
-      console.log("test");
+    const testCase = this.getOption("--filter-test-case");
+    if (testCase) {
+      console.log("filtering by test case");
       return;
     }
 
