@@ -14,8 +14,9 @@ export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/servi
 
 export {
   CliService,
-  Command,
+  // CommandOption,
   Subcommand,
+  SubcommandOption,
   // } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
 } from "../services/cli/cli_service.ts";
 
