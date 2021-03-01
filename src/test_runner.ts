@@ -2,8 +2,8 @@ import { colors, ConsoleLogger, readLines } from "../deps.ts";
 import { ITestPlanResults } from "./interfaces.ts";
 
 interface IOptions {
-  test_case?: string;
-  test_suite?: string;
+  test_case: null|string;
+  test_suite: null|string;
 }
 
 /**
@@ -12,7 +12,7 @@ interface IOptions {
 export async function runTests(
   testFiles: string[],
   denoFlags: string[],
-  options: IOptions = {},
+  options: IOptions,
 ): Promise<void> {
   console.log();
   ConsoleLogger.info("Starting Rhum");

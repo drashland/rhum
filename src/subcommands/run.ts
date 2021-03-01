@@ -2,10 +2,14 @@ import { runTests } from "../test_runner.ts";
 import { mimeDb } from "../mime_db.ts";
 import { CliService, Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
 
-class FilterTestCase extends SubcommandOption {
-  public name = "--filter-test-case";
+class OptionFilterTestCase extends SubcommandOption {
   public signature = "--filter-test-case [test case name]";
   public description = "Run only test cases that match the value of this option.";
+}
+
+class OptionFilterTestSuite extends SubcommandOption {
+  public signature = "--filter-test-suite [test suite name]";
+  public description = "Run only test suites that match the value of this option.";
 }
 
 const decoder = new TextDecoder();
@@ -14,7 +18,8 @@ export class RunSubcommand extends Subcommand {
   public signature = "run [directory|file]";
   public description = "Run tests.";
   public options = [
-    FilterTestCase
+    OptionFilterTestCase,
+    OptionFilterTestSuite
   ];
 
   //////////////////////////////////////////////////////////////////////////////
@@ -22,36 +27,53 @@ export class RunSubcommand extends Subcommand {
   //////////////////////////////////////////////////////////////////////////////
 
   public async handle(): Promise<void> {
-    const testCase = this.getOption("--filter-test-case");
-    if (testCase) {
-      console.log("filtering by test case");
-      return;
+    const input = this.getArgument("[directory|file]");
+
+    if (!input) {
+      return this.exit(1, "error", `[directory|file] not specified.`, () => {
+        this.showHelp();
+      });
     }
 
-    await this.run();
+    let testFiles = this.getTestFiles(input);
+
+    // No tests? Get out of here.
+    if (testFiles.length <= 0) {
+      const inputType = this.isFile(input) ? "file" : "directory";
+      this.exit(1, "error", `Could not find any tests in "${input}" ${inputType}.`);
+    }
+
+    // Are we filtering by test suite?
+    const testSuite = this.getOption("--filter-test-suite");
+    if (testSuite) {
+      testFiles = this.filterTestFilesByTestSuite(
+        testFiles,
+        testSuite,
+      );
+    }
+
+    // Are we filtering by test case?
+    const testCase = this.getOption("--filter-test-case");
+    if (testCase) {
+      testFiles = this.filterTestFilesByTestCase(
+        testFiles,
+        testCase
+      );
+    }
+
+    await runTests(
+      testFiles,
+      this.getDenoFlags(),
+      {
+        test_suite: testSuite,
+        test_case: testCase,
+      }
+    )
   }
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Run this command.
-   */
-  protected async run(): Promise<void> {
-    const filepath = this.getArgument("[directory|file]");
-
-    if (!filepath) {
-      return this.showHelp();
-    }
-
-    const testFiles = this.getTestFiles(filepath);
-
-    await runTests(
-      testFiles,
-      this.getDenoFlags()
-    )
-  }
 
   /**
    * Is the Rhum namespace present in the specified file contents?
@@ -61,23 +83,25 @@ export class RunSubcommand extends Subcommand {
    * @returns True if yes, false if no.
    */
   protected contentsContainRhumNamespace(contents: string): boolean {
+    let containsRhum = false;
+
     if (contents.includes("Rhum")) {
       if (contents.includes(".skip")) {
-        return true;
+        containsRhum = true;
       } else {
         if (contents.includes(".testPlan")) {
-          return true;
+          containsRhum = true;
         }
         if (contents.includes(".testSuite")) {
-          return true;
+          containsRhum = true;
         }
         if (contents.includes(".testCase")) {
-          return true;
+          containsRhum = true;
         }
       }
     }
 
-    return false;
+    return containsRhum;
   }
 
   /**
@@ -95,9 +119,10 @@ export class RunSubcommand extends Subcommand {
     const ret: string[] = [];
 
     for (const filepath of testFiles) {
-      const contents = this.minify(
+      const contents = this.minifyString(
         decoder.decode(Deno.readFileSync(filepath)),
       );
+
       if (contents.includes(`Rhum.testCase("${testCase}"`)) {
         ret.push(filepath);
       }
@@ -120,14 +145,14 @@ export class RunSubcommand extends Subcommand {
   ): string[] {
     const ret: string[] = [];
 
-    for (const filepath in testFiles) {
-      const contents = this.minify(
+    testFiles.forEach((filepath: string) => {
+      const contents = this.minifyString(
         decoder.decode(Deno.readFileSync(filepath)),
       );
       if (contents.includes(`Rhum.testSuite("${testSuite}"`)) {
         ret.push(filepath);
       }
-    }
+    });
 
     return ret;
   }
@@ -145,93 +170,21 @@ export class RunSubcommand extends Subcommand {
     const testFiles: string[] = [];
 
     if (this.isFile(input)) {
-      try {
-        if (this.validateFile(input)) {
-          testFiles.push(input);
-        }
-      } catch (error) {
-        throw new Error(`Error reading "${input}" file. See error stack below:\n${error.stack}`);
+      if (this.isValidFile(input)) {
+        testFiles.push(input);
       }
-
-      testFiles.push(input);
       return testFiles;
     }
 
-    this.validateDirectory(input);
-
-    for (const entry of walkSync(input, { includeDirs: false })) {
-      if (this.isFile(entry.path)) {
-        try {
-          if (this.validateFile(entry.path)) {
+    if (this.isValidDirectory(input)) {
+      for (const entry of walkSync(input, { includeDirs: false })) {
+        if (this.isFile(entry.path)) {
+          if (this.isValidFile(entry.path)) {
             testFiles.push(entry.path);
           }
-        } catch (error) {
-          throw new Error(`Error reading "${input}" file. See error stack below:\n${error.stack}`);
         }
       }
     }
-
-    return testFiles;
-  }
-
-  /**
-   * Get all of the test files containing the test case.
-   *
-   * @param filepath - The filepath containing the test case.
-   * @param testCase - The test case to find.
-   *
-   * @returns Test files containing the test case.
-   */
-  protected getTestFilesWithTestCase(
-    filepath: string,
-    testCase: string,
-  ): string[] {
-    let testFiles: string[] = [];
-
-    try {
-      testFiles = this.getTestFiles(filepath);
-    } catch (error) {
-      const inputType = filepath.includes(".ts") ? "file" : "directory";
-      throw new Error(
-        `Could not get tests using "${filepath}" as the ${inputType}. See error stack below.\n${error.stack}`,
-      );
-    }
-
-    testFiles = this.filterTestFilesByTestCase(
-      testFiles,
-      testCase,
-    );
-
-    return testFiles;
-  }
-
-  /**
-   * Get all of the test files containing the test suite.
-   *
-   * @param filepath - The filepath containing the test suite.
-   * @param testCase - The test suite to find.
-   *
-   * @returns Test files containing the test suite.
-   */
-  protected getTestFilesWithTestSuite(
-    filepath: string,
-    testSuite: string,
-  ): string[] {
-    let testFiles: string[] = [];
-
-    try {
-      testFiles = this.getTestFiles(filepath);
-    } catch (error) {
-      const inputType = filepath.includes(".ts") ? "file" : "directory";
-      throw new Error(
-        `Could not get tests using "${filepath}" as the ${inputType}. See error stack below.\n${error.stack}`,
-      );
-    }
-
-    testFiles = this.filterTestFilesByTestSuite(
-      testFiles,
-      testSuite,
-    );
 
     return testFiles;
   }
@@ -269,74 +222,48 @@ export class RunSubcommand extends Subcommand {
   }
 
   /**
+   * Validate the directory in question.
+   *
+   * @param directory - The filepath in question.
+   */
+  protected isValidDirectory(directory: string): boolean {
+    try {
+      Deno.readDirSync(directory);
+    } catch (error) {
+      this.exit(1, "error", `Could not read "${directory}" directory.`);
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate the file in question.
+   *
+   * @param file - The file in question.
+   */
+  protected isValidFile(file: string): boolean {
+    try {
+      const contents = Deno.readFileSync(file);
+
+      const decoded = decoder.decode(contents);
+      if (!this.contentsContainRhumNamespace(decoded)) {
+        return false;
+      }
+    } catch (error) {
+      this.exit(1, "error", `Could not read "${file}" file.`);
+    }
+
+    return true;
+  }
+
+  /**
    * Minify the input string -- removing new lines and whitespace.
    *
    * @param input - The string to minify.
    *
    * @returns A minified string.
    */
-  protected minify(input: string): string {
+  protected minifyString(input: string): string {
     return input.replace(/\n\s/g, "").replace(/\(\s+/g, "(");
-  }
-
-  /**
-   * Run the run subcommand with the --filter-test-suite option.
-   *
-   * @param subcommand - The subcommand object.
-   */
-  // protected async runWithOptionFilterTestSuite(): Promise<void> {
-  //   const option = this.options["--filter-test-suite"];
-  //   const testSuite = option.value;
-  //   const filepath = this.user_input.last();
-  //   const testFiles = this.getTestFilesWithTestSuite(
-  //     filepath,
-  //     testSuite,
-  //   );
-
-  //   if (testFiles.length == 0) {
-  //     const inputType = filepath.includes(".ts") ? "file" : "directory";
-  //     this.cli.logger.error(
-  //       `The "${testSuite}" test suite could not be found in the "${filepath}" ${inputType}.`,
-  //     );
-  //     Deno.exit(1);
-  //   }
-
-  //   await runTests(
-  //     testFiles,
-  //     this.user_input.getDenoFlagsFromDenoArgs(),
-  //     { test_suite: testSuite },
-  //   );
-  // }
-
-  /**
-   * Validate the filepath in question.
-   *
-   * @param filepath - The filepath in question.
-   */
-  protected validateDirectory(filepath: string): void {
-    try {
-      Deno.readDirSync(filepath);
-    } catch (error) {
-      throw new Error(`Error reading "${filepath}" directory. See error stack below:\n${error.stack}`);
-    }
-  }
-
-  /**
-   * Validate the filepath in question.
-   *
-   * @param filepath - The filepath in question.
-   */
-  protected validateFile(filepath: string): boolean {
-    const contents = Deno.readFileSync(filepath);
-    if (!contents) {
-      return false;
-    }
-
-    const decoded = decoder.decode(contents);
-    if (!this.contentsContainRhumNamespace(decoded)) {
-      return false;
-    }
-
-    return true;
   }
 }
