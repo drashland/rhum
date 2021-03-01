@@ -2,8 +2,8 @@ import { colors, ConsoleLogger, readLines } from "../deps.ts";
 import { ITestPlanResults } from "./interfaces.ts";
 
 interface IOptions {
-  test_case?: string;
-  test_suite?: string;
+  test_case: null | string;
+  test_suite: null | string;
 }
 
 /**
@@ -12,9 +12,8 @@ interface IOptions {
 export async function runTests(
   testFiles: string[],
   denoFlags: string[],
-  options: IOptions = {},
+  options: IOptions,
 ): Promise<void> {
-  console.log();
   ConsoleLogger.info("Starting Rhum");
 
   // Define the variable that will keep track of all tests' results
@@ -25,11 +24,23 @@ export async function runTests(
     errors: "",
   };
 
-  ConsoleLogger.info("Running test(s)\n");
+  if (options.test_suite) {
+    ConsoleLogger.info(
+      `Running test suite(s) that match "${options.test_suite}"`,
+    );
+  }
+  if (options.test_case) {
+    ConsoleLogger.info(
+      `Running test case(s) that match "${options.test_case}"`,
+    );
+  }
+  if (!options.test_suite && !options.test_case) {
+    ConsoleLogger.info(`Running all tests`);
+  }
 
   for await (const path of testFiles) {
     // Output what file is being tested
-    console.log("\n" + path);
+    console.log(`\n${path}`);
 
     let cmd = [
       "deno",
@@ -41,6 +52,8 @@ export async function runTests(
     cmd.push(Deno.realPathSync(path));
 
     cmd.push(JSON.stringify(options));
+
+    cmd.push(path);
 
     // Run the test file
     const p = Deno.run({

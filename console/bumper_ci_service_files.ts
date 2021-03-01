@@ -16,9 +16,4 @@ export const preReleaseFiles = [
     replaceTheRegex: regexes.import_export_statements,
     replaceWith: `rhum@v{{ thisModulesLatestVersion }}`,
   },
-  {
-    filename: "./src/cli/commands/version.ts",
-    replaceTheRegex: regexes.const_statements,
-    replaceWith: `rhum@v{{ thisModulesLatestVersion }}`,
-  },
 ];
