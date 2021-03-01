@@ -1,5 +1,5 @@
 import { Commander } from "./deps.ts";
-import { RunSubcommand } from "./src/subcommands/run.ts";
+import { RunSubcommand } from "./src/cli/subcommands/run.ts";
 
 const service = new Commander({
   command: "rhum",

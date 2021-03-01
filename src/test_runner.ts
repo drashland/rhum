@@ -34,11 +34,9 @@ export async function runTests(
     ConsoleLogger.info(`Running all tests`);
   }
 
-  console.log();
-
   for await (const path of testFiles) {
     // Output what file is being tested
-    console.log(path);
+    console.log(`\n${path}`);
 
     let cmd = [
       "deno",
@@ -50,6 +48,8 @@ export async function runTests(
     cmd.push(Deno.realPathSync(path));
 
     cmd.push(JSON.stringify(options));
+
+    cmd.push(path);
 
     // Run the test file
     const p = Deno.run({

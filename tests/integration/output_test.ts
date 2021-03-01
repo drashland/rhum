@@ -7,7 +7,7 @@ Rhum.testPlan(() => {
       const p = Deno.run({
         cmd: [
           "rhum",
-          "test",
+          "run",
           "--allow-read",
           "example_tests/test.ts",
         ],
@@ -38,11 +38,8 @@ Rhum.testPlan(() => {
   });
 });
 
-const output = `
-${colors.blue("INFO")} Starting Rhum
-${colors.blue("INFO")} Checking test file(s)
-${colors.blue("INFO")} Running test(s)
-
+const output = `${colors.blue("INFO")} Starting Rhum
+${colors.blue("INFO")} Running all tests
 
 example_tests/test.ts
     testSuite 1: skipped
@@ -68,6 +65,11 @@ example_tests/test.ts
         ${colors.yellow("SKIP")} skipped
         ${colors.red("FAIL")} fail
 
+
+
+The following error occurred in: 
+   ./example_tests/test.ts:66:20
+
 AssertionError: Values are not equal:
 
 
@@ -78,11 +80,6 @@ AssertionError: Values are not equal:
 
 ${colors.red(colors.bold("-   false"))}
 ${colors.green(colors.bold("+   true"))}
-
-The above assertion error occurred in:
-
-   test.ts:66:20
-
 
 
 Test Results: ${colors.green("4")} passed; ${colors.red("1")} failed; ${

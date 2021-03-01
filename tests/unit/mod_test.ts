@@ -317,11 +317,8 @@ Rhum.testPlan(() => {
 // DATA PROVIDERS //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-const data_skipTestPlan = `
-${colors.blue("INFO")} Starting Rhum
-${colors.blue("INFO")} Checking test file(s)
-${colors.blue("INFO")} Running test(s)
-
+const data_skipTestPlan = `${colors.blue("INFO")} Starting Rhum
+${colors.blue("INFO")} Running all tests
 
 tests/integration/skip_test_plan_test.ts
     testSuite skipped 1
@@ -353,11 +350,8 @@ Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
 } skipped
 `;
 
-const data_skipTestSuite = `
-${colors.blue("INFO")} Starting Rhum
-${colors.blue("INFO")} Checking test file(s)
-${colors.blue("INFO")} Running test(s)
-
+const data_skipTestSuite = `${colors.blue("INFO")} Starting Rhum
+${colors.blue("INFO")} Running all tests
 
 tests/integration/skip_test_suite_test.ts
     skipped
@@ -370,11 +364,8 @@ Test Results: ${colors.green("0")} passed; ${colors.red("0")} failed; ${
 } skipped
 `;
 
-const data_skipTestCase = `
-${colors.blue("INFO")} Starting Rhum
-${colors.blue("INFO")} Checking test file(s)
-${colors.blue("INFO")} Running test(s)
-
+const data_skipTestCase = `${colors.blue("INFO")} Starting Rhum
+${colors.blue("INFO")} Running all tests
 
 tests/integration/skip_test_case_test.ts
     testSuite

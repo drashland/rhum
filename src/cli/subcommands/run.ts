@@ -1,6 +1,6 @@
-import { runTests } from "../test_runner.ts";
-import { mimeDb } from "../mime_db.ts";
-import { Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
+import { runTests } from "../../test_runner.ts";
+import { mimeDb } from "../../mime_db.ts";
+import { Subcommand, SubcommandOption, walkSync } from "../../../deps.ts";
 
 class OptionFilterTestCase extends SubcommandOption {
   public signature = "--filter-test-case [test case name]";
