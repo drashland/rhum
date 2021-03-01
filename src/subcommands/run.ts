@@ -1,6 +1,6 @@
 import { runTests } from "../test_runner.ts";
 import { mimeDb } from "../mime_db.ts";
-import { CliService, Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
+import { Subcommand, SubcommandOption, walkSync } from "../../deps.ts";
 
 class OptionFilterTestCase extends SubcommandOption {
   public signature = "--filter-test-case [test case name]";
@@ -59,6 +59,12 @@ export class RunSubcommand extends Subcommand {
         testFiles,
         testCase
       );
+    }
+
+    // No tests after filter? Get out of here.
+    if (testFiles.length <= 0) {
+      const inputType = this.isFile(input) ? "file" : "directory";
+      this.exit(1, "error", `Could not find any tests that matched your filters in "${input}" ${inputType}.`);
     }
 
     await runTests(

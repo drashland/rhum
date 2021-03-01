@@ -14,7 +14,6 @@ export async function runTests(
   denoFlags: string[],
   options: IOptions,
 ): Promise<void> {
-  console.log();
   ConsoleLogger.info("Starting Rhum");
 
   // Define the variable that will keep track of all tests' results
@@ -25,11 +24,21 @@ export async function runTests(
     errors: "",
   };
 
-  ConsoleLogger.info("Running test(s)\n");
+  if (options.test_suite) {
+    ConsoleLogger.info(`Running test suite(s) that match "${options.test_suite}"`);
+  }
+  if (options.test_case) {
+    ConsoleLogger.info(`Running test case(s) that match "${options.test_case}"`);
+  }
+  if (!options.test_suite && !options.test_case) {
+    ConsoleLogger.info(`Running all tests`);
+  }
+
+  console.log();
 
   for await (const path of testFiles) {
     // Output what file is being tested
-    console.log("\n" + path);
+    console.log(path);
 
     let cmd = [
       "deno",

@@ -13,11 +13,10 @@ export { walkSync } from "https://deno.land/std@0.87.0/fs/walk.ts";
 export { ConsoleLogger } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/loggers/console_logger.ts";
 
 export {
-  CliService,
-  // CommandOption,
+  Commander,
   Subcommand,
   SubcommandOption,
   // } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/cli/cli_service.ts";
-} from "../services/cli/cli_service.ts";
+} from "../services/cli/commander/mod.ts";
 
 export { BumperService } from "https://raw.githubusercontent.com/drashland/services/v0.1.0/ci/bumper_service.ts";

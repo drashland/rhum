@@ -1,7 +1,7 @@
-import { CliService } from "./deps.ts";
+import { Commander } from "./deps.ts";
 import { RunSubcommand } from "./src/subcommands/run.ts";
 
-const service = new CliService({
+const service = new Commander({
   command: "rhum",
   name: "Rhum",
   description: "A lightweight testing framework for Deno.",
