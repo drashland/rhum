@@ -2,8 +2,8 @@ import { colors, ConsoleLogger, readLines } from "../deps.ts";
 import { ITestPlanResults } from "./interfaces.ts";
 
 interface IOptions {
-  test_case: null|string;
-  test_suite: null|string;
+  test_case: null | string;
+  test_suite: null | string;
 }
 
 /**
@@ -25,10 +25,14 @@ export async function runTests(
   };
 
   if (options.test_suite) {
-    ConsoleLogger.info(`Running test suite(s) that match "${options.test_suite}"`);
+    ConsoleLogger.info(
+      `Running test suite(s) that match "${options.test_suite}"`,
+    );
   }
   if (options.test_case) {
-    ConsoleLogger.info(`Running test case(s) that match "${options.test_case}"`);
+    ConsoleLogger.info(
+      `Running test case(s) that match "${options.test_case}"`,
+    );
   }
   if (!options.test_suite && !options.test_case) {
     ConsoleLogger.info(`Running all tests`);

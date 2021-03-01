@@ -7,8 +7,8 @@ const service = new Commander({
   description: "A lightweight testing framework for Deno.",
   version: "v2.0.0",
   subcommands: [
-    RunSubcommand
-  ]
+    RunSubcommand,
+  ],
 });
 
 service.run();

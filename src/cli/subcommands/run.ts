@@ -4,12 +4,14 @@ import { Subcommand, SubcommandOption, walkSync } from "../../../deps.ts";
 
 class OptionFilterTestCase extends SubcommandOption {
   public signature = "--filter-test-case [test case name]";
-  public description = "Run only test cases that match the value of this option.";
+  public description =
+    "Run only test cases that match the value of this option.";
 }
 
 class OptionFilterTestSuite extends SubcommandOption {
   public signature = "--filter-test-suite [test suite name]";
-  public description = "Run only test suites that match the value of this option.";
+  public description =
+    "Run only test suites that match the value of this option.";
 }
 
 const decoder = new TextDecoder();
@@ -19,7 +21,7 @@ export class RunSubcommand extends Subcommand {
   public description = "Run tests.";
   public options = [
     OptionFilterTestCase,
-    OptionFilterTestSuite
+    OptionFilterTestSuite,
   ];
 
   //////////////////////////////////////////////////////////////////////////////
@@ -40,7 +42,11 @@ export class RunSubcommand extends Subcommand {
     // No tests? Get out of here.
     if (testFiles.length <= 0) {
       const inputType = this.isFile(input) ? "file" : "directory";
-      this.exit(1, "error", `Could not find any tests in "${input}" ${inputType}.`);
+      this.exit(
+        1,
+        "error",
+        `Could not find any tests in "${input}" ${inputType}.`,
+      );
     }
 
     // Are we filtering by test suite?
@@ -57,14 +63,18 @@ export class RunSubcommand extends Subcommand {
     if (testCase) {
       testFiles = this.filterTestFilesByTestCase(
         testFiles,
-        testCase
+        testCase,
       );
     }
 
     // No tests after filter? Get out of here.
     if (testFiles.length <= 0) {
       const inputType = this.isFile(input) ? "file" : "directory";
-      this.exit(1, "error", `Could not find any tests that matched your filters in "${input}" ${inputType}.`);
+      this.exit(
+        1,
+        "error",
+        `Could not find any tests that matched your filters in "${input}" ${inputType}.`,
+      );
     }
 
     await runTests(
@@ -73,8 +83,8 @@ export class RunSubcommand extends Subcommand {
       {
         test_suite: testSuite,
         test_case: testCase,
-      }
-    )
+      },
+    );
   }
 
   //////////////////////////////////////////////////////////////////////////////
