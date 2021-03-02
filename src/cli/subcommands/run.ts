@@ -3,13 +3,13 @@ import { mimeDb } from "../../mime_db.ts";
 import { Subcommand, SubcommandOption, walkSync } from "../../../deps.ts";
 
 class OptionFilterTestCase extends SubcommandOption {
-  public signature = "--filter-test-case [test case name]";
+  public name = "--filter-test-case";
   public description =
     "Run only test cases that match the value of this option.";
 }
 
 class OptionFilterTestSuite extends SubcommandOption {
-  public signature = "--filter-test-suite [test suite name]";
+  public name = "--filter-test-suite";
   public description =
     "Run only test suites that match the value of this option.";
 }
