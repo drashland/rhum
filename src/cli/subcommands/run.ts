@@ -29,7 +29,7 @@ export class RunSubcommand extends Subcommand {
   //////////////////////////////////////////////////////////////////////////////
 
   public async handle(): Promise<void> {
-    const input = this.getArgument("[directory|file]");
+    const input = this.getArgumentValue("directory|file");
 
     if (!input) {
       return this.exit(1, "error", `[directory|file] not specified.`, () => {
@@ -50,7 +50,7 @@ export class RunSubcommand extends Subcommand {
     }
 
     // Are we filtering by test suite?
-    const testSuite = this.getOption("--filter-test-suite");
+    const testSuite = this.getOptionValue("--filter-test-suite");
     if (testSuite) {
       testFiles = this.filterTestFilesByTestSuite(
         testFiles,
@@ -59,7 +59,7 @@ export class RunSubcommand extends Subcommand {
     }
 
     // Are we filtering by test case?
-    const testCase = this.getOption("--filter-test-case");
+    const testCase = this.getOptionValue("--filter-test-case");
     if (testCase) {
       testFiles = this.filterTestFilesByTestCase(
         testFiles,

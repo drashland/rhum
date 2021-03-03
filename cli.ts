@@ -1,7 +1,7 @@
-import { Commander } from "./deps.ts";
+import { Line } from "./deps.ts";
 import { RunSubcommand } from "./src/cli/subcommands/run.ts";
 
-const service = new Commander({
+const service = new Line({
   command: "rhum",
   name: "Rhum",
   description: "A lightweight testing framework for Deno.",
