@@ -423,7 +423,10 @@ export class RhumRunner {
     if (this.test_plan_in_progress != this.passed_in_test_plan) {
       this.test_plan_in_progress = this.passed_in_test_plan;
       this.test_suite_in_progress = this.passed_in_test_suite;
-      newName = `${"\u0008".repeat(name.length + extraChars)}    ${this.passed_in_test_suite}` +
+      newName =
+        `${
+          "\u0008".repeat(name.length + extraChars)
+        }    ${this.passed_in_test_suite}` +
         `\n        ${name}`;
     } else {
       if (this.test_suite_in_progress != this.passed_in_test_suite) {

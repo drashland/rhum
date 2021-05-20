@@ -83,7 +83,7 @@ export class TestCase {
               await this.plan.suites[suiteName].after_all_case_hook!();
               executedAfterAllCaseHook = true;
             }
-           if (
+            if (
               this.plan.after_each_suite_hook && !executedAfterEachSuiteHook
             ) {
               await this.plan.after_each_suite_hook();
