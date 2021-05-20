@@ -40,6 +40,10 @@ export class TestCase {
       // Run cases
       this.plan!.suites[suiteName].cases!.forEach(
         async (c: ITestCase, caseIndex) => {
+          const isLastCase =
+            (this.plan!.suites[suiteName].cases!.length - 1) == caseIndex;
+          const isLastSuite =
+            (Object.keys(this.plan!.suites).length - 1) == suiteIndex;
           // Run the case - required to run like this because the
           // hooks need to be ran inside the Deno.test call. Deno.test seems to queue
           // the tests, meaning all hooks are ran, and **then** the tests are ran
@@ -72,8 +76,6 @@ export class TestCase {
             if (this.plan.suites[suiteName].after_each_case_hook) {
               await this.plan.suites[suiteName].after_each_case_hook!();
             }
-            const isLastCase =
-              (this.plan!.suites[suiteName].cases!.length - 1) == caseIndex;
             if (
               this.plan.suites[suiteName].after_all_case_hook &&
               !executedAfterAllCaseHook && isLastCase
@@ -81,14 +83,12 @@ export class TestCase {
               await this.plan.suites[suiteName].after_all_case_hook!();
               executedAfterAllCaseHook = true;
             }
-            if (
+           if (
               this.plan.after_each_suite_hook && !executedAfterEachSuiteHook
             ) {
               await this.plan.after_each_suite_hook();
               executedAfterEachSuiteHook = true;
             }
-            const isLastSuite =
-              (Object.keys(this.plan!.suites).length - 1) == suiteIndex;
             if (
               this.plan.after_all_suite_hook && !executedAfterAllSuiteHook &&
               isLastSuite
@@ -107,8 +107,8 @@ export class TestCase {
               await hookAttachedTestFn();
             });
           } else {
-            await Deno.test(c.name, async () => {
-              Deno.stdout.writeSync(encoder.encode(c.new_name));
+            await Deno.test(c.new_name, async () => {
+              // Deno.stdout.writeSync(encoder.encode(c.new_name));
               await hookAttachedTestFn();
             });
           }
