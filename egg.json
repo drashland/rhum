@@ -1,7 +1,7 @@
 {
   "name": "rhum",
   "description": "A lightweight testing framework for Deno.",
-  "version": "1.1.9",
+  "version": "1.1.11",
   "stable": true,
   "repository": "https://github.com/drashland/rhum",
   "files": [
