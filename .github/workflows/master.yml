@@ -22,10 +22,10 @@ jobs:
         uses: denolib/setup-deno@master
 
       - name: Unit
-        run: deno test --allow-env tests/unit
+        run: deno test tests/unit
 
       - name: Integration
-        run: deno test --allow-run --allow-env tests/integration
+        run: deno test tests/integration
 
   linter:
     # Only one OS is required since fmt is cross platform
@@ -35,10 +35,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Deno
-        uses: denolib/setup-deno@master
+        uses: denoland/setup-deno@v1
 
-      # - name: Lint
-      #   run: deno lint --unstable
+      - name: Lint
+        run: deno lint
 
       - name: Formatter
         run: deno fmt --check
