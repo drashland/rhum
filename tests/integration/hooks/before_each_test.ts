@@ -58,7 +58,7 @@ Rhum.testPlan("before_each_test.ts", () => {
 
     Rhum.beforeEach(async () => {
       await new Promise((resolve) => {
-        setTimeout(() => resolve((async_case_val = 15)), 1000);
+        setTimeout(() => resolve(async_case_val = 15), 1000);
       });
     });
 

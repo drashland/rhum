@@ -50,7 +50,7 @@ Rhum.testPlan("before_all_test.ts", () => {
     let async_case_val = 5;
     Rhum.beforeAll(async () => {
       await new Promise((resolve) => {
-        setTimeout(() => resolve((async_case_val = 15)), 1000);
+        setTimeout(() => resolve(async_case_val = 15), 1000);
       });
     });
     Rhum.testCase("beforeAll hook can be async", () => {

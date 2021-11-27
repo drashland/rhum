@@ -53,7 +53,7 @@ Rhum.testPlan("after_all_test.ts", () => {
     Rhum.afterAll(async () => {
       Rhum.asserts.assertEquals(async_case_val, 1);
       await new Promise((resolve) => {
-        setTimeout(() => resolve((async_case_val = 2)), 1000);
+        setTimeout(() => resolve(async_case_val = 2), 1000);
       });
     });
     Rhum.testCase("Async afterAll hook has no effect before case", () => {
