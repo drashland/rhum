@@ -77,11 +77,11 @@ export class MockBuilder<T> {
         if (!mock.calls[method]) {
           mock.calls[method] = 0;
         }
-        mock[method] = function () {
+        mock[method] = function (...args: unknown[]) {
           mock.calls[method]++;
           return (original[method as keyof T] as unknown as (
             ...params: unknown[]
-          ) => unknown)();
+          ) => unknown)(...args);
         };
       } else {
         // copy nativeMethod directly without mocking
