@@ -1,5 +1,3 @@
-import type { MockServerRequestFn } from "./mocks/server_request.ts";
-
 /**
  * @remarks
  * suites
@@ -120,12 +118,4 @@ export interface ITestCase {
   name: string;
   new_name: string;
   testFn: () => void;
-}
-
-/**
- * ServerRequest
- *     Type for the ServerRequest on the `Rhum.mocks` property
- */
-export interface RhumMocks {
-  ServerRequest: typeof MockServerRequestFn;
 }

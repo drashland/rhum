@@ -1,5 +1,3 @@
-export { ServerRequest } from "https://deno.land/std@0.116.0/http/server.ts";
-
 export { BufReader } from "https://deno.land/std@0.116.0/io/bufio.ts";
 
 export * as StdAsserts from "https://deno.land/std@0.116.0/testing/asserts.ts";
