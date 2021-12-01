@@ -1,7 +1,6 @@
 import { assertions, asserts } from "./src/rhum_asserts.ts";
-import { MockServerRequestFn } from "./src/mocks/server_request.ts";
 import { TestCase } from "./src/test_case.ts";
-import type { ITestPlan, RhumMocks } from "./src/interfaces.ts";
+import type { ITestPlan } from "./src/interfaces.ts";
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
 
@@ -60,8 +59,6 @@ export class RhumRunner {
   // deno-lint-ignore ban-types Reason for this is, deno lint no longer allows `Function` and instead needs us to be explicit: `() => void`, but  because  we couldn't use that to  type the properties (we would just be copying Deno's interfaces word for word), we have to deal with `Function
   public asserts: { [key in assertions]: Function } = asserts;
 
-  public mocks: RhumMocks;
-
   protected passed_in_test_plan = "";
 
   protected passed_in_test_suite = "";
@@ -71,15 +68,6 @@ export class RhumRunner {
   protected test_suite_in_progress = "";
 
   protected plan: ITestPlan = { suites: {} };
-
-  // FILE MARKER - METHODS - CONSTRUCTOR ///////////////////////////////////////
-
-  /**
-   * Construct an object of this class.
-   */
-  constructor() {
-    this.mocks = { ServerRequest: MockServerRequestFn };
-  }
 
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
