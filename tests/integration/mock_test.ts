@@ -110,14 +110,20 @@ Rhum.testPlan("mock_test.ts", () => {
         method: "post",
       });
       Rhum.asserts.assertEquals(router.calls.handle, 1);
-      Rhum.asserts.assertEquals(await router.handle(reqPostNotJson), "Content-Type is incorrect");
+      Rhum.asserts.assertEquals(
+        await router.handle(reqPostNotJson),
+        "Content-Type is incorrect",
+      );
       Rhum.asserts.assertEquals(router.calls.handle, 2);
 
       const reqGet = new Request("https://google.com", {
         method: "get",
       });
       Rhum.asserts.assertEquals(router.calls.handle, 2);
-      Rhum.asserts.assertEquals(await router.handle(reqGet), "Method is not post");
+      Rhum.asserts.assertEquals(
+        await router.handle(reqGet),
+        "Method is not post",
+      );
       Rhum.asserts.assertEquals(router.calls.handle, 3);
     });
   });
