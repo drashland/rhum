@@ -1,5 +1,5 @@
 import { Rhum } from "../../mod.ts";
-import { assertEquals } from "../deps.ts"
+import { assertEquals } from "../deps.ts";
 
 class Server {
   public greeting = "hello";
@@ -12,12 +12,12 @@ class Server {
   }
 }
 
-Deno.test("stub()", t => {
-  t.step('Can stub a propert', () => {
+Deno.test("stub()", (t) => {
+  t.step("Can stub a propert", () => {
     const server = Rhum.stubbed(new Server());
-      server.stub("greeting", "you got changed");
-      assertEquals(server.greeting, "you got changed");
-  })
+    server.stub("greeting", "you got changed");
+    assertEquals(server.greeting, "you got changed");
+  });
 
   t.step("Can stub a method", () => {
     const server = Rhum.stubbed(new Server());
@@ -32,5 +32,5 @@ Deno.test("stub()", t => {
       server.is_stubbed,
       true,
     );
-  })
-})
+  });
+});
