@@ -1,31 +1,33 @@
-import { StdAsserts as asserts } from "../../deps.ts";
+import { assertEquals } from "../deps.ts";
 import { MockBuilder } from "../../src/mock_builder.ts";
 
 Deno.test({
   name: "Unit | MockBuilder | constructor() | returns a MockBuilder object",
   fn(): void {
     const mock = new MockBuilder(TestObjectOne);
-    asserts.assertEquals(mock.constructor.name, "MockBuilder");
+    assertEquals(mock.constructor.name, "MockBuilder");
   },
 });
 
-Deno.test({
-  name: "Unit | MockBuilder | create() | creates mock without constructor args",
-  fn(): void {
-    const mock = new MockBuilder(TestObjectTwo)
-      .create();
-    asserts.assertEquals(mock.name, undefined);
-  },
-});
+Deno.test("create()", async (t) => {
+  await t.step({
+    name: "create() | creates mock without constructor args",
+    fn(): void {
+      const mock = new MockBuilder(TestObjectTwo)
+        .create();
+      assertEquals(mock.name, undefined);
+    },
+  });
 
-Deno.test({
-  name: "Unit | MockBuilder | create() | creates mock with constructor args",
-  fn(): void {
-    const mock = new MockBuilder(TestObjectTwo)
-      .withConstructorArgs("some name")
-      .create();
-    asserts.assertEquals(mock.name, "some name");
-  },
+  await t.step({
+    name: "Unit | MockBuilder | create() | creates mock with constructor args",
+    fn(): void {
+      const mock = new MockBuilder(TestObjectTwo)
+        .withConstructorArgs("some name")
+        .create();
+      assertEquals(mock.name, "some name");
+    },
+  });
 });
 
 // TODO(crookse) Write this test when we can invoke non-public members.

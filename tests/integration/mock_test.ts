@@ -42,8 +42,8 @@ class TestRequestHandler {
   }
 }
 
-Deno.test("mock()", (t) => {
-  t.step({
+Deno.test("mock()", async (t) => {
+  await t.step({
     name: "can mock an object",
     fn() {
       const mock = Rhum
@@ -54,7 +54,7 @@ Deno.test("mock()", (t) => {
     },
   });
 
-  t.step("Can mock an object with constructor args", () => {
+  await t.step("Can mock an object with constructor args", () => {
     const mock = Rhum
       .mock(TestObject)
       .withConstructorArgs("my server", new MathService())
@@ -64,7 +64,7 @@ Deno.test("mock()", (t) => {
     assertEquals(mock.name, "my server");
   });
 
-  t.step("can access protected property", () => {
+  await t.step("can access protected property", () => {
     const mock = Rhum
       .mock(TestObject)
       .create();
@@ -74,7 +74,7 @@ Deno.test("mock()", (t) => {
     );
   });
 
-  t.step("Can access protected method", () => {
+  await t.step("Can access protected method", () => {
     const mock = Rhum
       .mock(TestObject)
       .create();
@@ -84,7 +84,7 @@ Deno.test("mock()", (t) => {
     );
   });
 
-  t.step("has mocked math service", () => {
+  await t.step("has mocked math service", () => {
     const mockMathService = Rhum
       .mock(MathService)
       .create();
@@ -97,7 +97,7 @@ Deno.test("mock()", (t) => {
     assertEquals(mockMathService.calls.add, 1);
   });
 
-  t.step("Native request mock", async () => {
+  await t.step("Native request mock", async () => {
     const router = Rhum.mock(TestRequestHandler).create();
 
     const reqPost = new Request("https://google.com", {

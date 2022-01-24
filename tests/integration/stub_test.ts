@@ -12,14 +12,14 @@ class Server {
   }
 }
 
-Deno.test("stub()", (t) => {
-  t.step("Can stub a propert", () => {
+Deno.test("stub()", async (t) => {
+  await t.step("Can stub a propert", () => {
     const server = Rhum.stubbed(new Server());
     server.stub("greeting", "you got changed");
     assertEquals(server.greeting, "you got changed");
   });
 
-  t.step("Can stub a method", () => {
+  await t.step("Can stub a method", () => {
     const server = Rhum.stubbed(new Server());
     server.stub("methodThatLogs", () => {
       return "don't run the console.log()";
