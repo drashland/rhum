@@ -1,4 +1,5 @@
 import { Rhum } from "../../mod.ts";
+import { assertEquals } from "../deps.ts"
 
 class Server {
   public greeting = "hello";
@@ -11,29 +12,25 @@ class Server {
   }
 }
 
-Rhum.testPlan("stub_test.ts", () => {
-  Rhum.testSuite("stub()", () => {
-    Rhum.testCase("can stub a property", () => {
-      const server = Rhum.stubbed(new Server());
+Deno.test("stub()", t => {
+  t.step('Can stub a propert', () => {
+    const server = Rhum.stubbed(new Server());
       server.stub("greeting", "you got changed");
-      Rhum.asserts.assertEquals(server.greeting, "you got changed");
-    });
+      assertEquals(server.greeting, "you got changed");
+  })
 
-    Rhum.testCase("can stub a method", () => {
-      const server = Rhum.stubbed(new Server());
-      server.stub("methodThatLogs", () => {
-        return "don't run the console.log()";
-      });
-      Rhum.asserts.assertEquals(
-        server.methodThatLogs(),
-        "don't run the console.log()",
-      );
-      Rhum.asserts.assertEquals(
-        server.is_stubbed,
-        true,
-      );
+  t.step("Can stub a method", () => {
+    const server = Rhum.stubbed(new Server());
+    server.stub("methodThatLogs", () => {
+      return "don't run the console.log()";
     });
-  });
-});
-
-Rhum.run();
+    assertEquals(
+      server.methodThatLogs(),
+      "don't run the console.log()",
+    );
+    assertEquals(
+      server.is_stubbed,
+      true,
+    );
+  })
+})
