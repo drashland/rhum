@@ -5,7 +5,6 @@ export type { Constructor, Stubbed } from "./src/types.ts";
 export { MockBuilder } from "./src/mock_builder.ts";
 
 export class RhumRunner {
-
   // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
 
   /**

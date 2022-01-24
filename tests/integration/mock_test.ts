@@ -23,7 +23,7 @@ class TestObject {
   }
 }
 
-De
+De;
 Rhum.testPlan("mock_test.ts", () => {
   Rhum.testSuite("mock()", () => {
     Rhum.testCase("can mock an object", () => {
