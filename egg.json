@@ -1,6 +1,6 @@
 {
   "name": "rhum",
-  "description": "A test double mdoule to stub and mock your code.",
+  "description": "A test double module to stub and mock your code.",
   "version": "1.1.11",
   "stable": true,
   "repository": "https://github.com/drashland/rhum",
