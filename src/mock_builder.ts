@@ -78,10 +78,19 @@ export class MockBuilder<T> {
           mock.calls[method] = 0;
         }
         mock[method] = function (...args: unknown[]) {
+          // Add tracking
           mock.calls[method]++;
-          return (original[method as keyof T] as unknown as (
+
+          // Make sure the method calls its original self
+          let unbound = (original[method as keyof T] as unknown as (
             ...params: unknown[]
-          ) => unknown)(...args);
+          ) => unknown)
+
+          // When method calls its original self, let `this` be the mock. Reason
+          // being the mock has tracking and the original does not.
+          const bound = unbound.bind(mock);
+
+          return bound(...args);
         };
       } else {
         // copy nativeMethod directly without mocking
