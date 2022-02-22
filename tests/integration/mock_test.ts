@@ -1,7 +1,11 @@
 import { Rhum } from "../../mod.ts";
 
 class MathService {
-  public add(num1: number, num2: number, useNestedAdd: boolean = false): number {
+  public add(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
     if (useNestedAdd) {
       return this.nestedAdd(num1, num2);
     }
@@ -21,7 +25,11 @@ class TestObject {
     this.math_service = mathService;
     this.name = name;
   }
-  public sum(num1: number, num2: number, useNestedAdd: boolean = false): number {
+  public sum(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
     const sum = this.math_service.add(num1, num2, useNestedAdd);
     return sum;
   }

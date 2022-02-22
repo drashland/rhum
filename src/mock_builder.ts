@@ -84,7 +84,7 @@ export class MockBuilder<T> {
           // Make sure the method calls its original self
           let unbound = (original[method as keyof T] as unknown as (
             ...params: unknown[]
-          ) => unknown)
+          ) => unknown);
 
           // When method calls its original self, let `this` be the mock. Reason
           // being the mock has tracking and the original does not.
