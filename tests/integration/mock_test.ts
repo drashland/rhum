@@ -1,7 +1,18 @@
 import { Rhum } from "../../mod.ts";
 
 class MathService {
-  public add(num1: number, num2: number): number {
+  public add(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
+    if (useNestedAdd) {
+      return this.nestedAdd(num1, num2);
+    }
+    return num1 + num2;
+  }
+
+  public nestedAdd(num1: number, num2: number): number {
     return num1 + num2;
   }
 }
@@ -14,8 +25,12 @@ class TestObject {
     this.math_service = mathService;
     this.name = name;
   }
-  public sum(num1: number, num2: number): number {
-    const sum = this.math_service.add(num1, num2);
+  public sum(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
+    const sum = this.math_service.add(num1, num2, useNestedAdd);
     return sum;
   }
   protected protectedMethod() {
@@ -91,6 +106,21 @@ Rhum.testPlan("mock_test.ts", () => {
       Rhum.asserts.assertEquals(mockMathService.calls.add, 0);
       mockTestObject.sum(1, 1);
       Rhum.asserts.assertEquals(mockMathService.calls.add, 1);
+    });
+
+    Rhum.testCase("call count for outside nested function is increased", () => {
+      const mockMathService = Rhum
+        .mock(MathService)
+        .create();
+      const mockTestObject = Rhum
+        .mock(TestObject)
+        .withConstructorArgs("has mocked math service", mockMathService)
+        .create();
+      Rhum.asserts.assertEquals(mockMathService.calls.add, 0);
+      Rhum.asserts.assertEquals(mockMathService.calls.nestedAdd, 0);
+      mockTestObject.sum(1, 1, true);
+      Rhum.asserts.assertEquals(mockMathService.calls.add, 1);
+      Rhum.asserts.assertEquals(mockMathService.calls.nestedAdd, 1);
     });
 
     Rhum.testCase("Native Request mock", async () => {
