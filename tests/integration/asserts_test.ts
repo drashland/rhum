@@ -32,13 +32,6 @@ Rhum.testPlan("asserts_test.ts", () => {
         throw new Error("test");
       });
     });
-    Rhum.testCase("assertThrowsAsync", () => {
-      Rhum.asserts.assertThrowsAsync(() => {
-        return Rhum.asserts.assertThrowsAsync(() => {
-          return Promise.reject("Panic!");
-        });
-      });
-    });
   });
 });
 
