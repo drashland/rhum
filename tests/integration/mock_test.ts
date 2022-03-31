@@ -36,6 +36,14 @@ class TestObject {
   protected protectedMethod() {
     return "I AM A PROTECTED METHOD.";
   }
+
+  public get nameGetter() {
+    return this.name;
+  }
+
+  public set nameSetter(val: string) {
+    this.name = val;
+  }
 }
 
 class TestRequestHandler {
@@ -121,6 +129,14 @@ Rhum.testPlan("mock_test.ts", () => {
       mockTestObject.sum(1, 1, true);
       Rhum.asserts.assertEquals(mockMathService.calls.add, 1);
       Rhum.asserts.assertEquals(mockMathService.calls.nestedAdd, 1);
+    });
+
+    Rhum.testCase("can mock getters and setters", () => {
+      const mock = Rhum
+        .mock(TestObject)
+        .create();
+      mock.nameSetter = "custom name";
+      Rhum.asserts.assertEquals(mock.nameGetter, "custom name");
     });
 
     Rhum.testCase("Native Request mock", async () => {
