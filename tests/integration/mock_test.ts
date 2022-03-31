@@ -19,6 +19,7 @@ class MathService {
 
 class TestObject {
   public name: string;
+  #age = 0
   protected math_service: MathService;
   protected protected_property = "I AM PROTECTED PROPERTY.";
   constructor(name: string, mathService: MathService) {
@@ -37,12 +38,12 @@ class TestObject {
     return "I AM A PROTECTED METHOD.";
   }
 
-  public get nameGetter() {
-    return this.name;
+  public get age() {
+    return this.#age;
   }
 
-  public set nameSetter(val: string) {
-    this.name = val;
+  public set age(val: number) {
+    this.#age = val;
   }
 }
 
@@ -135,8 +136,8 @@ Rhum.testPlan("mock_test.ts", () => {
       const mock = Rhum
         .mock(TestObject)
         .create();
-      mock.nameSetter = "custom name";
-      Rhum.asserts.assertEquals(mock.nameGetter, "custom name");
+      mock.age = 999;
+      Rhum.asserts.assertEquals(mock.age, 999);
     });
 
     Rhum.testCase("Native Request mock", async () => {
