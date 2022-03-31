@@ -19,7 +19,7 @@ class MathService {
 
 class TestObject {
   public name: string;
-  #age = 0
+  #age = 0;
   protected math_service: MathService;
   protected protected_property = "I AM PROTECTED PROPERTY.";
   constructor(name: string, mathService: MathService) {
