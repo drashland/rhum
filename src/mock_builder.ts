@@ -52,17 +52,12 @@ export class MockBuilder<T> {
     const original = new this.constructor_fn(...this.constructor_args);
 
     // Attach all of the original's properties to the mock
-    console.log("gonna try attach all props from original, to mock");
     this.getAllProperties(original).forEach((property: string) => {
-      let desc = Object.getOwnPropertyDescriptor(original, property);
-      if (desc === undefined) {
-        // property is a getter or setter
-        desc = Object.getOwnPropertyDescriptor(
+      const desc = Object.getOwnPropertyDescriptor(original, property) ??
+        Object.getOwnPropertyDescriptor(
           this.constructor_fn.prototype,
           property,
         );
-      }
-      console.log(`looking at ${property}, got desc`, desc);
       mock[property] = desc!.value;
     });
 
