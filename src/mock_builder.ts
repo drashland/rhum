@@ -53,7 +53,11 @@ export class MockBuilder<T> {
 
     // Attach all of the original's properties to the mock
     this.getAllProperties(original).forEach((property: string) => {
-      const desc = Object.getOwnPropertyDescriptor(original, property);
+      const desc = Object.getOwnPropertyDescriptor(original, property) ??
+        Object.getOwnPropertyDescriptor(
+          this.constructor_fn.prototype,
+          property,
+        );
       mock[property] = desc!.value;
     });
 
