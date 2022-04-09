@@ -58,12 +58,16 @@ export class MockBuilder<T> {
           this.constructor_fn.prototype,
           property,
         );
-      if (typeof desc!.get === 'function') { // handle getter/setters different so we can initise their default getter value
+
+      // Handle getter/setters differently so we can initialise their default
+      // getter value
+      if (typeof desc!.get === 'function') {
         // deno-lint-ignore ban-ts-comment
         //@ts-ignore
         mock[property] = original[property]
        return; // continue
       }
+
       mock[property] = desc!.value;
     });
 
