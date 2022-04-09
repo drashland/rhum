@@ -174,6 +174,23 @@ Rhum.testPlan("mock_test.ts", () => {
       Rhum.asserts.assertEquals(router.calls.handle, 3);
     });
   });
+
+  await t.step("Sets the default value for getters", () => {
+    class Game {
+
+    }
+    class PlayersEngine {
+      private game = new Game
+      get Game() {
+        return this.game
+      }
+      set Game(val: Game) {
+        this.game = val
+      }
+    }
+    const mock = Mock(PlayersEngine).create();
+    assertEquals(mock.Game instanceof Game, true)
+  })
 });
 
 Rhum.run();
