@@ -1,11 +1,11 @@
-import { Rhum } from "../../mod.ts";
+import { Mock } from "../../mod.ts";
 import { assertEquals } from "../deps.ts";
 
 class MathService {
   public add(
     num1: number,
     num2: number,
-    useNestedAdd: boolean = false,
+    useNestedAdd = false,
   ): number {
     if (useNestedAdd) {
       return this.nestedAdd(num1, num2);
@@ -30,7 +30,7 @@ class TestObject {
   public sum(
     num1: number,
     num2: number,
-    useNestedAdd: boolean = false,
+    useNestedAdd = false,
   ): number {
     const sum = this.math_service.add(num1, num2, useNestedAdd);
     return sum;
@@ -70,8 +70,7 @@ Deno.test("mock()", async (t) => {
   await t.step({
     name: "can mock an object",
     fn() {
-      const mock = Rhum
-        .mock(TestObject)
+      const mock = Mock(TestObject)
         .create();
       assertEquals(mock.constructor.name, "TestObject");
       assertEquals(mock.is_mock, true);
@@ -79,8 +78,7 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("Can mock an object with constructor args", () => {
-    const mock = Rhum
-      .mock(TestObject)
+    const mock = Mock(TestObject)
       .withConstructorArgs("my server", new MathService())
       .create();
     assertEquals(mock.constructor.name, "TestObject");
@@ -89,8 +87,7 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("can access protected property", () => {
-    const mock = Rhum
-      .mock(TestObject)
+    const mock = Mock(TestObject)
       .create();
     assertEquals(
       (mock as unknown as { [key: string]: string }).protected_property,
@@ -99,8 +96,7 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("Can access protected method", () => {
-    const mock = Rhum
-      .mock(TestObject)
+    const mock = Mock(TestObject)
       .create();
     assertEquals(
       (mock as unknown as { [key: string]: () => string }).protectedMethod(),
@@ -109,11 +105,9 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("has mocked math service", () => {
-    const mockMathService = Rhum
-      .mock(MathService)
+    const mockMathService = Mock(MathService)
       .create();
-    const mockTestObject = Rhum
-      .mock(TestObject)
+    const mockTestObject = Mock(TestObject)
       .withConstructorArgs("has mocked math service", mockMathService)
       .create();
     assertEquals(mockMathService.calls.add, 0);
@@ -122,11 +116,9 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("call count for outside nested function is increased", () => {
-    const mockMathService = Rhum
-      .mock(MathService)
+    const mockMathService = Mock(MathService)
       .create();
-    const mockTestObject = Rhum
-      .mock(TestObject)
+    const mockTestObject = Mock(TestObject)
       .withConstructorArgs("has mocked math service", mockMathService)
       .create();
     assertEquals(mockMathService.calls.add, 0);
@@ -137,15 +129,14 @@ Deno.test("mock()", async (t) => {
   });
 
   await t.step("can mock getters and setters", () => {
-    const mock = Rhum
-      .mock(TestObject)
+    const mock = Mock(TestObject)
       .create();
     mock.age = 999;
     assertEquals(mock.age, 999);
   });
 
   await t.step("Native request mock", async () => {
-    const router = Rhum.mock(TestRequestHandler).create();
+    const router = Mock(TestRequestHandler).create();
 
     const reqPost = new Request("https://google.com", {
       method: "post",

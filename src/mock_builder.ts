@@ -86,7 +86,7 @@ export class MockBuilder<T> {
           mock.calls[method]++;
 
           // Make sure the method calls its original self
-          let unbound = (original[method as keyof T] as unknown as (
+          const unbound = (original[method as keyof T] as unknown as (
             ...params: unknown[]
           ) => unknown);
 

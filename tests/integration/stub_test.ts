@@ -1,4 +1,4 @@
-import { Rhum } from "../../mod.ts";
+import { Stub } from "../../mod.ts";
 import { assertEquals } from "../deps.ts";
 
 class Server {
@@ -14,13 +14,13 @@ class Server {
 
 Deno.test("stub()", async (t) => {
   await t.step("Can stub a propert", () => {
-    const server = Rhum.stubbed(new Server());
+    const server = Stub(new Server());
     server.stub("greeting", "you got changed");
     assertEquals(server.greeting, "you got changed");
   });
 
   await t.step("Can stub a method", () => {
-    const server = Rhum.stubbed(new Server());
+    const server = Stub(new Server());
     server.stub("methodThatLogs", () => {
       return "don't run the console.log()";
     });
