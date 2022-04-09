@@ -2,25 +2,49 @@ import { Rhum } from "../../mod.ts";
 import { assertEquals } from "../deps.ts";
 
 class MathService {
-  public add(num1: number, num2: number): number {
+  public add(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
+    if (useNestedAdd) {
+      return this.nestedAdd(num1, num2);
+    }
+    return num1 + num2;
+  }
+
+  public nestedAdd(num1: number, num2: number): number {
     return num1 + num2;
   }
 }
 
 class TestObject {
   public name: string;
+  #age = 0;
   protected math_service: MathService;
   protected protected_property = "I AM PROTECTED PROPERTY.";
   constructor(name: string, mathService: MathService) {
     this.math_service = mathService;
     this.name = name;
   }
-  public sum(num1: number, num2: number): number {
-    const sum = this.math_service.add(num1, num2);
+  public sum(
+    num1: number,
+    num2: number,
+    useNestedAdd: boolean = false,
+  ): number {
+    const sum = this.math_service.add(num1, num2, useNestedAdd);
     return sum;
   }
   protected protectedMethod() {
     return "I AM A PROTECTED METHOD.";
+  }
+
+  public get age() {
+    return this.#age;
+  }
+
+  public set age(val: number) {
+    this.#age = val;
   }
 }
 
@@ -95,6 +119,29 @@ Deno.test("mock()", async (t) => {
     assertEquals(mockMathService.calls.add, 0);
     mockTestObject.sum(1, 1);
     assertEquals(mockMathService.calls.add, 1);
+  });
+
+  await t.step("call count for outside nested function is increased", () => {
+    const mockMathService = Rhum
+      .mock(MathService)
+      .create();
+    const mockTestObject = Rhum
+      .mock(TestObject)
+      .withConstructorArgs("has mocked math service", mockMathService)
+      .create();
+    assertEquals(mockMathService.calls.add, 0);
+    assertEquals(mockMathService.calls.nestedAdd, 0);
+    mockTestObject.sum(1, 1, true);
+    assertEquals(mockMathService.calls.add, 1);
+    assertEquals(mockMathService.calls.nestedAdd, 1);
+  });
+
+  await t.step("can mock getters and setters", () => {
+    const mock = Rhum
+      .mock(TestObject)
+      .create();
+    mock.age = 999;
+    assertEquals(mock.age, 999);
   });
 
   await t.step("Native request mock", async () => {
