@@ -64,13 +64,12 @@ export class MockBuilder<T> {
       if (typeof desc!.get === 'function') {
         // deno-lint-ignore ban-ts-comment
         //@ts-ignore
-        mock[property] = original[property]
-       return; // continue
+        mock[property] = original[property];
+        return; // continue
       }
 
       mock[property] = desc!.value;
     });
-
 
     // Attach all of the original's functions to the mock
     this.getAllFunctions(original).forEach((method: string) => {

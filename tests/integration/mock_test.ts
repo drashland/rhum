@@ -174,25 +174,21 @@ Rhum.testPlan("mock_test.ts", () => {
       );
       Rhum.asserts.assertEquals(router.calls.handle, 3);
     });
-  });
-});
-
-Deno.test("mock", async(t) => {
-  await t.step("Sets the default value for getters", () => {
-    class Game {
-
-    }
-    class PlayersEngine {
-      private game = new Game
-      get Game() {
-        return this.game
+    Rhum.testCase("Sets the default value for getters", () => {
+      class Game {
       }
-      set Game(val: Game) {
-        this.game = val
+      class PlayersEngine {
+        private game = new Game();
+        get Game() {
+          return this.game;
+        }
+        set Game(val: Game) {
+          this.game = val;
+        }
       }
-    }
-    const mock = Rhum.mock(PlayersEngine).create();
-    assertEquals(mock.Game instanceof Game, true)
+      const mock = Rhum.mock(PlayersEngine).create();
+      Rhum.asserts.assertEquals(mock.Game instanceof Game, true);
+    });
   });
 });
 
