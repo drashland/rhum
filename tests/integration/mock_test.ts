@@ -1,4 +1,5 @@
 import { Rhum } from "../../mod.ts";
+import { assertEquals } from "../deps.ts";
 
 class MathService {
   public add(
@@ -173,7 +174,6 @@ Rhum.testPlan("mock_test.ts", () => {
       );
       Rhum.asserts.assertEquals(router.calls.handle, 3);
     });
-
     Rhum.testCase("Sets the default value for getters", () => {
       class Game {
       }
