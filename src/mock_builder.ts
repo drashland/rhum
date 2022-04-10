@@ -58,15 +58,14 @@ export class MockBuilder<T> {
           this.constructor_fn.prototype,
           property,
         );
-      if (typeof desc!.get === 'function') { // handle getter/setters different so we can initise their default getter value
+      if (typeof desc!.get === "function") { // handle getter/setters different so we can initise their default getter value
         // deno-lint-ignore ban-ts-comment
         //@ts-ignore
-        mock[property] = original[property]
-       return; // continue
+        mock[property] = original[property];
+        return; // continue
       }
       mock[property] = desc!.value;
     });
-
 
     // Attach all of the original's functions to the mock
     this.getAllFunctions(original).forEach((method: string) => {

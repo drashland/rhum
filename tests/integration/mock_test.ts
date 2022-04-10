@@ -176,20 +176,19 @@ Rhum.testPlan("mock_test.ts", () => {
 
     Rhum.testCase("Sets the default value for getters", () => {
       class Game {
-  
       }
       class PlayersEngine {
-        private game = new Game
+        private game = new Game();
         get Game() {
-          return this.game
+          return this.game;
         }
         set Game(val: Game) {
-          this.game = val
+          this.game = val;
         }
       }
       const mock = Rhum.mock(PlayersEngine).create();
-      Rhum.asserts.assertEquals(mock.Game instanceof Game, true)
-    })
+      Rhum.asserts.assertEquals(mock.Game instanceof Game, true);
+    });
   });
 });
 
