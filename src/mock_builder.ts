@@ -1,5 +1,6 @@
 import type { Constructor } from "./types.ts";
-import { Mock } from "./mock.ts";
+import type { IMock } from "./interfaces.ts";
+import { createMock } from "./mock.ts";
 import { PreProgrammedMethod } from "./pre_programmed_method.ts";
 
 /**
@@ -41,17 +42,21 @@ export class MockBuilder<ClassToMock> {
    *
    * @returns The original object with capabilities from the Mock class.
    */
-  public create(): ClassToMock & Mock<ClassToMock> {
+  public create(): ClassToMock & IMock<ClassToMock> {
     const original = new this.#constructor_fn(...this.#constructor_args);
 
-    const mock = new Mock<ClassToMock>(
-      original,
-      this.#getAllFunctionNames(original),
+    const mock = createMock<Constructor<ClassToMock>, ClassToMock>(
+      this.#constructor_fn
     );
+    mock.init(original, this.#getAllFunctionNames(original));
 
     // Attach all of the original's properties to the mock
     this.#getAllPropertyNames(original).forEach((property: string) => {
-      this.#addOriginalObjectPropertyToMockObject(original, mock, property);
+      this.#addOriginalObjectPropertyToMockObject(
+        original,
+        mock,
+        property
+      );
     });
 
     // Attach all of the original's functions to the mock
@@ -63,7 +68,7 @@ export class MockBuilder<ClassToMock> {
       );
     });
 
-    return mock as ClassToMock & Mock<ClassToMock>;
+    return mock as ClassToMock & IMock<ClassToMock>;
   }
 
   /**
@@ -95,7 +100,7 @@ export class MockBuilder<ClassToMock> {
    */
   #addMethodToMockObject(
     original: ClassToMock,
-    mock: Mock<ClassToMock>,
+    mock: IMock<ClassToMock>,
     method: string,
   ): void {
     Object.defineProperty(mock, method, {
@@ -114,7 +119,7 @@ export class MockBuilder<ClassToMock> {
    */
   #addOriginalObjectMethodToMockObject(
     original: ClassToMock,
-    mock: Mock<ClassToMock>,
+    mock: IMock<ClassToMock>,
     method: string,
   ): void {
     const nativeMethods = [
@@ -159,7 +164,7 @@ export class MockBuilder<ClassToMock> {
    */
   #addOriginalObjectPropertyToMockObject(
     original: ClassToMock,
-    mock: Mock<ClassToMock>,
+    mock: IMock<ClassToMock>,
     property: string,
   ): void {
     const desc = Object.getOwnPropertyDescriptor(original, property) ??
@@ -168,10 +173,20 @@ export class MockBuilder<ClassToMock> {
         property,
       );
 
-    Object.defineProperty(mock, property, {
-      value: desc!.value,
-      writable: true, // Make writable because getters/setters can be mocked
-    });
+    // If we do not have a desc, then we have no idea what the value should be.
+    // Also, we have no idea what we are copying, so we should just not do it.
+    if (!desc) {
+      return;
+    }
+
+    // Basic property (e.g., public test = "hello"). We do not handle get() and
+    // set() because those are handled by the mock mixin.
+    if (("value" in desc)) {
+      Object.defineProperty(mock, property, {
+        value: desc.value,
+        writable: true,
+      });
+    }
   }
 
   /**
@@ -184,9 +199,11 @@ export class MockBuilder<ClassToMock> {
    */
   #addTrackableMethodToMockObject(
     original: ClassToMock,
-    mock: Mock<ClassToMock>,
+    mock: IMock<ClassToMock>,
     method: keyof ClassToMock,
   ): void {
+    // console.log(`METHOD IS THIS: `, method);
+
     Object.defineProperty(mock, method, {
       value: (...args: unknown[]) => {
         // Track that this method was called
@@ -202,7 +219,10 @@ export class MockBuilder<ClassToMock> {
         // something. If it was, then we make sure that this method we are
         // currently defining returns that pre-programmed value.
         if (methodToCall instanceof PreProgrammedMethod) {
-          return methodToCall.return_value;
+          if (methodToCall.will_throw) {
+            throw methodToCall.error
+          }
+          return methodToCall.return;
         }
 
         // When method calls its original self, let the `this` context of the
@@ -210,14 +230,16 @@ export class MockBuilder<ClassToMock> {
         // original does not.
         const bound = methodToCall.bind(mock);
 
+        // console.log(`calling bound()`);
+
+        // Use `return` because the original function could return a value
         return bound(...args);
-      },
+      }
     });
   }
 
   /**
-   * Get all properties--public, protected, private--from the object that will
-   * be mocked.
+   * Get all properties from the original so they can be added to the mock.
    *
    * @param obj - The object that will be mocked.
    *
@@ -242,8 +264,7 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Get all functions--public, protected, private--from the object that will be
-   * mocked.
+   * Get all functions from the original so they can be added to the mock.
    *
    * @param obj - The object that will be mocked.
    *

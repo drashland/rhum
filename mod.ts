@@ -19,8 +19,6 @@ export const Mock = <T>(constructorFn: Constructor<T>): MockBuilder<T> => {
  * Stub a member of an object.
  *
  * @param obj -The object containing the member to stub.
- * @param member -The member to stub.
- * @param value - The return value of the stubbed member.
  */
 export const Stub = <T>(obj: T): Stubbed<T> => {
   (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
