@@ -106,7 +106,8 @@ Deno.test("MockBuilder", async (t) => {
         // Original returns "World"
         assertEquals(mock.test(), "World");
 
-        // Don't fully pre-program the method. This should cause an error during assertions.
+        // Don't fully pre-program the method. This should cause an error during
+        // assertions.
         mock
           .method("test")
           .willReturn({
@@ -125,39 +126,49 @@ Deno.test("MockBuilder", async (t) => {
         const mock = new MockBuilder(TestObjectFourBuilder).create();
         assertEquals(mock.is_mock, true);
 
-        // mock
-        //   .method("someComplexMethod")
-        //   .willReturn(mock)
+        mock
+          .method("someComplexMethod")
+          .willReturn(mock)
 
         assertEquals(mock.someComplexMethod(), mock);
         assertEquals(mock.calls.someComplexMethod, 1);
       },
     });
 
-    // await t.step({
-    //   name: ".willReturn(mock) returns the mock object (extra)",
-    //   fn(): void {
-    //     // Assert that the original implementation sets properties
-    //     const mock1 = new MockBuilder(TestObjectFourBuilder).create();
-    //     assertEquals(mock1.is_mock, true);
-    //     mock1.someComplexMethod();
-    //     assertEquals(mock1.something_one, "one");
-    //     assertEquals(mock1.something_two, "two");
-    //     assertEquals(mock1.calls.someComplexMethod, 1);
+    await t.step({
+      name: ".willReturn(mock) returns the mock object (extra)",
+      fn(): void {
+        // Assert that the original implementation sets properties
+        const mock1 = new MockBuilder(TestObjectFourBuilder).create();
+        assertEquals(mock1.is_mock, true);
+        mock1.someComplexMethod();
+        assertEquals(mock1.something_one, "one");
+        assertEquals(mock1.something_two, "two");
+        assertEquals(mock1.calls.someComplexMethod, 1);
 
-    //     // // Assert that `.willReturnSelf()` does not set properties
-    //     // const mock2 = new MockBuilder(TestObjectFourBuilder).create();
-    //     // assertEquals(mock2.is_mock, true);
-    //     // mock2
-    //     //   .method("someComplexMethod")
-    //     //   .willReturn(mock2);
+        // Assert that the mock implementation will not set properties
+        const mock2 = new MockBuilder(TestObjectFourBuilder).create();
+        assertEquals(mock2.is_mock, true);
+        mock2
+          .method("someComplexMethod")
+          .willReturn(mock2);
 
-    //     // assertEquals(mock2.someComplexMethod(), mock2);
-    //     // assertEquals(mock2.something_one, undefined);
-    //     // assertEquals(mock2.something_two, undefined);
-    //     // assertEquals(mock2.calls.someComplexMethod, 1);
-    //   },
-    // });
+        assertEquals(mock2.someComplexMethod(), mock2);
+        assertEquals(mock2.something_one, undefined);
+        assertEquals(mock2.something_two, undefined);
+        assertEquals(mock2.calls.someComplexMethod, 1);
+
+        // Assert that we can also use setters
+        const mock3= new MockBuilder(TestObjectFourBuilder).create();
+        assertEquals(mock3.is_mock, true);
+        mock3.someComplexMethod();
+        assertEquals(mock3.something_one, "one");
+        assertEquals(mock3.something_two, "two");
+        mock3.something_one = "you got changed";
+        assertEquals(mock3.something_one, "you got changed");
+        assertEquals(mock3.calls.someComplexMethod, 1);
+      },
+    });
 
     await t.step({
       name: ".willThrow() causes throwing RandomError (with constructor)",
@@ -242,6 +253,10 @@ class TestObjectFourBuilder {
     return this.#something_two;
   }
 
+  set something_one(value: string | undefined)  {
+    this.#something_one = value;
+  }
+
   someComplexMethod(): this {
     this.#setSomethingOne();
     this.#setSomethingTwo();
@@ -249,7 +264,11 @@ class TestObjectFourBuilder {
   }
 
   #setSomethingOne(): void {
+    // console.log("inside setSomethingOne()");
+    // console.log(this);
     this.#something_one = "one";
+    // console.log(`set something_one:`, this.#something_one);
+    // console.log(this);
   }
 
   #setSomethingTwo(): void {
