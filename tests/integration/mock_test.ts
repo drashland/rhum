@@ -161,11 +161,30 @@ Deno.test("mock()", async (t) => {
     const reqGet = new Request("https://google.com", {
       method: "get",
     });
+
     assertEquals(router.calls.handle, 2);
     assertEquals(
       await router.handle(reqGet),
       "Method is not post",
     );
     assertEquals(router.calls.handle, 3);
+  });
+
+  await t.step("Sets the default value for getters", () => {
+    class Game {
+    }
+
+    class PlayersEngine {
+      private game = new Game();
+      get Game() {
+        return this.game;
+      }
+      set Game(val: Game) {
+        this.game = val;
+      }
+    }
+
+    const mock = Mock(PlayersEngine).create();
+    assertEquals(mock.Game instanceof Game, true);
   });
 });
