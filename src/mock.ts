@@ -43,14 +43,14 @@ export class Mock<OriginalObject> {
    * @param methodName The method name on the original.
    * @returns A pre-programmed method that will be called instead of original.
    */
-  public method<MethodReturnValue>(
+  public method<ReturnValueType>(
     methodName: MethodOf<OriginalObject>,
-  ): PreProgrammedMethod<OriginalObject, MethodReturnValue> {
+  ): PreProgrammedMethod<OriginalObject, ReturnValueType> {
     const methodConfiguration = new PreProgrammedMethod<
       OriginalObject,
-      MethodReturnValue
+      ReturnValueType
     >(
-      methodName,
+      methodName
     );
 
     if (!((methodName as string) in this.#original)) {

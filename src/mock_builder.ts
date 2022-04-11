@@ -170,7 +170,7 @@ export class MockBuilder<ClassToMock> {
 
     Object.defineProperty(mock, property, {
       value: desc!.value,
-      writable: true, // Make writable because getters/setters can be mocked
+      writable: true, // Make writable because getters/setters can be configured
     });
   }
 
@@ -210,8 +210,9 @@ export class MockBuilder<ClassToMock> {
         // original does not.
         const bound = methodToCall.bind(mock);
 
+        // Use `return` because the original function could return a value
         return bound(...args);
-      },
+      }
     });
   }
 
