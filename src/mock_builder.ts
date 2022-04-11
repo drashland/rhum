@@ -1,5 +1,5 @@
 import type { Constructor } from "./types.ts";
-import { Mock } from "./mock.ts";
+import { createMock, Mock } from "./mock.ts";
 import { PreProgrammedMethod } from "./pre_programmed_method.ts";
 
 /**

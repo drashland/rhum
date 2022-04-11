@@ -134,6 +134,31 @@ Deno.test("MockBuilder", async (t) => {
       },
     });
 
+    // await t.step({
+    //   name: ".willReturn(mock) returns the mock object (extra)",
+    //   fn(): void {
+    //     // Assert that the original implementation sets properties
+    //     const mock1 = new MockBuilder(TestObjectFourBuilder).create();
+    //     assertEquals(mock1.is_mock, true);
+    //     mock1.someComplexMethod();
+    //     assertEquals(mock1.something_one, "one");
+    //     assertEquals(mock1.something_two, "two");
+    //     assertEquals(mock1.calls.someComplexMethod, 1);
+
+    //     // // Assert that `.willReturnSelf()` does not set properties
+    //     // const mock2 = new MockBuilder(TestObjectFourBuilder).create();
+    //     // assertEquals(mock2.is_mock, true);
+    //     // mock2
+    //     //   .method("someComplexMethod")
+    //     //   .willReturn(mock2);
+
+    //     // assertEquals(mock2.someComplexMethod(), mock2);
+    //     // assertEquals(mock2.something_one, undefined);
+    //     // assertEquals(mock2.something_two, undefined);
+    //     // assertEquals(mock2.calls.someComplexMethod, 1);
+    //   },
+    // });
+
     await t.step({
       name: ".willThrow() causes throwing RandomError (with constructor)",
       fn(): void {

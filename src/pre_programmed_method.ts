@@ -20,6 +20,7 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   /**
    * @param methodName - The name of the method to program. Must be a method of
    * the original object in question.
+   * @param original - The original object object that contains the method.
    */
   constructor(methodName: MethodOf<OriginalObject>) {
     this.#method_name = methodName;

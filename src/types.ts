@@ -1,5 +1,5 @@
 // deno-lint-ignore no-explicit-any
-export type Constructor<T extends unknown> = new (...args: any[]) => T;
+export type Constructor<T extends any> = new (...args: any[]) => T;
 
 export type MockedObject = { [k: string]: unknown };
 
