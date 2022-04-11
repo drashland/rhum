@@ -61,7 +61,7 @@ export class MockBuilder<T> {
 
       // Handle getter/setters differently so we can initialise their default
       // getter value
-      if (typeof desc!.get === 'function') {
+      if (typeof desc!.get === "function") {
         // deno-lint-ignore ban-ts-comment
         //@ts-ignore
         mock[property] = original[property];
