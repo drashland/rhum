@@ -220,8 +220,7 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Get all properties--public, protected, private--from the object that will
-   * be mocked.
+   * Get all properties from the original so they can be added to the mock.
    *
    * @param obj - The object that will be mocked.
    *
@@ -246,8 +245,7 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Get all functions--public, protected, private--from the object that will be
-   * mocked.
+   * Get all functions from the original so they can be added to the mock.
    *
    * @param obj - The object that will be mocked.
    *
