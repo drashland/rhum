@@ -1,5 +1,5 @@
 import type { Constructor, MethodCalls, MethodOf } from "../types.ts";
-import { PreProgrammedMethod } from "./pre_programmed_method.ts";
+import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 import type { IMock } from "../interfaces.ts";
 
 class MockError extends Error {}

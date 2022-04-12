@@ -2,11 +2,28 @@ import type {
   MethodCalls,
   MethodOf,
 } from "./types.ts";
-import { PreProgrammedMethod } from "./mock/pre_programmed_method.ts";
 
 export interface IError {
   name: string;
   message?: string;
+}
+
+export interface IPreProgrammedMethod<ReturnValue> {
+  willReturn(returnValue: ReturnValue): void;
+  willThrow(error: IError): void;
+}
+
+export interface IFake<OriginalObject> {
+  is_fake: boolean;
+
+  init(
+    original: OriginalObject,
+    methodsToTrack: string[],
+  ): void;
+
+  method<ReturnValueType>(
+    methodName: MethodOf<OriginalObject>
+  ): IPreProgrammedMethod<ReturnValueType>;
 }
 
 export interface IMock<OriginalObject> {
@@ -20,5 +37,5 @@ export interface IMock<OriginalObject> {
 
   method<ReturnValueType>(
     methodName: MethodOf<OriginalObject>
-  ): PreProgrammedMethod<OriginalObject, ReturnValueType>;
+  ): IPreProgrammedMethod<ReturnValueType>;
 }

@@ -1,5 +1,5 @@
-import type { MethodOf } from "../types.ts";
-import type { IError } from "../interfaces.ts";
+import type { MethodOf } from "./types.ts";
+import type { IError } from "./interfaces.ts";
 
 class PreProgrammedMethodError extends Error {}
 

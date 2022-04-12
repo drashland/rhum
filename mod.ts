@@ -1,10 +1,12 @@
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
+import { FakeBuilder } from "./src/fake/fake_builder.ts";
 export * as Types from "./src/types.ts";
 
 /**
- * Create an object that can be passed around, but never actually used. A dummy
- * is usually just used to fill a parameter.
+ * Create a dummy.
+ *
+ *Per Martin Fowler, "Dummy objects are passed around but never actually used. Usually they are just used to fill parameter lists."
  *
  * @param constructorFn - The constructor function to use to become the
  * prototype of the dummy. Dummy objects should be the same instance as what
@@ -20,7 +22,22 @@ export const Dummy = <T>(constructorFn?: Constructor<T>): T => {
 }
 
 /**
+ * Get the builder to create fake objects.
+ *
+ * Per Martin Fowler, "Fake objects actually have working implementations, but usually take some shortcut which makes them not suitable for production (an InMemoryTestDatabase is a good example)."
+ *
+ * @param constructorFn - The constructor function of the object to fake.
+ *
+ * @returns Instance of `FakeBuilder`.
+ */
+ export const Fake = <T>(constructorFn: Constructor<T>): FakeBuilder<T> => {
+  return new FakeBuilder(constructorFn);
+};
+
+/**
  * Get the builder to create mocked objects.
+ *
+ * Per Martin Fowler, "Mocks are pre-programmed with expectations which form a specification of the calls they are expected to receive. They can throw an exception if they receive a call they don't expect and are checked during verification to ensure they got all the calls they were expecting."
  *
  * @param constructorFn - The constructor function of the object to mock.
  *
@@ -32,6 +49,8 @@ export const Mock = <T>(constructorFn: Constructor<T>): MockBuilder<T> => {
 
 /**
  * Stub a member of an object.
+ *
+ * Per Martin Fowler, "Stubs provide canned answers to calls made during the test, usually not responding at all to anything outside what's programmed in for the test."
  *
  * @param obj -The object containing the member to stub.
  */

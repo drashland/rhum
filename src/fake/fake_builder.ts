@@ -1,22 +1,20 @@
 import type { Constructor } from "../types.ts";
-import type { IMock } from "../interfaces.ts";
-import { createMock } from "./mock_mixin.ts";
+import type { IFake } from "../interfaces.ts";
+import { createFake } from "./fake_mixin.ts";
 import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
 /**
- * Builder to help build a mock object. This does all of the heavy-lifting to
- * create a mock object. Its `create()` method returns an instance of `Mock`,
- * which is basically an original object with added data members for verifying
- * behavior.
+ * Builder to help build a fake object. This does all of the heavy-lifting to
+ * create a fake object.
  */
-export class MockBuilder<ClassToMock> {
+export class FakeBuilder<ClassToFake> {
   /**
-   * The class object passed into the constructor
+   * The class to fake (should be constructable).
    */
-  #constructor_fn: Constructor<ClassToMock>;
+  #constructor_fn: Constructor<ClassToFake>;
 
   /**
-   * A list of arguments the class constructor takes
+   * A list of arguments the class constructor takes.
    */
   #constructor_args: unknown[] = [];
 
@@ -27,9 +25,9 @@ export class MockBuilder<ClassToMock> {
   /**
    * Construct an object of this class.
    *
-   * @param constructorFn - The constructor function of the object to mock.
+   * @param constructorFn - The class to fake (should be constructable).
    */
-  constructor(constructorFn: Constructor<ClassToMock>) {
+  constructor(constructorFn: Constructor<ClassToFake>) {
     this.#constructor_fn = constructorFn;
   }
 
@@ -38,45 +36,45 @@ export class MockBuilder<ClassToMock> {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Create the mock object.
+   * Create the fake object.
    *
-   * @returns The original object with capabilities from the Mock class.
+   * @returns The original object with capabilities from the fake class.
    */
-  public create(): ClassToMock & IMock<ClassToMock> {
+  public create(): ClassToFake & IFake<ClassToFake> {
     const original = new this.#constructor_fn(...this.#constructor_args);
 
-    const mock = createMock<Constructor<ClassToMock>, ClassToMock>(
+    const fake = createFake<Constructor<ClassToFake>, ClassToFake>(
       this.#constructor_fn
     );
-    mock.init(original, this.#getAllFunctionNames(original));
+    fake.init(original, this.#getAllFunctionNames(original));
 
-    // Attach all of the original's properties to the mock
+    // Attach all of the original's properties to the fake
     this.#getAllPropertyNames(original).forEach((property: string) => {
-      this.#addOriginalObjectPropertyToMockObject(
+      this.#addOriginalObjectPropertyToFakeObject(
         original,
-        mock,
+        fake,
         property
       );
     });
 
-    // Attach all of the original's functions to the mock
+    // Attach all of the original's functions to the fake
     this.#getAllFunctionNames(original).forEach((method: string) => {
-      this.#addOriginalObjectMethodToMockObject(
+      this.#addOriginalObjectMethodToFakeObject(
         original,
-        mock,
+        fake,
         method,
       );
     });
 
-    return mock as ClassToMock & IMock<ClassToMock>;
+    return fake as ClassToFake & IFake<ClassToFake>;
   }
 
   /**
-   * Before constructing the mock object, track any constructor function args
-   * that need to be passed in when constructing the mock object.
+   * Before constructing the fake object, track any constructor function args
+   * that need to be passed in when constructing the fake object.
    *
    * @param args - A rest parameter of arguments that will get passed in to the
-   * constructor function of the object being mocked.
+   * constructor function of the object being faked.
    *
    * @returns `this` so that methods in this class can be chained.
    */
@@ -90,36 +88,36 @@ export class MockBuilder<ClassToMock> {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Add an original object's method to a mock object without doing anything
+   * Add an original object's method to a fake object without doing anything
    * else.
    *
-   * @param original - The original object containing the method to mock.
-   * @param mock - The mock object receiving the method to mock.
-   * @param method - The name of the method to mock -- callable via
-   * `mock[method](...)`.
+   * @param original - The original object containing the method to fake.
+   * @param fake - The fake object receiving the method to fake.
+   * @param method - The name of the method to fake -- callable via
+   * `fake[method](...)`.
    */
-  #addMethodToMockObject(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
+  #addMethodToFakeObject(
+    original: ClassToFake,
+    fake: IFake<ClassToFake>,
     method: string,
   ): void {
-    Object.defineProperty(mock, method, {
-      value: original[method as keyof ClassToMock],
+    Object.defineProperty(fake, method, {
+      value: original[method as keyof ClassToFake],
     });
   }
 
   /**
-   * Add an original object's method to a mock object -- determining whether the
+   * Add an original object's method to a fake object -- determining whether the
    * method should or should not be trackable.
    *
    * @param original - The original object containing the method to add.
-   * @param mock - The mock object receiving the method.
-   * @param method - The name of the method to mock -- callable via
-   * `mock[method](...)`.
+   * @param fake - The fake object receiving the method.
+   * @param method - The name of the method to fake -- callable via
+   * `fake[method](...)`.
    */
-  #addOriginalObjectMethodToMockObject(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
+  #addOriginalObjectMethodToFakeObject(
+    original: ClassToFake,
+    fake: IFake<ClassToFake>,
     method: string,
   ): void {
     const nativeMethods = [
@@ -137,34 +135,34 @@ export class MockBuilder<ClassToMock> {
     ];
 
     // If this is a native method, then do not do anything fancy. Just add it to
-    // the mock.
+    // the fake.
     if (nativeMethods.includes(method as string)) {
-      return this.#addMethodToMockObject(
+      return this.#addMethodToFakeObject(
         original,
-        mock,
+        fake,
         method,
       );
     }
 
     // Otherwise, make the method trackable via `.calls` usage.
-    this.#addTrackableMethodToMockObject(
+    this.#addTrackableMethodToFakeObject(
       original,
-      mock,
-      method as keyof ClassToMock,
+      fake,
+      method as keyof ClassToFake,
     );
   }
 
   /**
-   * Add an original object's property to a mock object.
+   * Add an original object's property to a fake object.
    *
    * @param original The original object containing the property.
-   * @param mock The mock object receiving the property.
+   * @param fake The fake object receiving the property.
    * @param property The name of the property -- retrievable via
-   * `mock[property]`.
+   * `fake[property]`.
    */
-  #addOriginalObjectPropertyToMockObject(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
+  #addOriginalObjectPropertyToFakeObject(
+    original: ClassToFake,
+    fake: IFake<ClassToFake>,
     property: string,
   ): void {
     const desc = Object.getOwnPropertyDescriptor(original, property) ??
@@ -180,9 +178,9 @@ export class MockBuilder<ClassToMock> {
     }
 
     // Basic property (e.g., public test = "hello"). We do not handle get() and
-    // set() because those are handled by the mock mixin.
+    // set() because those are handled by the fake mixin.
     if (("value" in desc)) {
-      Object.defineProperty(mock, property, {
+      Object.defineProperty(fake, property, {
         value: desc.value,
         writable: true,
       });
@@ -190,28 +188,25 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Add a trackable method to a mock object. A trackable method is one that can
-   * be verified using `mock.calls[someMethod]`.
+   * Add a trackable method to a fake object. A trackable method is one that can
+   * be verified using `fake.calls[someMethod]`.
    *
    * @param original - The original object containing the method to add.
-   * @param mock - The mock object receiving the method.
+   * @param fake - The fake object receiving the method.
    * @param method - The name of the method.
    */
-  #addTrackableMethodToMockObject(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
-    method: keyof ClassToMock,
+  #addTrackableMethodToFakeObject(
+    original: ClassToFake,
+    fake: IFake<ClassToFake>,
+    method: keyof ClassToFake,
   ): void {
     // console.log(`METHOD IS THIS: `, method);
 
-    Object.defineProperty(mock, method, {
+    Object.defineProperty(fake, method, {
       value: (...args: unknown[]) => {
-        // Track that this method was called
-        mock.calls[method]++;
-
         // Make sure the method calls its original self
         const methodToCall =
-          (original[method as keyof ClassToMock] as unknown as (
+          (original[method as keyof ClassToFake] as unknown as (
             ...params: unknown[]
           ) => unknown);
 
@@ -219,16 +214,13 @@ export class MockBuilder<ClassToMock> {
         // something. If it was, then we make sure that this method we are
         // currently defining returns that pre-programmed value.
         if (methodToCall instanceof PreProgrammedMethod) {
-          if (methodToCall.will_throw) {
-            throw methodToCall.error
-          }
           return methodToCall.return;
         }
 
         // When method calls its original self, let the `this` context of the
-        // original be the mock. Reason being the mock has tracking and the
+        // original be the fake. Reason being the fake has tracking and the
         // original does not.
-        const bound = methodToCall.bind(mock);
+        const bound = methodToCall.bind(fake);
 
         // console.log(`calling bound()`);
 
@@ -239,13 +231,13 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Get all properties from the original so they can be added to the mock.
+   * Get all properties from the original so they can be added to the fake.
    *
-   * @param obj - The object that will be mocked.
+   * @param obj - The object that will be faked.
    *
    * @returns An array of the object's properties.
    */
-  #getAllPropertyNames(obj: ClassToMock): string[] {
+  #getAllPropertyNames(obj: ClassToFake): string[] {
     let functions: string[] = [];
     let clone = obj;
     do {
@@ -255,7 +247,7 @@ export class MockBuilder<ClassToMock> {
     return functions.sort().filter(
       function (e: string, i: number, arr: unknown[]) {
         if (
-          e != arr[i + 1] && typeof obj[e as keyof ClassToMock] != "function"
+          e != arr[i + 1] && typeof obj[e as keyof ClassToFake] != "function"
         ) {
           return true;
         }
@@ -264,13 +256,13 @@ export class MockBuilder<ClassToMock> {
   }
 
   /**
-   * Get all functions from the original so they can be added to the mock.
+   * Get all functions from the original so they can be added to the fake.
    *
-   * @param obj - The object that will be mocked.
+   * @param obj - The object that will be faked.
    *
    * @returns An array of the object's functions.
    */
-  #getAllFunctionNames(obj: ClassToMock): string[] {
+  #getAllFunctionNames(obj: ClassToFake): string[] {
     let functions: string[] = [];
     let clone = obj;
     do {
@@ -280,7 +272,7 @@ export class MockBuilder<ClassToMock> {
     return functions.sort().filter(
       function (e: string, i: number, arr: unknown[]) {
         if (
-          e != arr[i + 1] && typeof obj[e as keyof ClassToMock] == "function"
+          e != arr[i + 1] && typeof obj[e as keyof ClassToFake] == "function"
         ) {
           return true;
         }

@@ -1,24 +1,22 @@
-import { Dummy, Mock } from "../../mod.ts";
-import { assertEquals } from "../deps.ts";
+import { Dummy, Mock } from "../../../mod.ts";
+import { assertEquals } from "../../deps.ts";
 
-Deno.test("mod", async (t) => {
-  await t.step("Dummy()", async (t) => {
-    await t.step({
-      name: "can fill parameter lists",
-      fn(): void {
-        const mockServiceOne = Mock(ServiceOne).create();
-        const dummy3 = Dummy(ServiceThree);
+Deno.test("Dummy()", async (t) => {
+  await t.step({
+    name: "can fill parameter lists",
+    fn(): void {
+      const mockServiceOne = Mock(ServiceOne).create();
+      const dummy3 = Dummy(ServiceThree);
 
-        const resource = new Resource(
-          mockServiceOne,
-          Dummy(ServiceTwo),
-          dummy3,
-        );
+      const resource = new Resource(
+        mockServiceOne,
+        Dummy(ServiceTwo),
+        dummy3,
+      );
 
-        resource.callServiceOne();
-        assertEquals(mockServiceOne.calls.methodServiceOne, 1);
-      },
-    });
+      resource.callServiceOne();
+      assertEquals(mockServiceOne.calls.methodServiceOne, 1);
+    },
   });
 });
 
