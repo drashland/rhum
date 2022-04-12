@@ -6,7 +6,9 @@
 
 <img align="right" height="100" src="./logo.svg" alt="Rhum logo">
 
-Rhum is a test double library that follows [test double definitions](https://martinfowler.com/bliki/TestDouble.html) from Gerard Meszaros.
+Rhum is a test double library that follows
+[test double definitions](https://martinfowler.com/bliki/TestDouble.html) from
+Gerard Meszaros.
 
 View the full documentation at https://drash.land/rhum.
 

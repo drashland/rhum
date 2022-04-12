@@ -200,8 +200,6 @@ export class FakeBuilder<ClassToFake> {
     fake: IFake<ClassToFake>,
     method: keyof ClassToFake,
   ): void {
-    // console.log(`METHOD IS THIS: `, method);
-
     Object.defineProperty(fake, method, {
       value: (...args: unknown[]) => {
         // Make sure the method calls its original self

@@ -279,11 +279,7 @@ class TestObjectFourBuilder {
   }
 
   #setSomethingOne(): void {
-    // console.log("inside setSomethingOne()");
-    // console.log(this);
     this.#something_one = "one";
-    // console.log(`set something_one:`, this.#something_one);
-    // console.log(this);
   }
 
   #setSomethingTwo(): void {

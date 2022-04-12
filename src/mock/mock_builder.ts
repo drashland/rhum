@@ -202,8 +202,6 @@ export class MockBuilder<ClassToMock> {
     mock: IMock<ClassToMock>,
     method: keyof ClassToMock,
   ): void {
-    // console.log(`METHOD IS THIS: `, method);
-
     Object.defineProperty(mock, method, {
       value: (...args: unknown[]) => {
         // Track that this method was called
