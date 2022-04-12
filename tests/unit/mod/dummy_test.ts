@@ -18,6 +18,14 @@ Deno.test("Dummy()", async (t) => {
       assertEquals(mockServiceOne.calls.methodServiceOne, 1);
     },
   });
+
+  await t.step({
+    name: "can be made without specifying constructor args",
+    fn(): void {
+      const dummy = Dummy(Resource);
+      assertEquals(Object.getPrototypeOf(dummy), Resource);
+    },
+  });
 });
 
 class Resource {
