@@ -1,8 +1,7 @@
 import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock_builder.ts";
+export * as Types from "./src/types.ts";
 
-export type { Constructor, Stubbed } from "./src/types.ts";
-export { MockBuilder } from "./src/mock_builder.ts";
 /**
  * Create an object that can be passed around, but never actually used. A dummy
  * is usually just used to fill a parameter.
@@ -21,7 +20,7 @@ export const Dummy = <T>(constructorFn?: Constructor<T>): T => {
 }
 
 /**
- * Get the builder to help you create mocked objects.
+ * Get the builder to create mocked objects.
  *
  * @param constructorFn - The constructor function of the object to mock.
  *
