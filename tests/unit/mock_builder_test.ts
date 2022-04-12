@@ -261,12 +261,12 @@ class TestObjectFourBuilder {
     return this.#something_one;
   }
 
-  get something_two(): string | undefined {
-    return this.#something_two;
-  }
-
   set something_one(value: string | undefined) {
     this.#something_one = value;
+  }
+
+  get something_two(): string | undefined {
+    return this.#something_two;
   }
 
   someComplexMethod(): this {
