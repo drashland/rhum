@@ -1,7 +1,7 @@
 import type { MethodCalls, MethodOf } from "./types.ts";
 
 export interface IMethodExpectation {
-  toBeCalled(numCalls: number): void;
+  toBeCalled(expectedCalls: number): void;
 }
 
 export interface IError {
