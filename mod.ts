@@ -1,4 +1,4 @@
-import { Constructor } from "./src/types.ts";
+import type { Constructor, StubReturnValue } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
 export * as Types from "./src/types.ts";
@@ -18,11 +18,11 @@ export * as Interfaces from "./src/interfaces.ts";
  * should be an instance of `SomeClass`.
  * @returns A dummy object being an instance of the given constructor function.
  */
-export const Dummy = <T>(constructorFn?: Constructor<T>): T => {
+export function Dummy<T>(constructorFn?: Constructor<T>): T {
   const dummy = Object.create({});
   Object.setPrototypeOf(dummy, constructorFn ?? Object);
   return dummy;
-};
+}
 
 /**
  * Get the builder to create fake objects.
@@ -35,9 +35,9 @@ export const Dummy = <T>(constructorFn?: Constructor<T>): T => {
  *
  * @returns Instance of `FakeBuilder`.
  */
-export const Fake = <T>(constructorFn: Constructor<T>): FakeBuilder<T> => {
+export function Fake<T>(constructorFn: Constructor<T>): FakeBuilder<T> {
   return new FakeBuilder(constructorFn);
-};
+}
 
 /**
  * Get the builder to create mocked objects.
@@ -52,39 +52,73 @@ export const Fake = <T>(constructorFn: Constructor<T>): FakeBuilder<T> => {
  *
  * @returns Instance of `MockBuilder`.
  */
-export const Mock = <T>(constructorFn: Constructor<T>): MockBuilder<T> => {
+export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
   return new MockBuilder(constructorFn);
-};
+}
 
 /**
- * Create a stub.
+ * Create a stub function that returns "stubbed".
+ */
+export function Stub<T, R>(): () => "stubbed";
+/**
+ * Take the given object and stub its given data member to return the given
+ * return value.
+ *
+ * @param obj - The object receiving the stub.
+ * @param dataMember - The data member on the object to be stubbed.
+ * @param returnValue - (optional) What the stub should return. Defaults to
+ * "stubbed".
+ */
+export function Stub<T, R>(
+  obj: T,
+  dataMember: keyof T,
+  returnValue?: R,
+): StubReturnValue<T, R>;
+/**
+ * Take the given object and stub its given data member to return the given
+ * return value.
  *
  * Per Martin Fowler (based on Gerard Meszaros), "Stubs provide canned answers
  * to calls made during the test, usually not responding at all to anything
  * outside what's programmed in for the test."
  *
- * @param obj -The object containing the member to stub.
+ * @param obj - (optional) The object receiving the stub. Defaults to a stub
+ * function.
+ * @param dataMember - (optional) The data member on the object to be stubbed.
+ * Only used if `obj` is an object.
+ * @param returnValue - (optional) What the stub should return. Defaults to
+ * "stubbed" for class properties and a function that returns "stubbed" for
+ * class methods. Only used if `object` is an object and `dataMember` is a
+ * member of that object.
  */
-export const Stub = <T>(
-  obj: T,
-  dataMember: string,
-  returnValue?: unknown,
-): void => {
-  Object.defineProperty(obj, "is_stubbed", {
-    value: true,
-  });
-
-  const dataMemberToStub = obj[dataMember as keyof T];
-
-  if (typeof dataMemberToStub === "function") {
-    Object.defineProperty(obj, dataMember, {
-      value: () => returnValue ?? null,
-    });
-
-    return;
+export function Stub<T, R>(
+  obj?: T,
+  dataMember?: keyof T,
+  returnValue?: R,
+): unknown {
+  if (obj === undefined) {
+    return function stubbed() {
+      return "stubbed";
+    };
   }
 
-  Object.defineProperty(obj, dataMember, {
-    value: returnValue ?? null,
-  });
-};
+  // If we get here, then we know for a fact that we are stubbing object
+  // properties. Also, we do not care if `returnValue` was passed in here. If it
+  // is not passed in, then `returnValue` defaults to "stubbed". Otherwise, use
+  // the value of `returnValue`.
+  if (typeof obj === "object" && dataMember !== undefined) {
+    // If we are stubbing a method, then make sure the method is still callable
+    if (typeof obj[dataMember] === "function") {
+      Object.defineProperty(obj, dataMember, {
+        value: () => returnValue !== undefined ? returnValue : "stubbed",
+        writable: true,
+      });
+    } else {
+      // If we are stubbing a property, then just reassign the property
+      Object.defineProperty(obj, dataMember, {
+        value: returnValue !== undefined ? returnValue : "stubbed",
+        writable: true,
+      });
+    }
+  }
+}
