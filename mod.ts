@@ -1,3 +1,4 @@
+import { Constructor } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
 export * as Types from "./src/types.ts";
