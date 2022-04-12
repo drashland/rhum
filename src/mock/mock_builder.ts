@@ -46,7 +46,7 @@ export class MockBuilder<ClassToMock> {
     const original = new this.#constructor_fn(...this.#constructor_args);
 
     const mock = createMock<Constructor<ClassToMock>, ClassToMock>(
-      this.#constructor_fn
+      this.#constructor_fn,
     );
     mock.init(original, this.#getAllFunctionNames(original));
 
@@ -55,7 +55,7 @@ export class MockBuilder<ClassToMock> {
       this.#addOriginalObjectPropertyToMockObject(
         original,
         mock,
-        property
+        property,
       );
     });
 
@@ -220,7 +220,7 @@ export class MockBuilder<ClassToMock> {
         // currently defining returns that pre-programmed value.
         if (methodToCall instanceof PreProgrammedMethod) {
           if (methodToCall.will_throw) {
-            throw methodToCall.error
+            throw methodToCall.error;
           }
           return methodToCall.return;
         }
@@ -234,7 +234,7 @@ export class MockBuilder<ClassToMock> {
 
         // Use `return` because the original function could return a value
         return bound(...args);
-      }
+      },
     });
   }
 

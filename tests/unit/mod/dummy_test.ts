@@ -28,7 +28,7 @@ class Resource {
   constructor(
     serviceOne: ServiceOne,
     serviceTwo: ServiceTwo,
-    serviceThree: ServiceThree
+    serviceThree: ServiceThree,
   ) {
     this.#service_one = serviceOne;
     this.#service_two = serviceTwo;

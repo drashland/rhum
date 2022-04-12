@@ -44,7 +44,7 @@ export class FakeBuilder<ClassToFake> {
     const original = new this.#constructor_fn(...this.#constructor_args);
 
     const fake = createFake<Constructor<ClassToFake>, ClassToFake>(
-      this.#constructor_fn
+      this.#constructor_fn,
     );
     fake.init(original, this.#getAllFunctionNames(original));
 
@@ -53,7 +53,7 @@ export class FakeBuilder<ClassToFake> {
       this.#addOriginalObjectPropertyToFakeObject(
         original,
         fake,
-        property
+        property,
       );
     });
 
@@ -226,7 +226,7 @@ export class FakeBuilder<ClassToFake> {
 
         // Use `return` because the original function could return a value
         return bound(...args);
-      }
+      },
     });
   }
 

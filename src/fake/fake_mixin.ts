@@ -4,9 +4,13 @@ import type { IFake } from "../interfaces.ts";
 
 class FakeError extends Error {}
 
-export function createFake<OriginalConstructor, OriginalObject>(OriginalClass: OriginalConstructor): IFake<OriginalObject> {
+export function createFake<OriginalConstructor, OriginalObject>(
+  OriginalClass: OriginalConstructor,
+): IFake<OriginalObject> {
   // deno-lint-ignore no-explicit-any
-  const Original = OriginalClass as unknown as Constructor<(...args: any[]) => any>;
+  const Original = OriginalClass as unknown as Constructor<
+    (...args: any[]) => any
+  >;
   return new class FakeExtension extends Original {
     /**
      * Helper property to see that this is a fake object and not the original.
@@ -46,7 +50,7 @@ export function createFake<OriginalConstructor, OriginalObject>(OriginalClass: O
         OriginalObject,
         ReturnValueType
       >(
-        methodName
+        methodName,
       );
 
       if (!((methodName as string) in this.#original)) {
@@ -62,5 +66,5 @@ export function createFake<OriginalConstructor, OriginalObject>(OriginalClass: O
 
       return methodConfiguration;
     }
-  }
+  }();
 }

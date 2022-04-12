@@ -111,10 +111,10 @@ Deno.test("MockBuilder", async (t) => {
         mock
           .method("test")
           .willReturn({
-            name: "something"
+            name: "something",
           });
 
-        assertEquals(mock.test(), {name: "something"});
+        assertEquals(mock.test(), { name: "something" });
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
       },
@@ -128,7 +128,7 @@ Deno.test("MockBuilder", async (t) => {
 
         mock
           .method("someComplexMethod")
-          .willReturn(mock)
+          .willReturn(mock);
 
         assertEquals(mock.someComplexMethod(), mock);
         assertEquals(mock.calls.someComplexMethod, 1);
@@ -159,7 +159,7 @@ Deno.test("MockBuilder", async (t) => {
         assertEquals(mock2.calls.someComplexMethod, 1);
 
         // Assert that we can also use setters
-        const mock3= new MockBuilder(TestObjectFourBuilder).create();
+        const mock3 = new MockBuilder(TestObjectFourBuilder).create();
         assertEquals(mock3.is_mock, true);
         mock3.someComplexMethod();
         assertEquals(mock3.something_one, "one");
@@ -182,12 +182,12 @@ Deno.test("MockBuilder", async (t) => {
         // Make the original method throw RandomError
         mock
           .method("test")
-          .willThrow(new RandomError("Random error message."))
+          .willThrow(new RandomError("Random error message."));
 
         assertThrows(
           () => mock.test(),
           RandomError,
-          "Random error message."
+          "Random error message.",
         );
         assertEquals(mock.calls.test, 2);
       },
@@ -205,12 +205,12 @@ Deno.test("MockBuilder", async (t) => {
         // Make the original method throw RandomError
         mock
           .method("test")
-          .willThrow(new RandomError2())
+          .willThrow(new RandomError2());
 
         assertThrows(
           () => mock.test(),
           RandomError2,
-          "Some message not by the constructor."
+          "Some message not by the constructor.",
         );
         assertEquals(mock.calls.test, 2);
       },
@@ -253,7 +253,7 @@ class TestObjectFourBuilder {
     return this.#something_two;
   }
 
-  set something_one(value: string | undefined)  {
+  set something_one(value: string | undefined) {
     this.#something_one = value;
   }
 
@@ -278,6 +278,6 @@ class TestObjectFourBuilder {
 
 class RandomError extends Error {}
 class RandomError2 extends Error {
-  public name = "RandomError2Name"
-  public message = "Some message not by the constructor."
+  public name = "RandomError2Name";
+  public message = "Some message not by the constructor.";
 }

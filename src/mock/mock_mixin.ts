@@ -4,9 +4,13 @@ import type { IMock } from "../interfaces.ts";
 
 class MockError extends Error {}
 
-export function createMock<OriginalConstructor, OriginalObject>(OriginalClass: OriginalConstructor): IMock<OriginalObject> {
+export function createMock<OriginalConstructor, OriginalObject>(
+  OriginalClass: OriginalConstructor,
+): IMock<OriginalObject> {
   // deno-lint-ignore no-explicit-any
-  const Original = OriginalClass as unknown as Constructor<(...args: any[]) => any>;
+  const Original = OriginalClass as unknown as Constructor<
+    (...args: any[]) => any
+  >;
   return new class MockExtension extends Original {
     /**
      * Helper property to see that this is a mock object and not the original.
@@ -60,7 +64,7 @@ export function createMock<OriginalConstructor, OriginalObject>(OriginalClass: O
         OriginalObject,
         ReturnValueType
       >(
-        methodName
+        methodName,
       );
 
       if (!((methodName as string) in this.#original)) {
@@ -96,5 +100,5 @@ export function createMock<OriginalConstructor, OriginalObject>(OriginalClass: O
 
       return calls as Record<keyof OriginalObject, number>;
     }
-  }
+  }();
 }

@@ -1,7 +1,4 @@
-import type {
-  MethodCalls,
-  MethodOf,
-} from "./types.ts";
+import type { MethodCalls, MethodOf } from "./types.ts";
 
 export interface IError {
   name: string;
@@ -22,7 +19,7 @@ export interface IFake<OriginalObject> {
   ): void;
 
   method<ReturnValueType>(
-    methodName: MethodOf<OriginalObject>
+    methodName: MethodOf<OriginalObject>,
   ): IPreProgrammedMethod<ReturnValueType>;
 }
 
@@ -36,6 +33,6 @@ export interface IMock<OriginalObject> {
   ): void;
 
   method<ReturnValueType>(
-    methodName: MethodOf<OriginalObject>
+    methodName: MethodOf<OriginalObject>,
   ): IPreProgrammedMethod<ReturnValueType>;
 }

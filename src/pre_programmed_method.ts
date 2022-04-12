@@ -20,7 +20,6 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   /**
    * @param methodName - The name of the method to program. Must be a method of
    * the original object in question.
-   * @param original - The original object object that contains the method.
    */
   constructor(methodName: MethodOf<OriginalObject>) {
     this.#method_name = methodName;
@@ -69,6 +68,7 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
 
   /**
    * Pre-program this method to return the given value.
+
    * @param returnValue The value that should be returned when this object is
    * being used in place of an original method.
    */
@@ -77,6 +77,11 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
     this.#return = returnValue;
   }
 
+  /**
+   * Pre-program this method to throw the given error.
+   *
+   * @param error - The error to throw.
+   */
   public willThrow(error: IError): void {
     this.#will_throw = true;
     this.#error = error;

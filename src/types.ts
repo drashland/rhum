@@ -13,5 +13,5 @@ export type MethodCalls<Object> = Record<keyof Object, number>;
 
 export type MethodOf<Object> = {
   // deno-lint-ignore no-explicit-any
-  [K in keyof Object]: Object[K] extends (...args: any) => any ? K : never
+  [K in keyof Object]: Object[K] extends (...args: any) => any ? K : never;
 }[keyof Object];

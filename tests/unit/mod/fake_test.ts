@@ -63,7 +63,6 @@ class Repository {
     return `Finding user by id #${id}`;
   }
 
-
   #anothaOne() {
     this.anotha_one_called = true;
   }
