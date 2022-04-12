@@ -13,7 +13,7 @@ class Server {
 }
 
 Deno.test("stub()", async (t) => {
-  await t.step("Can stub a propert", () => {
+  await t.step("Can stub a property", () => {
     const server = Stub(new Server());
     server.stub("greeting", "you got changed");
     assertEquals(server.greeting, "you got changed");

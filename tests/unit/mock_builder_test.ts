@@ -1,5 +1,5 @@
 import { assertEquals, assertThrows } from "../deps.ts";
-import { MockBuilder } from "../../src/mock_builder.ts";
+import { MockBuilder } from "../../src/mock/mock_builder.ts";
 
 Deno.test("MockBuilder", async (t) => {
   await t.step("create()", async (t) => {

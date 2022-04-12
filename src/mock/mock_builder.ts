@@ -1,7 +1,7 @@
-import type { Constructor } from "./types.ts";
-import type { IMock } from "./interfaces.ts";
-import { createMock } from "./mock.ts";
-import { PreProgrammedMethod } from "./pre_programmed_method.ts";
+import type { Constructor } from "../types.ts";
+import type { IMock } from "../interfaces.ts";
+import { createMock } from "./mock_mixin.ts";
+import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
 /**
  * Builder to help build a mock object. This does all of the heavy-lifting to

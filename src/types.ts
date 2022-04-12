@@ -12,6 +12,6 @@ export type Stubbed<T> = T & {
 export type MethodCalls<Object> = Record<keyof Object, number>;
 
 export type MethodOf<Object> = {
-  [K in keyof Object]: Object[K] extends (...args: unknown[]) => unknown ? K
-    : never;
+  // deno-lint-ignore no-explicit-any
+  [K in keyof Object]: Object[K] extends (...args: any) => any ? K : never
 }[keyof Object];
