@@ -215,6 +215,18 @@ Deno.test("MockBuilder", async (t) => {
         assertEquals(mock.calls.test, 2);
       },
     });
+
+    await t.step({
+      name: ".expects(...).toBeCalled(...)",
+      fn(): void {
+        const mock = new MockBuilder(TestObjectThree).create();
+        assertEquals(mock.is_mock, true);
+
+        mock.expects("hello").toBeCalled(2);
+        mock.test();
+        mock.verifyExpectations();
+      },
+    });
   });
 });
 // FILE MARKER - DATA //////////////////////////////////////////////////////////

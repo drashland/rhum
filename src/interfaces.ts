@@ -1,5 +1,9 @@
 import type { MethodCalls, MethodOf } from "./types.ts";
 
+export interface IMethodExpectation {
+  toBeCalled(numCalls: number): void;
+}
+
 export interface IError {
   name: string;
   message?: string;
@@ -32,7 +36,11 @@ export interface IMock<OriginalObject> {
     methodsToTrack: string[],
   ): void;
 
+  expects(method: MethodOf<OriginalObject>): IMethodExpectation;
+
   method<ReturnValueType>(
     methodName: MethodOf<OriginalObject>,
   ): IPreProgrammedMethod<ReturnValueType>;
+
+  verifyExpectations(): void;
 }

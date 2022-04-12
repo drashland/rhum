@@ -4,6 +4,27 @@ import type { IMock } from "../interfaces.ts";
 
 class MockError extends Error {}
 
+class MethodExpectation<OriginalObject> {
+  #method_name: MethodOf<OriginalObject>;
+  #expected_calls = 0;
+
+  get method_name(): MethodOf<OriginalObject> {
+    return this.#method_name;
+  }
+
+  get expected_calls(): number {
+    return this.#expected_calls;
+  }
+
+  constructor(methodName: MethodOf<OriginalObject>) {
+    this.#method_name = methodName;
+  }
+
+  public toBeCalled(expectedCalls: number) {
+    this.#expected_calls = expectedCalls;
+  }
+}
+
 export function createMock<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
 ): IMock<OriginalObject> {
@@ -21,6 +42,11 @@ export function createMock<OriginalConstructor, OriginalObject>(
      * Property to track method calls.
      */
     #calls!: MethodCalls<OriginalObject>;
+
+    /**
+     * An array of expectations to verify (if any).
+     */
+    #expectations: MethodExpectation<OriginalObject>[] = [];
 
     /**
      * The original object that this class creates a mock of.
@@ -53,7 +79,20 @@ export function createMock<OriginalConstructor, OriginalObject>(
     //////////////////////////////////////////////////////////////////////////////
 
     /**
+     * Create a method expectation, which is basically asserting calls.
+     *
+     * @param method - The method to create an expectation for.
+     * @returns A method expectation.
+     */
+    public expects(method: MethodOf<OriginalObject>): MethodExpectation<OriginalObject> {
+      const expectation = new MethodExpectation(method);
+      this.#expectations.push(expectation);
+      return expectation;
+    }
+
+    /**
      * Pre-program a method on the original to return a specific value.
+     *
      * @param methodName The method name on the original.
      * @returns A pre-programmed method that will be called instead of original.
      */
@@ -80,6 +119,25 @@ export function createMock<OriginalConstructor, OriginalObject>(
 
       return methodConfiguration;
     }
+
+    /**
+     * Verify all expectations created in this mock.
+     */
+    public verifyExpectations(): void {
+      this.#expectations.forEach((e: MethodExpectation<OriginalObject>) => {
+        const expectedCalls = e.expected_calls;
+        const actualCalls = this.#calls[e.method_name];
+        if (expectedCalls !== actualCalls) {
+          throw new MockError(
+            `Method "${e.method_name}" expected ${expectedCalls} call(s), but received ${actualCalls} call(s).`
+          );
+        }
+      });
+    }
+
+    //////////////////////////////////////////////////////////////////////////////
+    // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
 
     /**
      * Construct the calls property. Only construct it, do not set it. The
