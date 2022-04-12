@@ -2,7 +2,7 @@ import type {
   MethodCalls,
   MethodOf,
 } from "./types.ts";
-import { PreProgrammedMethod } from "./pre_programmed_method.ts";
+import { PreProgrammedMethod } from "./mock/pre_programmed_method.ts";
 
 export interface IError {
   name: string;
