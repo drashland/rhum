@@ -4,7 +4,10 @@ import type { IError } from "./interfaces.ts";
 class PreProgrammedMethodError extends Error {}
 
 /**
- * Class that allows to be a "stand-in" for a method. For example, when used in a mock object, the mock object can replace methods with pre-programmed methods (using this class), and have a system under test use the pre-programmed methods.
+ * Class that allows to be a "stand-in" for a method. For example, when used in
+ * a mock object, the mock object can replace methods with pre-programmed
+ * methods (using this class), and have a system under test use the
+ * pre-programmed methods.
  */
 export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   #method_name: MethodOf<OriginalObject>;
