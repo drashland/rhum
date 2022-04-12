@@ -1,4 +1,3 @@
-import type { Constructor, Stubbed } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
 export * as Types from "./src/types.ts";
@@ -63,18 +62,26 @@ export const Mock = <T>(constructorFn: Constructor<T>): MockBuilder<T> => {
  *
  * @param obj -The object containing the member to stub.
  */
-export const Stub = <T>(obj: T): Stubbed<T> => {
-  (obj as unknown as { [key: string]: boolean }).is_stubbed = true;
-  (obj as unknown as {
-    [key: string]: (property: string, value: unknown) => void;
-  }).stub = function (
-    property: string,
-    value: unknown,
-  ): void {
-    Object.defineProperty(obj, property, {
-      value: value,
-    });
-  };
+export const Stub = <T>(
+  obj: T,
+  dataMember: string,
+  returnValue?: unknown,
+): void => {
+  Object.defineProperty(obj, "is_stubbed", {
+    value: true,
+  });
 
-  return obj as Stubbed<T>;
+  const dataMemberToStub = obj[dataMember as keyof T];
+
+  if (typeof dataMemberToStub === "function") {
+    Object.defineProperty(obj, dataMember, {
+      value: () => returnValue ?? null,
+    });
+
+    return;
+  }
+
+  Object.defineProperty(obj, dataMember, {
+    value: returnValue ?? null,
+  });
 };

@@ -28,8 +28,8 @@ class MethodExpectation<OriginalObject> {
 export function createMock<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
 ): IMock<OriginalObject> {
-  // deno-lint-ignore no-explicit-any
   const Original = OriginalClass as unknown as Constructor<
+    // deno-lint-ignore no-explicit-any
     (...args: any[]) => any
   >;
   return new class MockExtension extends Original {
@@ -84,7 +84,9 @@ export function createMock<OriginalConstructor, OriginalObject>(
      * @param method - The method to create an expectation for.
      * @returns A method expectation.
      */
-    public expects(method: MethodOf<OriginalObject>): MethodExpectation<OriginalObject> {
+    public expects(
+      method: MethodOf<OriginalObject>,
+    ): MethodExpectation<OriginalObject> {
       const expectation = new MethodExpectation(method);
       this.#expectations.push(expectation);
       return expectation;
@@ -129,7 +131,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
         const actualCalls = this.#calls[e.method_name];
         if (expectedCalls !== actualCalls) {
           throw new MockError(
-            `Method "${e.method_name}" expected ${expectedCalls} call(s), but received ${actualCalls} call(s).`
+            `Method "${e.method_name}" expected ${expectedCalls} call(s), but received ${actualCalls} call(s).`,
           );
         }
       });

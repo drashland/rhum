@@ -7,8 +7,8 @@ class FakeError extends Error {}
 export function createFake<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
 ): IFake<OriginalObject> {
-  // deno-lint-ignore no-explicit-any
   const Original = OriginalClass as unknown as Constructor<
+    // deno-lint-ignore no-explicit-any
     (...args: any[]) => any
   >;
   return new class FakeExtension extends Original {
