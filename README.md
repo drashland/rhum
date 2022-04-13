@@ -1,4 +1,4 @@
-# Drash
+# Rhum
 
 [![Latest Release](https://img.shields.io/github/release/drashland/rhum.svg?color=bright_green&label=latest)](#)
 [![CI master](https://img.shields.io/github/workflow/status/drashland/rhum/master?label=ci%20-%20master)](#)
