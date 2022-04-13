@@ -54,19 +54,6 @@ export function createMock<OriginalConstructor, OriginalObject>(
     #original!: OriginalObject;
 
     //////////////////////////////////////////////////////////////////////////////
-    // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
-    //////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * @param original - The original object to mock.
-     * @param methodsToTrack - The original object's method to make trackable.
-     */
-    public init(original: OriginalObject, methodsToTrack: string[]) {
-      this.#original = original;
-      this.#calls = this.#constructCallsProperty(methodsToTrack);
-    }
-
-    //////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - GETTERS / SETTERS ///////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
 
@@ -77,6 +64,15 @@ export function createMock<OriginalConstructor, OriginalObject>(
     //////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param original - The original object to mock.
+     * @param methodsToTrack - The original object's method to make trackable.
+     */
+    public init(original: OriginalObject, methodsToTrack: string[]) {
+      this.#original = original;
+      this.#calls = this.#constructCallsProperty(methodsToTrack);
+    }
 
     /**
      * Create a method expectation, which is basically asserting calls.
