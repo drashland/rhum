@@ -212,6 +212,9 @@ export class FakeBuilder<ClassToFake> {
         // something. If it was, then we make sure that this method we are
         // currently defining returns that pre-programmed value.
         if (methodToCall instanceof PreProgrammedMethod) {
+          if (methodToCall.will_throw) {
+            throw methodToCall.error;
+          }
           return methodToCall.return;
         }
 
