@@ -24,9 +24,6 @@ jobs:
       - name: Unit
         run: deno test tests/unit
 
-      - name: Integration
-        run: deno test tests/integration
-
   linter:
     # Only one OS is required since fmt is cross platform
     runs-on: ubuntu-latest
