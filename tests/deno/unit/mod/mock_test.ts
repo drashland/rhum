@@ -19,24 +19,6 @@ Deno.test("Mock()", async (t) => {
         assertEquals(mock.is_mock, true);
       },
     });
-
-    await t.step("can access protected property", () => {
-      const mock = Mock(TestObjectLotsOfDataMembers)
-        .create();
-      assertEquals(
-        (mock as unknown as { [key: string]: string }).protected_property,
-        "I AM PROTECTED PROPERTY.",
-      );
-    });
-
-    await t.step("can access protected method", () => {
-      const mock = Mock(TestObjectLotsOfDataMembers)
-        .create();
-      assertEquals(
-        (mock as unknown as { [key: string]: () => string }).protectedMethod(),
-        "I AM A PROTECTED METHOD.",
-      );
-    });
   });
 
   await t.step(".withConstructorArgs(...)", async (t) => {
