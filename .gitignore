@@ -11,3 +11,6 @@ tmp/
 
 # exceptions
 !.gitkeep
+
+# locks
+yarn.lock
