@@ -138,7 +138,7 @@ export class MockBuilder<ClassToMock> {
 
     // If this is a native method, then do not do anything fancy. Just add it to
     // the mock.
-    if (nativeMethods.includes(method as string)) {
+    if (nativeMethods.indexOf(method as string) !== -1) {
       return this.#addMethodToMockObject(
         original,
         mock,
