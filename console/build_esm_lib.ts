@@ -12,11 +12,6 @@ const filesToRewrite = [
   "tmp/conversion_workspace/mod.ts",
 ];
 
-Deno.run({ cmd: ["rm", "-r", "tmp/conversion_workspace/"] });
-Deno.run({ cmd: ["mkdir", "-p", "tmp/conversion_workspace/"] });
-Deno.run({ cmd: ["cp", "-r", "src/", `tmp/conversion_workspace/src`] });
-Deno.run({ cmd: ["cp", "mod.ts", `tmp/conversion_workspace/mod.ts`] });
-
 let file: any;
 
 while (!file) {

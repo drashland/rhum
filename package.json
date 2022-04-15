@@ -11,8 +11,7 @@
     "test": "jest --verbose tests",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
-    "build:conversion-workspace": "deno run --allow-read --allow-run --allow-write ./console/build_esm_lib.ts",
-    "build": "yarn build:conversion-workspace && yarn build:cjs && yarn build:esm"
+    "build": ". console/build_esm_lib && yarn build:cjs && yarn build:esm"
   },
   "devDependencies": {
     "@types/jest": "27.x",

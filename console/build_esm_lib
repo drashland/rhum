@@ -1,0 +1,9 @@
+#!/bin/bash
+
+(
+  rm -r tmp/conversion_workspace/
+  mkdir -p tmp/conversion_workspace/
+  cp -r src/ tmp/conversion_workspace/src/
+  cp mod.ts tmp/conversion_workspace/mod.ts
+  deno run --allow-read --allow-run --allow-write ./console/build_esm_lib.ts
+)
