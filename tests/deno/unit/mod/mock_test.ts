@@ -1,5 +1,5 @@
-import { Mock } from "../../../mod.ts";
-import { assertEquals, assertThrows } from "../../deps.ts";
+import { Mock } from "../../../../mod.ts";
+import { assertEquals, assertThrows } from "../../../deps.ts";
 
 Deno.test("Mock()", async (t) => {
   await t.step({

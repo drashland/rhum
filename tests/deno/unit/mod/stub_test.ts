@@ -1,5 +1,5 @@
-import { Stub } from "../../../mod.ts";
-import { assertEquals } from "../../deps.ts";
+import { Stub } from "../../../../mod.ts";
+import { assertEquals } from "../../../deps.ts";
 
 class Server {
   public greeting = "hello";

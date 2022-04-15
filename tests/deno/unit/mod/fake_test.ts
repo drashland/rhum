@@ -1,5 +1,5 @@
-import { Fake } from "../../../mod.ts";
-import { assertEquals, assertThrows } from "../../deps.ts";
+import { Fake } from "../../../../mod.ts";
+import { assertEquals, assertThrows } from "../../../deps.ts";
 
 Deno.test("Fake()", async (t) => {
   await t.step({

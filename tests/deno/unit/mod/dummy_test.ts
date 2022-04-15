@@ -1,5 +1,5 @@
-import { Dummy, Mock } from "../../../mod.ts";
-import { assertEquals } from "../../deps.ts";
+import { Dummy, Mock } from "../../../../mod.ts";
+import { assertEquals } from "../../../deps.ts";
 
 Deno.test("Dummy()", async (t) => {
   await t.step({
