@@ -2,12 +2,12 @@
 .DS_Store
 
 # directories
-tmp*/*
-tmp/*
 .idea
+.vscode
+lib/
+node_modules/
+tmp*/
+tmp/
 
 # exceptions
 !.gitkeep
-
-.vscode
-
