@@ -1,0 +1,29 @@
+{
+  "name": "@drashland/rhum",
+  "version": "2.0.0",
+  "description": "A test double library",
+  "main": "./lib/cjs/mod.js",
+  "types": "./lib/cjs/mod.d.ts",
+  "repository": "git@github.com:drashland/rhum.git",
+  "author": "Drash Land",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest --verbose tests",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json",
+    "build:conversion-workspace": "deno run --allow-read --allow-run --allow-write ./console/build_esm_lib.ts",
+    "build": "yarn build:conversion-workspace && yarn build:cjs && yarn build:esm"
+  },
+  "devDependencies": {
+    "@types/jest": "27.x",
+    "@types/node": "16.x",
+    "jest": "27.x",
+    "ts-jest": "27.x",
+    "ts-node": "10.x",
+    "typescript": "4.x"
+  },
+  "files": [
+    "./lib"
+  ]
+}
+
