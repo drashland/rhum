@@ -12,17 +12,6 @@ const filesToRewrite = [
   "tmp/conversion_workspace/mod.ts",
 ];
 
-let file: any;
-
-while (!file) {
-  try {
-    file = await Deno.lstat(
-      "tmp/conversion_workspace/src/fake/fake_builder.ts",
-    );
-  } catch (error) {
-  }
-}
-
 for (const index in filesToRewrite) {
   const file = filesToRewrite[index];
 

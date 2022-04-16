@@ -8,10 +8,11 @@
   "author": "Drash Land",
   "license": "MIT",
   "scripts": {
-    "test": "jest tests",
+    "build": ". console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
-    "build": ". console/build_esm_lib && yarn build:cjs && yarn build:esm"
+    "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
+    "test": "jest tests"
   },
   "devDependencies": {
     "@babel/preset-env": "7.x",
