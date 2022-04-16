@@ -1,6 +1,6 @@
 {
   "name": "@drashland/rhum",
-  "version": "2.0.0",
+  "version": "2.0.0-alpha-2",
   "description": "A test double library",
   "main": "./lib/cjs/mod.js",
   "types": "./lib/cjs/mod.d.ts",
