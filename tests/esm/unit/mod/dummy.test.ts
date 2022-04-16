@@ -16,14 +16,16 @@ describe("Dummy()", () => {
 
       resource.callServiceOne();
       assertEquals(mockServiceOne.calls.methodServiceOne, 1);
-  });
+    },
+  );
 
   it(
     "can be made without specifying constructor args",
     (): void => {
       const dummy = Dummy(Resource);
       assertEquals(Object.getPrototypeOf(dummy), Resource);
-  });
+    },
+  );
 });
 
 class Resource {
@@ -72,4 +74,4 @@ class ServiceThree {
   }
 }
 
-export {}
+export {};

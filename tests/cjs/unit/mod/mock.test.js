@@ -3,7 +3,7 @@ const { Mock } = require("../../../../lib/cjs/mod");
 class Request {
   constructor(
     url,
-    options = {}
+    options = {},
   ) {
     this.url = url;
     this.options = options;
@@ -114,9 +114,9 @@ class TestRequestHandler {
     const method = request.method.toLowerCase();
     const contentType = request.headers.get("content-type");
 
-    console.log(request.headers)
-    console.log(request.headers)
-    console.log(request.headers)
+    console.log(request.headers);
+    console.log(request.headers);
+    console.log(request.headers);
 
     if (method !== "post") {
       return "Method is not post";
@@ -136,7 +136,8 @@ describe("Mock()", () => {
     () => {
       const mock = Mock(TestObjectOne);
       expect(mock.constructor.name).toBe("MockBuilder");
-  });
+    },
+  );
 
   describe(".create()", () => {
     it(
@@ -145,7 +146,8 @@ describe("Mock()", () => {
         const mock = Mock(TestObjectTwo).create();
         expect(mock.name).toBe(undefined);
         expect(mock.is_mock).toBe(true);
-    });
+      },
+    );
   });
 
   describe(".withConstructorArgs(...)", () => {
@@ -157,7 +159,8 @@ describe("Mock()", () => {
           .create();
         expect(mock.name).toBe("some name");
         expect(mock.is_mock).toBe(true);
-    });
+      },
+    );
 
     it(
       "can take more than 1 arg",
@@ -177,7 +180,8 @@ describe("Mock()", () => {
         expect(mockMathService.calls.add).toBe(0);
         mockTestObject.sum(1, 1);
         expect(mockMathService.calls.add).toBe(1);
-    });
+      },
+    );
   });
 
   describe("method(...)", () => {
@@ -196,26 +200,29 @@ describe("Mock()", () => {
         try {
           mock.test();
         } catch (error) {
-          expect(error.message).toBe(`Pre-programmed method "test" does not have a return value.`);
+          expect(error.message).toBe(
+            `Pre-programmed method "test" does not have a return value.`,
+          );
         }
         expect(mock.calls.test).toBe(2);
         expect(mock.calls.hello).toBe(2);
-    });
+      },
+    );
 
-    it(".willReturn(...) does not call original method and returns given value",() => {
-        const mock = Mock(TestObjectThree).create();
-        expect(mock.is_mock).toBe(true);
+    it(".willReturn(...) does not call original method and returns given value", () => {
+      const mock = Mock(TestObjectThree).create();
+      expect(mock.is_mock).toBe(true);
 
-        // Original returns "World"
-        expect(mock.test()).toBe("World");
+      // Original returns "World"
+      expect(mock.test()).toBe("World");
 
-        // Change original to return "Hello"
-        mock.method("test").willReturn("Hello");
+      // Change original to return "Hello"
+      mock.method("test").willReturn("Hello");
 
-        // Should output "Hello" and make the following calls
-        expect(mock.test()).toBe("Hello");
-        expect(mock.calls.test).toBe(2);
-        expect(mock.calls.hello).toBe(2);
+      // Should output "Hello" and make the following calls
+      expect(mock.test()).toBe("Hello");
+      expect(mock.calls.test).toBe(2);
+      expect(mock.calls.hello).toBe(2);
     });
 
     it(
@@ -234,7 +241,8 @@ describe("Mock()", () => {
         expect(mock.test()).toBe("Hello!");
         expect(mock.calls.test).toBe(2);
         expect(mock.calls.hello).toBe(2);
-    });
+      },
+    );
 
     it(
       ".willReturn(...) returns specified value",
@@ -250,56 +258,57 @@ describe("Mock()", () => {
         mock
           .method("test")
           .willReturn({
-            "something": undefined
+            "something": undefined,
           });
 
         expect(mock.test()).toStrictEqual({ "something": undefined });
         expect(mock.calls.test).toBe(2);
         expect(mock.calls.hello).toBe(2);
-    });
+      },
+    );
 
     it(".willReturn(mock) returns the mock object (basic)", () => {
-        const mock = Mock(TestObjectFourBuilder).create();
-        expect(mock.is_mock).toBe(true);
+      const mock = Mock(TestObjectFourBuilder).create();
+      expect(mock.is_mock).toBe(true);
 
-        mock
-          .method("someComplexMethod")
-          .willReturn(mock);
+      mock
+        .method("someComplexMethod")
+        .willReturn(mock);
 
-        expect(mock.someComplexMethod()).toBe(mock);
-        expect(mock.calls.someComplexMethod).toBe(1);
+      expect(mock.someComplexMethod()).toBe(mock);
+      expect(mock.calls.someComplexMethod).toBe(1);
     });
 
     it(".willReturn(mock) returns the mock object (extra)", () => {
-        // Assert that the original implementation sets properties
-        const mock1 = Mock(TestObjectFourBuilder).create();
-        expect(mock1.is_mock).toBe(true);
-        mock1.someComplexMethod();
-        expect(mock1.something_one).toBe("one");
-        expect(mock1.something_two).toBe("two");
-        expect(mock1.calls.someComplexMethod).toBe(1);
+      // Assert that the original implementation sets properties
+      const mock1 = Mock(TestObjectFourBuilder).create();
+      expect(mock1.is_mock).toBe(true);
+      mock1.someComplexMethod();
+      expect(mock1.something_one).toBe("one");
+      expect(mock1.something_two).toBe("two");
+      expect(mock1.calls.someComplexMethod).toBe(1);
 
-        // Assert that the mock implementation will not set properties
-        const mock2 = Mock(TestObjectFourBuilder).create();
-        expect(mock2.is_mock).toBe(true);
-        mock2
-          .method("someComplexMethod")
-          .willReturn(mock2);
+      // Assert that the mock implementation will not set properties
+      const mock2 = Mock(TestObjectFourBuilder).create();
+      expect(mock2.is_mock).toBe(true);
+      mock2
+        .method("someComplexMethod")
+        .willReturn(mock2);
 
-        expect(mock2.someComplexMethod()).toBe(mock2);
-        expect(mock2.something_one).toBe(undefined);
-        expect(mock2.something_two).toBe(undefined);
-        expect(mock2.calls.someComplexMethod).toBe(1);
+      expect(mock2.someComplexMethod()).toBe(mock2);
+      expect(mock2.something_one).toBe(undefined);
+      expect(mock2.something_two).toBe(undefined);
+      expect(mock2.calls.someComplexMethod).toBe(1);
 
-        // Assert that we can also use setters
-        const mock3 = Mock(TestObjectFourBuilder).create();
-        expect(mock3.is_mock).toBe(true);
-        mock3.someComplexMethod();
-        expect(mock3.something_one).toBe("one");
-        expect(mock3.something_two).toBe("two");
-        mock3.something_one = "you got changed";
-        expect(mock3.something_one).toBe("you got changed");
-        expect(mock3.calls.someComplexMethod).toBe(1);
+      // Assert that we can also use setters
+      const mock3 = Mock(TestObjectFourBuilder).create();
+      expect(mock3.is_mock).toBe(true);
+      mock3.someComplexMethod();
+      expect(mock3.something_one).toBe("one");
+      expect(mock3.something_two).toBe("two");
+      mock3.something_one = "you got changed";
+      expect(mock3.something_one).toBe("you got changed");
+      expect(mock3.calls.someComplexMethod).toBe(1);
     });
 
     it(
@@ -317,10 +326,11 @@ describe("Mock()", () => {
           .willThrow(new RandomError("Random error message."));
 
         expect(
-          () => mock.test()
+          () => mock.test(),
         ).toThrow(new RandomError("Random error message."));
         expect(mock.calls.test).toBe(2);
-    });
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError2 (no constructor)",
@@ -336,9 +346,12 @@ describe("Mock()", () => {
           .method("test")
           .willThrow(new RandomError2());
 
-        expect(() => mock.test()).toThrow(new RandomError2("Some message not by the constructor."));
+        expect(() => mock.test()).toThrow(
+          new RandomError2("Some message not by the constructor."),
+        );
         expect(mock.calls.test).toBe(2);
-    });
+      },
+    );
 
     it(
       ".expects(...).toBeCalled(...)",
@@ -349,7 +362,8 @@ describe("Mock()", () => {
         mock.expects("hello").toBeCalled(2);
         mock.test();
         mock.verifyExpectations();
-    });
+      },
+    );
   });
 
   // TODO(crookse) Put the below tests into one of the groups above this line
@@ -383,9 +397,9 @@ describe("Mock()", () => {
         "content-type": "application/json",
       },
     });
-    console.log("testasdfasfasdf")
+    console.log("testasdfasfasdf");
     console.log(reqPost.headers);
-    console.log("testasdfasfasdf")
+    console.log("testasdfasfasdf");
     expect(router.calls.handle).toBe(0);
     expect(router.handle(reqPost)).toBe("posted");
     expect(router.calls.handle).toBe(1);

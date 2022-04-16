@@ -47,7 +47,9 @@ describe("Fake()", () => {
       try {
         fake.test();
       } catch (error) {
-        expect(error.message).toBe(`Pre-programmed method "test" does not have a return value.`);
+        expect(error.message).toBe(
+          `Pre-programmed method "test" does not have a return value.`,
+        );
       }
     });
 
@@ -173,7 +175,9 @@ describe("Fake()", () => {
         .method("test")
         .willThrow(new RandomError("Random error message."));
 
-      expect(() => fake.test()).toThrow(new RandomError("Random error message."));
+      expect(() => fake.test()).toThrow(
+        new RandomError("Random error message."),
+      );
     });
 
     it(".willThrow() causes throwing RandomError2 (no constructor)", () => {
@@ -188,7 +192,9 @@ describe("Fake()", () => {
         .method("test")
         .willThrow(new RandomError2());
 
-      expect(() => fake.test()).toThrow(new RandomError2("Some message not by the constructor."));
+      expect(() => fake.test()).toThrow(
+        new RandomError2("Some message not by the constructor."),
+      );
     });
   });
 });
@@ -242,7 +248,7 @@ class Resource {
 }
 
 class TestObjectFourBuilder {
-  someComplexMethod()  {
+  someComplexMethod() {
     this.setSomethingOne();
     this.setSomethingTwo();
     return this;
@@ -296,4 +302,3 @@ class RandomError2 extends Error {
   name = "RandomError2Name";
   message = "Some message not by the constructor.";
 }
-

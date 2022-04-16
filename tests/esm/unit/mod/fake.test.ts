@@ -7,7 +7,8 @@ describe("Fake()", () => {
     (): void => {
       const fake = Fake(TestObjectOne);
       assertEquals(fake.constructor.name, "FakeBuilder");
-  });
+    },
+  );
 
   describe(".create()", () => {
     it(
@@ -16,7 +17,8 @@ describe("Fake()", () => {
         const fake = Fake(TestObjectTwo).create();
         assertEquals(fake.name, undefined);
         assertEquals(fake.is_fake, true);
-    });
+      },
+    );
   });
 
   describe(".withConstructorArgs(...)", () => {
@@ -28,7 +30,8 @@ describe("Fake()", () => {
           .create();
         assertEquals(fake.name, "some name");
         assertEquals(fake.is_fake, true);
-    });
+      },
+    );
 
     it(
       "can take more than 1 arg",
@@ -39,7 +42,8 @@ describe("Fake()", () => {
         assertEquals(fake.name, "some name");
         assertEquals(fake.array, ["hello"]);
         assertEquals(fake.is_fake, true);
-    });
+      },
+    );
   });
 
   describe(".method(...)", () => {
@@ -63,10 +67,11 @@ describe("Fake()", () => {
             `Pre-programmed method "test" does not have a return value.`,
           );
         }
-    });
+      },
+    );
 
     it(
-        ".willReturn(...) does not call original method and returns given value",
+      ".willReturn(...) does not call original method and returns given value",
       (): void => {
         // Assert that a fake can make a class take a shortcut
         const fakeServiceDoingShortcut = Fake(Repository).create();
@@ -91,7 +96,8 @@ describe("Fake()", () => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-    });
+      },
+    );
 
     it(
       ".willReturn(...) can be performed more than once",
@@ -120,7 +126,8 @@ describe("Fake()", () => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-    });
+      },
+    );
 
     it(
       ".willThrow(...) does not call original method and throws error",
@@ -148,7 +155,8 @@ describe("Fake()", () => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-    });
+      },
+    );
 
     it(
       ".willReturn(fake) returns the fake object (basic)",
@@ -161,7 +169,8 @@ describe("Fake()", () => {
           .willReturn(fake);
 
         assertEquals(fake.someComplexMethod(), fake);
-    });
+      },
+    );
 
     it(
       ".willReturn(fake) returns the fake object (extra)",
@@ -192,7 +201,8 @@ describe("Fake()", () => {
         assertEquals(fake3.something_two, "two");
         fake3.something_one = "you got changed";
         assertEquals(fake3.something_one, "you got changed");
-    });
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError (with constructor)",
@@ -213,7 +223,8 @@ describe("Fake()", () => {
           RandomError,
           "Random error message.",
         );
-    });
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError2 (no constructor)",
@@ -234,7 +245,8 @@ describe("Fake()", () => {
           RandomError2,
           "Some message not by the constructor.",
         );
-    });
+      },
+    );
   });
 });
 

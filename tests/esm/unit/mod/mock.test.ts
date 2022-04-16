@@ -14,7 +14,7 @@ class Request {
 
   constructor(
     url: string,
-    options: IRequestOptions
+    options: IRequestOptions,
   ) {
     this.url = url;
     this.options = options;
@@ -171,7 +171,8 @@ describe("Mock()", () => {
     (): void => {
       const mock = Mock(TestObjectOne);
       assertEquals(mock.constructor.name, "MockBuilder");
-  });
+    },
+  );
 
   describe(".create()", () => {
     it(
@@ -180,7 +181,8 @@ describe("Mock()", () => {
         const mock = Mock(TestObjectTwo).create();
         assertEquals(mock.name, undefined);
         assertEquals(mock.is_mock, true);
-    });
+      },
+    );
   });
 
   describe(".withConstructorArgs(...)", () => {
@@ -192,7 +194,8 @@ describe("Mock()", () => {
           .create();
         assertEquals(mock.name, "some name");
         assertEquals(mock.is_mock, true);
-    });
+      },
+    );
 
     it(
       "can take more than 1 arg",
@@ -212,7 +215,8 @@ describe("Mock()", () => {
         assertEquals(mockMathService.calls.add, 0);
         mockTestObject.sum(1, 1);
         assertEquals(mockMathService.calls.add, 1);
-    });
+      },
+    );
   });
 
   describe("method(...)", () => {
@@ -238,10 +242,11 @@ describe("Mock()", () => {
         }
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
-    });
+      },
+    );
 
     it(
-        ".willReturn(...) does not call original method and returns given value",
+      ".willReturn(...) does not call original method and returns given value",
       (): void => {
         const mock = Mock(TestObjectThree).create();
         assertEquals(mock.is_mock, true);
@@ -256,7 +261,8 @@ describe("Mock()", () => {
         assertEquals(mock.test(), "Hello");
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
-    });
+      },
+    );
 
     it(
       ".willReturn(...) can be performed more than once",
@@ -274,7 +280,8 @@ describe("Mock()", () => {
         assertEquals(mock.test(), "Hello!");
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
-    });
+      },
+    );
 
     it(
       ".willReturn(...) returns specified value",
@@ -296,7 +303,8 @@ describe("Mock()", () => {
         assertEquals(mock.test(), { "something": "something" });
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
-    });
+      },
+    );
 
     it(
       ".willReturn(mock) returns the mock object (basic)",
@@ -310,7 +318,8 @@ describe("Mock()", () => {
 
         assertEquals(mock.someComplexMethod(), mock);
         assertEquals(mock.calls.someComplexMethod, 1);
-    });
+      },
+    );
 
     it(
       ".willReturn(mock) returns the mock object (extra)",
@@ -344,7 +353,8 @@ describe("Mock()", () => {
         mock3.something_one = "you got changed";
         assertEquals(mock3.something_one, "you got changed");
         assertEquals(mock3.calls.someComplexMethod, 1);
-    });
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError (with constructor)",
@@ -366,7 +376,8 @@ describe("Mock()", () => {
           "Random error message.",
         );
         assertEquals(mock.calls.test, 2);
-    });
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError2 (no constructor)",
@@ -388,7 +399,8 @@ describe("Mock()", () => {
           "Some message not by the constructor.",
         );
         assertEquals(mock.calls.test, 2);
-    });
+      },
+    );
 
     it(
       ".expects(...).toBeCalled(...)",
@@ -399,7 +411,8 @@ describe("Mock()", () => {
         mock.expects("hello").toBeCalled(2);
         mock.test();
         mock.verifyExpectations();
-    });
+      },
+    );
   });
 
   // TODO(crookse) Put the below tests into one of the groups above this line
@@ -426,7 +439,6 @@ describe("Mock()", () => {
 
   describe("native request mock", () => {
     it("handles async requests", async () => {
-
       const router = Mock(TestRequestHandler).create();
 
       const reqPost = new Request("https://google.com", {
