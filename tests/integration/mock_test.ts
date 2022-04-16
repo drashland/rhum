@@ -1,4 +1,5 @@
 import { Rhum } from "../../mod.ts";
+import { assertEquals } from "../deps.ts";
 
 class MathService {
   public add(
@@ -172,6 +173,21 @@ Rhum.testPlan("mock_test.ts", () => {
         "Method is not post",
       );
       Rhum.asserts.assertEquals(router.calls.handle, 3);
+    });
+    Rhum.testCase("Sets the default value for getters", () => {
+      class Game {
+      }
+      class PlayersEngine {
+        private game = new Game();
+        get Game() {
+          return this.game;
+        }
+        set Game(val: Game) {
+          this.game = val;
+        }
+      }
+      const mock = Rhum.mock(PlayersEngine).create();
+      Rhum.asserts.assertEquals(mock.Game instanceof Game, true);
     });
   });
 });
