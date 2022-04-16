@@ -28,7 +28,8 @@ version-resolver:
 template: |
   ## Compatibility
 
-  Requires Deno v<version>
+  * Requires Deno v<version>
+  * Requires Node v<version>
 
   ## Documentation
 
