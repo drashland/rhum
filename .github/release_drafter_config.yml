@@ -29,7 +29,6 @@ template: |
   ## Compatibility
 
   Requires Deno v<version>
-  Uses Deno Standard Modules <version>
 
   ## Documentation
 
