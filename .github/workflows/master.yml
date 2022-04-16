@@ -21,8 +21,14 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Unit
-        run: deno test tests/unit
+      - name: Unit Tests (Deno)
+        run: deno test tests/
+
+      - name: Unit Tests (Node)
+        run: |
+          yarn install
+          yarn build
+          yarn test
 
   linter:
     # Only one OS is required since fmt is cross platform
