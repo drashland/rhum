@@ -2,7 +2,67 @@ name: Release
 on:
   release:
     types: [published]
+
 jobs:
+
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      # Setup .npmrc file to publish to npm
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@drashland'
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Build CJS and ESM
+        run: yarn build
+
+      - name: Publish
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
+
+  github:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CI_USER_PAT }}
+
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      # Setup .npmrc file to publish to github
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@drashland'
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Build CJS and ESM
+        run: yarn build
+
+      - name: Publish
+        run: yarn publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish-egg:
     runs-on: ubuntu-latest
     steps:
