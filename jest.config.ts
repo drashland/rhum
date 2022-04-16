@@ -1,5 +1,5 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-import type { Config } from "@jest/types"
+import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   preset: "ts-jest",
@@ -7,8 +7,8 @@ const config: Config.InitialOptions = {
   verbose: true,
   moduleFileExtensions: ["ts", "js"],
   transform: {
-    '^.+\\.(ts|tsx)?$': 'ts-jest',
+    "^.+\\.(ts|tsx)?$": "ts-jest",
     "^.+\\.(js|jsx)$": "babel-jest",
-  }
-}
-export default config
+  },
+};
+export default config;
