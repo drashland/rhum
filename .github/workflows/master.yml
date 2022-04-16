@@ -30,7 +30,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         # We only support until EOL
-        node: ['10', '12', '14', '15', '16', '17']
+        # See https://nodejs.org/en/about/releases/
+        node: ['14', '15', '16', '17']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
