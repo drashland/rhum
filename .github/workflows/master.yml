@@ -9,23 +9,57 @@ on:
       - main
 
 jobs:
-  tests:
+  tests_deno:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
 
       - name: Install Deno
-        uses: denolib/setup-deno@master
+        uses: denoland/setup-deno@v1
 
-      - name: Unit
-        run: deno test --allow-env tests/unit
+      - name: Unit Tests
+        run: deno test tests/deno
 
-      - name: Integration
-        run: deno test --allow-run --allow-env tests/integration
+  tests_node:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # We only support until EOL
+        # See https://nodejs.org/en/about/releases/
+        node: ['14', '15', '16', '17']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Build CJS and ESM (*nix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          yarn build
+
+      - name: Build CJS and ESM (windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          yarn build:windows
+
+      - name: Unit Test
+        run: yarn test
 
   linter:
     # Only one OS is required since fmt is cross platform
@@ -35,10 +69,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Install Deno
-        uses: denolib/setup-deno@master
+        uses: denoland/setup-deno@v1
 
-      # - name: Lint
-      #   run: deno lint --unstable
+      - name: Lint
+        run: deno lint
 
       - name: Formatter
         run: deno fmt --check

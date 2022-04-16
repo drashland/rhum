@@ -1,18 +1,20 @@
-export type TConstructorFunction<T> = {
-  new (...args: unknown[]): T;
-  [key: string]: unknown;
-};
-
 // deno-lint-ignore no-explicit-any
-export type Constructor<T extends unknown> = new (...args: any[]) => T;
+export type Constructor<T extends any> = new (...args: any[]) => T;
 
-export type Mocked<T> = T & {
-  calls: { [k in keyof T]: T[k] extends () => void ? number : never };
-  is_mock: true;
-};
+export type MethodCalls<Object> = Record<keyof Object, number>;
 
-export type Stubbed<T> = T & {
-  calls: { [k in keyof T]?: T[k] extends () => void ? number : never };
-  stub: (p: string, v: unknown) => void;
-  is_stubbed: true;
-};
+export type MethodOf<Object> = {
+  // deno-lint-ignore no-explicit-any
+  [K in keyof Object]: Object[K] extends (...args: any[]) => unknown ? K
+    : never;
+}[keyof Object];
+
+export type MemberOf<Object> = {
+  [K in keyof Object]: Object[K];
+}[keyof Object];
+
+export type MockedObject = { [k: string]: unknown };
+
+export type StubReturnValue<T, R> = T extends (...args: unknown[]) => unknown
+  ? () => R
+  : string;
