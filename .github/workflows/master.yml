@@ -36,6 +36,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      # We need deno because the "Build CJS and ESM" step runs `deno run`
+      - name: Install Deno
+        uses: denoland/setup-deno@v1
+
       - name: Install Node
         uses: actions/setup-node@v2
         with:
