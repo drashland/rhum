@@ -1,55 +1,51 @@
-import { Fake } from "../../../mod.ts";
-import { assertEquals, assertThrows } from "../../deps.ts";
+import { Fake } from "../../../../lib/esm/mod";
+import { assertEquals, assertThrows } from "../../jest_assertions";
 
-Deno.test("Fake()", async (t) => {
-  await t.step({
-    name: "creates fake builder",
-    fn(): void {
+describe("Fake()", () => {
+  it(
+    "creates fake builder",
+    (): void => {
       const fake = Fake(TestObjectOne);
       assertEquals(fake.constructor.name, "FakeBuilder");
-    },
   });
 
-  await t.step(".create()", async (t) => {
-    await t.step({
-      name: "creates fake object",
-      fn(): void {
+  describe(".create()", () => {
+    it(
+      "creates fake object",
+      (): void => {
         const fake = Fake(TestObjectTwo).create();
         assertEquals(fake.name, undefined);
         assertEquals(fake.is_fake, true);
-      },
     });
   });
 
-  await t.step(".withConstructorArgs(...)", async (t) => {
-    await t.step({
-      name: "can take 1 arg",
-      fn(): void {
+  describe(".withConstructorArgs(...)", () => {
+    it(
+      "can take 1 arg",
+      (): void => {
         const fake = Fake(TestObjectTwo)
           .withConstructorArgs("some name")
           .create();
         assertEquals(fake.name, "some name");
         assertEquals(fake.is_fake, true);
-      },
     });
 
-    await t.step({
-      name: "can take more than 1 arg",
-      fn(): void {
+    it(
+      "can take more than 1 arg",
+      (): void => {
         const fake = Fake(TestObjectTwoMore)
           .withConstructorArgs("some name", ["hello"])
           .create();
         assertEquals(fake.name, "some name");
         assertEquals(fake.array, ["hello"]);
         assertEquals(fake.is_fake, true);
-      },
     });
   });
 
-  await t.step(".method(...)", async (t) => {
-    await t.step({
-      name: "requires .willReturn(...) or .willThrow(...) to be chained",
-      fn(): void {
+  describe(".method(...)", () => {
+    it(
+      "requires .willReturn(...) or .willThrow(...) to be chained",
+      (): void => {
         const fake = Fake(TestObjectThree).create();
         assertEquals(fake.is_fake, true);
 
@@ -67,13 +63,11 @@ Deno.test("Fake()", async (t) => {
             `Pre-programmed method "test" does not have a return value.`,
           );
         }
-      },
     });
 
-    await t.step({
-      name:
+    it(
         ".willReturn(...) does not call original method and returns given value",
-      fn(): void {
+      (): void => {
         // Assert that a fake can make a class take a shortcut
         const fakeServiceDoingShortcut = Fake(Repository).create();
         fakeServiceDoingShortcut.method("findAllUsers").willReturn("shortcut");
@@ -97,12 +91,11 @@ Deno.test("Fake()", async (t) => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-      },
     });
 
-    await t.step({
-      name: ".willReturn(...) can be performed more than once",
-      fn(): void {
+    it(
+      ".willReturn(...) can be performed more than once",
+      (): void => {
         // Assert that a fake can make a class take a shortcut
         const fakeServiceDoingShortcut = Fake(Repository).create();
         fakeServiceDoingShortcut.method("findUserById").willReturn("shortcut");
@@ -127,12 +120,11 @@ Deno.test("Fake()", async (t) => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-      },
     });
 
-    await t.step({
-      name: ".willThrow(...) does not call original method and throws error",
-      fn(): void {
+    it(
+      ".willThrow(...) does not call original method and throws error",
+      (): void => {
         // Assert that a fake can make a class take a shortcut
         const fakeServiceDoingShortcut = Fake(Repository).create();
         fakeServiceDoingShortcut.method("findAllUsers").willReturn("shortcut");
@@ -156,12 +148,11 @@ Deno.test("Fake()", async (t) => {
           fakeServiceNotDoingShortcut.do_something_else_called,
           true,
         );
-      },
     });
 
-    await t.step({
-      name: ".willReturn(fake) returns the fake object (basic)",
-      fn(): void {
+    it(
+      ".willReturn(fake) returns the fake object (basic)",
+      (): void => {
         const fake = Fake(TestObjectFourBuilder).create();
         assertEquals(fake.is_fake, true);
 
@@ -170,12 +161,11 @@ Deno.test("Fake()", async (t) => {
           .willReturn(fake);
 
         assertEquals(fake.someComplexMethod(), fake);
-      },
     });
 
-    await t.step({
-      name: ".willReturn(fake) returns the fake object (extra)",
-      fn(): void {
+    it(
+      ".willReturn(fake) returns the fake object (extra)",
+      (): void => {
         // Assert that the original implementation sets properties
         const fake1 = Fake(TestObjectFourBuilder).create();
         assertEquals(fake1.is_fake, true);
@@ -202,12 +192,11 @@ Deno.test("Fake()", async (t) => {
         assertEquals(fake3.something_two, "two");
         fake3.something_one = "you got changed";
         assertEquals(fake3.something_one, "you got changed");
-      },
     });
 
-    await t.step({
-      name: ".willThrow() causes throwing RandomError (with constructor)",
-      fn(): void {
+    it(
+      ".willThrow() causes throwing RandomError (with constructor)",
+      (): void => {
         const fake = Fake(TestObjectThree).create();
         assertEquals(fake.is_fake, true);
 
@@ -224,12 +213,11 @@ Deno.test("Fake()", async (t) => {
           RandomError,
           "Random error message.",
         );
-      },
     });
 
-    await t.step({
-      name: ".willThrow() causes throwing RandomError2 (no constructor)",
-      fn(): void {
+    it(
+      ".willThrow() causes throwing RandomError2 (no constructor)",
+      (): void => {
         const fake = Fake(TestObjectThree).create();
         assertEquals(fake.is_fake, true);
 
@@ -246,7 +234,6 @@ Deno.test("Fake()", async (t) => {
           RandomError2,
           "Some message not by the constructor.",
         );
-      },
     });
   });
 });

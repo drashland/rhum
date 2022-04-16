@@ -136,7 +136,7 @@ export class FakeBuilder<ClassToFake> {
 
     // If this is a native method, then do not do anything fancy. Just add it to
     // the fake.
-    if (nativeMethods.includes(method as string)) {
+    if (nativeMethods.indexOf(method as string) !== -1) {
       return this.#addMethodToFakeObject(
         original,
         fake,

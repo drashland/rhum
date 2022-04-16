@@ -1,5 +1,5 @@
-import { Stub } from "../../../mod.ts";
-import { assertEquals } from "../../deps.ts";
+import { Stub } from "../../../../lib/esm/mod";
+import { assertEquals } from "../../jest_assertions";
 
 class Server {
   public greeting = "hello";
@@ -9,8 +9,8 @@ class Server {
   }
 }
 
-Deno.test("Stub()", async (t) => {
-  await t.step("can stub a class property", () => {
+describe("Stub()", () => {
+  it("can stub a class property", () => {
     const server = new Server();
     assertEquals(server.greeting, "hello");
     Stub(server, "greeting", "you got changed");
@@ -24,7 +24,7 @@ Deno.test("Stub()", async (t) => {
     assertEquals(server.greeting, obj);
   });
 
-  await t.step("can stub a class method", () => {
+  it("can stub a class method", () => {
     const server = new Server();
     assertEquals(server.methodThatLogs(), "server is running!");
     Stub(server, "methodThatLogs");
@@ -38,7 +38,7 @@ Deno.test("Stub()", async (t) => {
     assertEquals(server.methodThatLogs(), obj);
   });
 
-  await t.step("can return a stubbed function", () => {
+  it("can return a stubbed function", () => {
     const stub = Stub();
     assertEquals(stub(), "stubbed");
   });
