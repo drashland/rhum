@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  tests:
+  tests_deno:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -21,14 +21,35 @@ jobs:
       - name: Install Deno
         uses: denoland/setup-deno@v1
 
-      - name: Unit Tests (Deno)
+      - name: Unit Tests
         run: deno test tests/deno
 
-      - name: Unit Tests (Node)
+  tests_node:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # We only support until EOL
+        node: ['10', '12', '14', '15', '16', '17']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Build CJS and ESM
         run: |
-          yarn install
           yarn build
           yarn test
+
+      - name: Unit Test
+        run: yarn test
 
   linter:
     # Only one OS is required since fmt is cross platform
