@@ -22,7 +22,7 @@ jobs:
         uses: denoland/setup-deno@v1
 
       - name: Unit Tests (Deno)
-        run: deno test tests/
+        run: deno test tests/deno
 
       - name: Unit Tests (Node)
         run: |
