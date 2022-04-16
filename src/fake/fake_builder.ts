@@ -223,8 +223,6 @@ export class FakeBuilder<ClassToFake> {
         // original does not.
         const bound = methodToCall.bind(fake);
 
-        // console.log(`calling bound()`);
-
         // Use `return` because the original function could return a value
         return bound(...args);
       },

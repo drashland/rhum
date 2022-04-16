@@ -48,10 +48,15 @@ jobs:
       - name: Install deps
         run: yarn install
 
-      - name: Build CJS and ESM
+      - name: Build CJS and ESM (*nix)
+        if: matrix.os != 'windows-latest'
         run: |
           yarn build
-          yarn test
+
+      - name: Build CJS and ESM (windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          yarn build:windows
 
       - name: Unit Test
         run: yarn test

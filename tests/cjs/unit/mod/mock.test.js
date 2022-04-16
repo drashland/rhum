@@ -114,10 +114,6 @@ class TestRequestHandler {
     const method = request.method.toLowerCase();
     const contentType = request.headers.get("content-type");
 
-    console.log(request.headers);
-    console.log(request.headers);
-    console.log(request.headers);
-
     if (method !== "post") {
       return "Method is not post";
     }
@@ -397,9 +393,6 @@ describe("Mock()", () => {
         "content-type": "application/json",
       },
     });
-    console.log("testasdfasfasdf");
-    console.log(reqPost.headers);
-    console.log("testasdfasfasdf");
     expect(router.calls.handle).toBe(0);
     expect(router.handle(reqPost)).toBe("posted");
     expect(router.calls.handle).toBe(1);

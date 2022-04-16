@@ -228,8 +228,6 @@ export class MockBuilder<ClassToMock> {
         // original does not.
         const bound = methodToCall.bind(mock);
 
-        // console.log(`calling bound()`);
-
         // Use `return` because the original function could return a value
         return bound(...args);
       },

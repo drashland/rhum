@@ -9,6 +9,7 @@
   "license": "MIT",
   "scripts": {
     "build": "console/build_esm_lib && yarn build:cjs && yarn build:esm",
+    "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json",
     "build:esm": "tsc --project tsconfig.esm.json",
     "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
