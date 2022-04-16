@@ -16,7 +16,9 @@ let file: any;
 
 while (!file) {
   try {
-    file = await Deno.lstat("tmp/conversion_workspace/src/fake/fake_builder.ts");
+    file = await Deno.lstat(
+      "tmp/conversion_workspace/src/fake/fake_builder.ts",
+    );
   } catch (error) {
   }
 }
@@ -33,12 +35,12 @@ for (const index in filesToRewrite) {
 
   // Step 3: Remove all .ts extensions from the import/export statements
   const newImportStatements = importStatements?.map((statement: string) => {
-      return statement.replace(/\.ts";/, `";`);
-    });
+    return statement.replace(/\.ts";/, `";`);
+  });
 
   const newExportStatements = exportStatements?.map((statement: string) => {
-      return statement.replace(/\.ts";/, `";`);
-    });
+    return statement.replace(/\.ts";/, `";`);
+  });
 
   // Step 4: Replace the original contents with the new contents
   if (newImportStatements) {
