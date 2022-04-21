@@ -1,6 +1,8 @@
 import type { Constructor, StubReturnValue } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
+import { SpyBuilder } from "./src/spy/spy_builder.ts";
+import * as Interfaces from "./src/interfaces.ts";
 export * as Types from "./src/types.ts";
 export * as Interfaces from "./src/interfaces.ts";
 
@@ -54,6 +56,20 @@ export function Fake<T>(constructorFn: Constructor<T>): FakeBuilder<T> {
  */
 export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
   return new MockBuilder(constructorFn);
+}
+
+export function Spy<T>(
+  obj: Constructor<T>
+): Interfaces.ISpy<T> & T;
+
+export function Spy<T>(
+  obj: T,
+  dataMember?: keyof T
+): unknown {
+  if (typeof obj === "function" && ("prototype" in obj)) {
+    // @ts-ignore
+    return new SpyBuilder(obj).create();
+  }
 }
 
 /**
