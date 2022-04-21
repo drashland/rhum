@@ -61,45 +61,47 @@ export class MethodVerificationError extends RhumError {
       "_mixin.ts",
     ];
 
-    if (this.stack) {
-      const conciseStack = this.stack.split("\n").filter((line: string) => {
-        try {
-          return ignoredLines.filter((ignoredLine: string) => {
-            return line.includes(ignoredLine);
-          }).length === 0;
-        } catch (_error) {
-          // Do nothing. If we can't filter because the `ignoredLines.filter()`
-          // call errored out. Whatev... we just move on and show a full stack
-          // trace. No biggie.
-        }
-        return false;
-      }).join("\n");
-
-      const extractedFilenameWithLineAndColumnNumbers = conciseStack.match(
-        /\/[a-zA-Z0-9\(\)\[\]_-\d.]+\.ts:\d+:\d+/,
-      );
-
-      const [filename, lineNumber] = extractedFilenameWithLineAndColumnNumbers
-        ? extractedFilenameWithLineAndColumnNumbers[0].split(":")
-        : "";
-
-      let newStack = "\n\n"; // Give spacing when displayed in the console
-      newStack += conciseStack;
-
-      newStack += `\n\nVerification Results:`;
-      newStack += `\n    ${this.#actual_results}`;
-      newStack += `\n    ${this.#expected_results}`;
-
-      if (lineNumber) {
-        newStack += `\n\nCheck the above '${
-          filename.replace("/", "")
-        }' file at/around line ${lineNumber} for the following code to fix this error:`;
-        newStack += `\n    ${this.#code_that_threw}`;
-      }
-      newStack += "\n\n\n"; // Give spacing when displayed in the console
-
-      this.stack = newStack;
+    if (!this.stack) {
+      return;
     }
+
+    const conciseStack = this.stack.split("\n").filter((line: string) => {
+      try {
+        return ignoredLines.filter((ignoredLine: string) => {
+          return line.includes(ignoredLine);
+        }).length === 0;
+      } catch (_error) {
+        // Do nothing. If we can't filter because the `ignoredLines.filter()`
+        // call errored out. Whatev... we just move on and show a full stack
+        // trace. No biggie.
+      }
+      return false;
+    }).join("\n");
+
+    const extractedFilenameWithLineAndColumnNumbers = conciseStack.match(
+      /\/[a-zA-Z0-9\(\)\[\]_-\d.]+\.ts:\d+:\d+/,
+    );
+
+    const [filename, lineNumber] = extractedFilenameWithLineAndColumnNumbers
+      ? extractedFilenameWithLineAndColumnNumbers[0].split(":")
+      : "";
+
+    let newStack = "\n\n"; // Give spacing when displayed in the console
+    newStack += conciseStack;
+
+    newStack += `\n\nVerification Results:`;
+    newStack += `\n    ${this.#actual_results}`;
+    newStack += `\n    ${this.#expected_results}`;
+
+    if (lineNumber) {
+      newStack += `\n\nCheck the above '${
+        filename.replace("/", "")
+      }' file at/around line ${lineNumber} for the following code to fix this error:`;
+      newStack += `\n    ${this.#code_that_threw}`;
+    }
+    newStack += "\n\n\n"; // Give spacing when displayed in the console
+
+    this.stack = newStack;
   }
 }
 
