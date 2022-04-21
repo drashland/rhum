@@ -58,6 +58,30 @@ export class TestDoubleBuilder<OriginalClass> {
   protected getAllFunctionNames(obj: OriginalClass): string[] {
     let functions: string[] = [];
     let clone = obj;
+
+    // This do-while loop iterates over all of the parent classes of the
+    // original object (if any). It gets all of the functions from the parent
+    // class currently being iterated over, adds them to the `functions` array
+    // variable, and repeats this process until it reaches the top-level parent.
+    // An example is below:
+    //
+    //     class A {}
+    //     class B extends A {}
+    //     class C extends B {}
+    //     class D extends C {}
+    //
+    //     let clone = new D();
+    //
+    //     do {
+    //       functions = functions.concat(Object.getOwnPropertyNames(clone));
+    //       // Iteration 1 ---> D {} // Adds all functions
+    //       // Iteration 2 ---> D {} // Adds all functions
+    //       // Iteration 3 ---> C {} // Adds all functions
+    //       // Iteration 4 ---> B {} // Adds all functions
+    //       // Iteration 5 ---> A {} // Adds all functions
+    //       // Iteration 6 ---> {}   // Adss all functions and stops here
+    //     } while ((clone = Object.getPrototypeOf(clone)));
+    //
     do {
       functions = functions.concat(Object.getOwnPropertyNames(clone));
     } while ((clone = Object.getPrototypeOf(clone)));
@@ -82,13 +106,37 @@ export class TestDoubleBuilder<OriginalClass> {
    * @returns An array of the object's properties.
    */
   protected getAllPropertyNames(obj: OriginalClass): string[] {
-    let functions: string[] = [];
+    let properties: string[] = [];
     let clone = obj;
+
+    // This do-while loop iterates over all of the parent classes of the
+    // original object (if any). It gets all of the properties from the parent
+    // class currently being iterated over, adds them to the `properties` array
+    // variable, and repeats this process until it reaches the top-level parent.
+    // An example is below:
+    //
+    //     class A {}
+    //     class B extends A {}
+    //     class C extends B {}
+    //     class D extends C {}
+    //
+    //     let clone = new D();
+    //
+    //     do {
+    //       properties = properties.concat(Object.getOwnPropertyNames(clone));
+    //       // Iteration 1 ---> D {} // Adds all properties
+    //       // Iteration 2 ---> D {} // Adds all properties
+    //       // Iteration 3 ---> C {} // Adds all properties
+    //       // Iteration 4 ---> B {} // Adds all properties
+    //       // Iteration 5 ---> A {} // Adds all properties
+    //       // Iteration 6 ---> {}   // Adss all properties and stops here
+    //     } while ((clone = Object.getPrototypeOf(clone)));
+    //
     do {
-      functions = functions.concat(Object.getOwnPropertyNames(clone));
+      properties = properties.concat(Object.getOwnPropertyNames(clone));
     } while ((clone = Object.getPrototypeOf(clone)));
 
-    return functions.sort().filter(
+    return properties.sort().filter(
       function (e: string, i: number, arr: unknown[]) {
         if (
           e != arr[i + 1] && typeof obj[e as keyof OriginalClass] != "function"
