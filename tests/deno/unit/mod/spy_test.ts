@@ -54,61 +54,74 @@ class ResourceParameterized {
 }
 
 Deno.test("Spy()", async (t) => {
-  await t.step("can turn a class into a spy", () => {
-    const spy = Spy(Resource);
-    assertEquals(spy.is_spy, true);
+  await t.step("using Spy() on methods", async (t) => {
+    await t.step("can spy on a method", () => {
+      const resource = new Resource();
+
+      Spy(resource, "methodThatPosts");
+      console.log(resource.methodThatPosts());
+      console.log(resource.methodThatPosts());
+      console.log(resource.methodThatPosts());
+    });
   });
 
-  await t.step("stubs all data members", () => {
-    const spy = Spy(Resource);
-    assertEquals(spy.methodThatLogs(), "stubbed");
-    assertEquals(spy.methodThatGets(), "stubbed");
-    assertEquals(spy.methodThatPosts(), "stubbed");
-  });
+  await t.step("using Spy() on classes", async (t) => {
+    await t.step("can turn a class into a spy", () => {
+      const spy = Spy(Resource);
+      assertEquals(spy.is_spy, true);
+    });
 
-  await t.step("can verify calls for non-parameterized methods", () => {
-    const spy = Spy(Resource);
-    // Verify that `methodThatLogs` was called once (because we called it here)
-    spy.methodThatLogs();
-    spy.verify("methodThatLogs").toBeCalled(1);
+    await t.step("stubs all data members", () => {
+      const spy = Spy(Resource);
+      assertEquals(spy.methodThatLogs(), "stubbed");
+      assertEquals(spy.methodThatGets(), "stubbed");
+      assertEquals(spy.methodThatPosts(), "stubbed");
+    });
 
-    // Verify that `methodThatLogs()` was still only called once since
-    // `methodThatGets()` is stubbed
-    spy.methodThatGets();
-    spy.verify("methodThatLogs").toBeCalled(1);
+    await t.step("can verify calls for non-parameterized methods", () => {
+      const spy = Spy(Resource);
+      // Verify that `methodThatLogs` was called once (because we called it here)
+      spy.methodThatLogs();
+      spy.verify("methodThatLogs").toBeCalled(1);
 
-    // Verify that `methodThatLogs()` was still only called once since
-    // `methodThatPosts()` is stubbed
-    spy.methodThatPosts();
-    spy.verify("methodThatLogs").toBeCalled(1);
-  });
+      // Verify that `methodThatLogs()` was still only called once since
+      // `methodThatGets()` is stubbed
+      spy.methodThatGets();
+      spy.verify("methodThatLogs").toBeCalled(1);
 
-  await t.step("can verify calls for parameterized methods", () => {
-    const spy = Spy(ResourceParameterized);
-    // Verify that `methodThatLogs` was called once (because we called it here)
-    spy.methodThatLogs("hello");
-    spy.verify("methodThatLogs")
-      .toBeCalled(1)
-      .toBeCalledWith("hello");
+      // Verify that `methodThatLogs()` was still only called once since
+      // `methodThatPosts()` is stubbed
+      spy.methodThatPosts();
+      spy.verify("methodThatLogs").toBeCalled(1);
+    });
 
-    // Verify that `methodThatLogs()` was still only called once since
-    // `methodThatGets()` is stubbed
-    spy.methodThatGets("hello", "world");
-    spy.verify("methodThatLogs")
-      .toBeCalled(1)
-      .toBeCalledWith("hello");
-    spy.verify("methodThatGets")
-      .toBeCalled(1)
-      .toBeCalledWith("hello", "world");
+    await t.step("can verify calls for parameterized methods", () => {
+      const spy = Spy(ResourceParameterized);
+      // Verify that `methodThatLogs` was called once (because we called it here)
+      spy.methodThatLogs("hello");
+      spy.verify("methodThatLogs")
+        .toBeCalled(1)
+        .toBeCalledWith("hello");
 
-    // Verify that `methodThatLogs()` was still only called once since
-    // `methodThatPosts()` is stubbed
-    spy.methodThatPosts(true, false, ["test"]);
-    spy.verify("methodThatLogs")
-      .toBeCalled(1)
-      .toBeCalledWith("hello");
-    spy.verify("methodThatPosts")
-      .toBeCalled(1)
-      .toBeCalledWith(true, false, ["test"]);
+      // Verify that `methodThatLogs()` was still only called once since
+      // `methodThatGets()` is stubbed
+      spy.methodThatGets("hello", "world");
+      spy.verify("methodThatLogs")
+        .toBeCalled(1)
+        .toBeCalledWith("hello");
+      spy.verify("methodThatGets")
+        .toBeCalled(1)
+        .toBeCalledWith("hello", "world");
+
+      // Verify that `methodThatLogs()` was still only called once since
+      // `methodThatPosts()` is stubbed
+      spy.methodThatPosts(true, false, ["test"]);
+      spy.verify("methodThatLogs")
+        .toBeCalled(1)
+        .toBeCalledWith("hello");
+      spy.verify("methodThatPosts")
+        .toBeCalled(1)
+        .toBeCalledWith(true, false, ["test"]);
+    });
   });
 });

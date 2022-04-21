@@ -58,6 +58,11 @@ export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
   return new MockBuilder(constructorFn);
 }
 
+export function Spy<T, R>(
+  obj: T,
+  dataMember: keyof T
+): StubReturnValue<T, R>;
+
 export function Spy<T>(
   obj: Constructor<T>
 ): Interfaces.ISpy<T> & T;
@@ -66,6 +71,10 @@ export function Spy<T>(
   obj: T,
   dataMember?: keyof T
 ): unknown {
+  if (dataMember) {
+    return Stub(obj, dataMember);
+  }
+
   if (typeof obj === "function" && ("prototype" in obj)) {
     // @ts-ignore
     return new SpyBuilder(obj).create();
