@@ -1,30 +1,48 @@
-import type { Constructor, MethodCalls, MethodOf } from "../types.ts";
-import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 import type { IMock } from "../interfaces.ts";
+import type { Constructor, MethodCalls, MethodOf } from "../types.ts";
 
-class MockError extends Error {}
+import { MethodVerifier } from "../method_verifier.ts";
+import { MockError } from "../errors.ts";
+import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
 class MethodExpectation<OriginalObject> {
-  #method_name: MethodOf<OriginalObject>;
   #expected_calls = 0;
+  #method_name: MethodOf<OriginalObject>;
+  #verifier: MethodVerifier<OriginalObject>;
+
+  constructor(methodName: MethodOf<OriginalObject>) {
+    this.#method_name = methodName;
+    this.#verifier = new MethodVerifier(methodName);
+  }
 
   get method_name(): MethodOf<OriginalObject> {
     return this.#method_name;
   }
 
-  get expected_calls(): number {
-    return this.#expected_calls;
-  }
-
-  constructor(methodName: MethodOf<OriginalObject>) {
-    this.#method_name = methodName;
-  }
-
-  public toBeCalled(expectedCalls: number) {
+  /**
+   * Set an expected number of calls.
+   *
+   * @param expectedCalls - The number of calls to receive.
+   */
+  public toBeCalled(expectedCalls: number): void {
     this.#expected_calls = expectedCalls;
+  }
+
+  /**
+   * Verify all expected calls were made.
+   */
+  public verifyCalls(actualCalls: number): void {
+    this.#verifier.toBeCalled(actualCalls, this.#expected_calls);
   }
 }
 
+/**
+ * Create a mock object as an extension of an original object.
+ *
+ * @param OriginalClass - The class the mock should extend.
+ *
+ * @returns A mock object of the `OriginalClass`.
+ */
 export function createMock<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
 ): IMock<OriginalObject> {
@@ -123,13 +141,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
      */
     public verifyExpectations(): void {
       this.#expectations.forEach((e: MethodExpectation<OriginalObject>) => {
-        const expectedCalls = e.expected_calls;
-        const actualCalls = this.#calls[e.method_name];
-        if (expectedCalls !== actualCalls) {
-          throw new MockError(
-            `Method "${e.method_name}" expected ${expectedCalls} call(s), but received ${actualCalls} call(s).`,
-          );
-        }
+        e.verifyCalls(this.#calls[e.method_name]);
       });
     }
 

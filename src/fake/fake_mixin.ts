@@ -1,9 +1,16 @@
-import type { Constructor, MethodOf } from "../types.ts";
-import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 import type { IFake } from "../interfaces.ts";
+import type { Constructor, MethodOf } from "../types.ts";
+import { FakeError } from "../errors.ts";
 
-class FakeError extends Error {}
+import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
+/**
+ * Create a mock object as an extension of an original object.
+ *
+ * @param OriginalClass - The class the mock should extend.
+ *
+ * @returns A mock object of the `OriginalClass`.
+ */
 export function createFake<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
 ): IFake<OriginalObject> {
