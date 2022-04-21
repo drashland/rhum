@@ -11,6 +11,9 @@ export type MethodOf<Object> = {
     : never;
 }[keyof Object];
 
+export type SpyReturnValue<T, R> = T extends Constructor<T> ? () => R
+  : string;
+
 export type StubReturnValue<T, R> = T extends (...args: unknown[]) => unknown
   ? () => R
   : string;

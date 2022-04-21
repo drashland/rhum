@@ -1,4 +1,4 @@
-import type { MethodCalls, MethodOf } from "./types.ts";
+import type { MethodArguments, MethodCalls, MethodOf } from "./types.ts";
 
 export interface IMethodExpectation {
   toBeCalled(expectedCalls: number): void;
@@ -86,6 +86,16 @@ export interface IMock<OriginalObject> {
    * ```
    */
   verifyExpectations(): void;
+}
+
+export interface ISpy<OriginalObject> {
+  calls: MethodCalls<OriginalObject>;
+  calls_arguments: MethodArguments<OriginalObject>;
+  is_spy: boolean;
+
+  verify(
+    methodName: MethodOf<OriginalObject>,
+  ): IMethodVerification;
 }
 
 export interface ITestDouble<OriginalObject> {
