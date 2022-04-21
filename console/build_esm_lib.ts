@@ -2,14 +2,17 @@ const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
 const filesToRewrite = [
+  "tmp/conversion_workspace/mod.ts",
+  "tmp/conversion_workspace/src/errors.ts",
   "tmp/conversion_workspace/src/fake/fake_builder.ts",
   "tmp/conversion_workspace/src/fake/fake_mixin.ts",
+  "tmp/conversion_workspace/src/interfaces.ts",
+  "tmp/conversion_workspace/src/method_verifier.ts",
   "tmp/conversion_workspace/src/mock/mock_builder.ts",
   "tmp/conversion_workspace/src/mock/mock_mixin.ts",
-  "tmp/conversion_workspace/src/interfaces.ts",
   "tmp/conversion_workspace/src/pre_programmed_method.ts",
+  "tmp/conversion_workspace/src/test_double_builder.ts",
   "tmp/conversion_workspace/src/types.ts",
-  "tmp/conversion_workspace/mod.ts",
 ];
 
 for (const index in filesToRewrite) {
