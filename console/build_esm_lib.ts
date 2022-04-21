@@ -11,6 +11,8 @@ const filesToRewrite = [
   "tmp/conversion_workspace/src/mock/mock_builder.ts",
   "tmp/conversion_workspace/src/mock/mock_mixin.ts",
   "tmp/conversion_workspace/src/pre_programmed_method.ts",
+  "tmp/conversion_workspace/src/spy/spy_builder.ts",
+  "tmp/conversion_workspace/src/spy/spy_mixin.ts",
   "tmp/conversion_workspace/src/test_double_builder.ts",
   "tmp/conversion_workspace/src/types.ts",
 ];
