@@ -8,7 +8,7 @@ class Resource {
     return "Resource is running!";
   }
 
-  // This method will be stubbed to return "stubbed", so during
+  // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
   public methodThatGets() {
@@ -16,7 +16,7 @@ class Resource {
     return "Do GET";
   }
 
-  // This method will be stubbed to return "stubbed", so during
+  // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
   public methodThatPosts() {
@@ -32,7 +32,7 @@ class ResourceParameterized {
     return message;
   }
 
-  // This method will be stubbed to return "stubbed", so during
+  // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
   public methodThatGets(paramString1: string, paramString2: string) {
@@ -40,7 +40,7 @@ class ResourceParameterized {
     return "Do GET";
   }
 
-  // This method will be stubbed to return "stubbed", so during
+  // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
   public methodThatPosts(
@@ -60,33 +60,36 @@ Deno.test("Spy()", async (t) => {
       assertEquals(spy.is_spy, true);
     });
 
-    await t.step('stubs all data members with "stubbed" return value', () => {
-      const spy = Spy(Resource);
-      assertEquals(spy.methodThatLogs(), "stubbed");
-      assertEquals(spy.methodThatGets(), "stubbed");
-      assertEquals(spy.methodThatPosts(), "stubbed");
-      const spy2 = Spy(Resource);
-      const stubbedReturnValue = spy2.methodThatLogs(); // We called it, ...
-      spy2.verify("methodThatLogs").toBeCalled(); // ... so we can verify it was called ...
-    });
+    await t.step(
+      'stubs all data members with "spy-stubbed" return value',
+      () => {
+        const spy = Spy(Resource);
+        assertEquals(spy.methodThatLogs(), "spy-stubbed");
+        assertEquals(spy.methodThatGets(), "spy-stubbed");
+        assertEquals(spy.methodThatPosts(), "spy-stubbed");
+        const spy2 = Spy(Resource);
+        const stubbedReturnValue = spy2.methodThatLogs(); // We called it, ...
+        spy2.verify("methodThatLogs").toBeCalled(); // ... so we can verify it was called ...
+      },
+    );
 
     await t.step("can verify calls for non-parameterized methods", () => {
       const spy = Spy(Resource);
       // Verify that `methodThatLogs` was called once (because we called it here)
       const stubbedRetVal1 = spy.methodThatLogs();
-      assertEquals(stubbedRetVal1, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal1, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs").toBeCalled(1);
 
       // Verify that `methodThatLogs()` was still only called once since
       // `methodThatGets()` is stubbed
       const stubbedRetVal2 = spy.methodThatGets();
-      assertEquals(stubbedRetVal2, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal2, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs").toBeCalled(1);
 
       // Verify that `methodThatLogs()` was still only called once since
       // `methodThatPosts()` is stubbed
       const stubbedRetVal3 = spy.methodThatPosts();
-      assertEquals(stubbedRetVal3, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal3, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs").toBeCalled(1);
     });
 
@@ -94,7 +97,7 @@ Deno.test("Spy()", async (t) => {
       const spy = Spy(ResourceParameterized);
       // Verify that `methodThatLogs` was called once (because we called it here)
       const stubbedRetVal1 = spy.methodThatLogs("hello");
-      assertEquals(stubbedRetVal1, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal1, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs")
         .toBeCalled(1)
         .toBeCalledWithArgs("hello");
@@ -102,7 +105,7 @@ Deno.test("Spy()", async (t) => {
       // Verify that `methodThatLogs()` was still only called once since
       // `methodThatGets()` is stubbed
       const stubbedRetVal2 = spy.methodThatGets("hello", "world");
-      assertEquals(stubbedRetVal2, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal2, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs")
         .toBeCalled(1)
         .toBeCalledWithArgs("hello");
@@ -113,7 +116,7 @@ Deno.test("Spy()", async (t) => {
       // Verify that `methodThatLogs()` was still only called once since
       // `methodThatPosts()` is stubbed
       const stubbedRetVal3 = spy.methodThatPosts(true, false, ["test"]);
-      assertEquals(stubbedRetVal3, "stubbed"); // All spies have stubbed methods
+      assertEquals(stubbedRetVal3, "spy-stubbed"); // All spies have stubbed methods
       spy.verify("methodThatLogs")
         .toBeCalled(1)
         .toBeCalledWithArgs("hello");
@@ -127,7 +130,7 @@ Deno.test("Spy()", async (t) => {
     await t.step("can stub the class method", () => {
       const resource = new Resource();
       Spy(resource, "methodThatPosts");
-      assertEquals(resource.methodThatPosts(), "stubbed");
+      assertEquals(resource.methodThatPosts(), "spy-stubbed");
     });
 
     await t.step(
@@ -144,14 +147,14 @@ Deno.test("Spy()", async (t) => {
       const resource = new Resource();
 
       // Now we're going to spy on the fake's `methodThatLogs()` method.
-      // We set the return value to what it would return originally so it does not return "stubbed"
+      // We set the return value to what it would return originally so it does not return "spy-stubbed"
       const spyMethod = Spy(
         resource,
         "methodThatGets",
       );
 
       // Fake's have working implementations, so we expect a real call
-      assertEquals(resource.methodThatGets(), "stubbed");
+      assertEquals(resource.methodThatGets(), "spy-stubbed");
 
       // However, since we are spying on the `methodThatGets()` method,
       // we can verify that it was called
@@ -165,7 +168,7 @@ Deno.test("Spy()", async (t) => {
         const resource = new Resource();
 
         // Now we're going to spy on the fake's `methodThatLogs()` method.
-        // We set the return value to what it would return originally so it does not return "stubbed"
+        // We set the return value to what it would return originally so it does not return "spy-stubbed"
         const spyMethod = Spy(
           resource,
           "methodThatGets",
@@ -189,7 +192,7 @@ Deno.test("Spy()", async (t) => {
       const resource = new ResourceParameterized();
 
       // Now we're going to spy on the fake's `methodThatLogs()` method.
-      // We set the return value to what it would return originally so it does not return "stubbed"
+      // We set the return value to what it would return originally so it does not return "spy-stubbed"
       const spyMethod = Spy(
         resource,
         "methodThatGets",
@@ -225,7 +228,7 @@ Deno.test("Spy()", async (t) => {
         const resource = new ResourceParameterized();
 
         // Now we're going to spy on the fake's `methodThatLogs()` method.
-        // We set the return value to what it would return originally so it does not return "stubbed"
+        // We set the return value to what it would return originally so it does not return "spy-stubbed"
         const spyMethod = Spy(
           resource,
           "methodThatGets",
@@ -262,7 +265,7 @@ Deno.test("Spy()", async (t) => {
       const fake = Fake(Resource).create();
 
       // Now we're going to spy on the fake's `methodThatLogs()` method.
-      // We set the return value to what it would return originally so it does not return "stubbed"
+      // We set the return value to what it would return originally so it does not return "spy-stubbed"
       const spyMethod = Spy(fake, "methodThatGets", fake.methodThatGets());
 
       // Fake's have working implementations, so we expect a real call
@@ -280,7 +283,7 @@ Deno.test("Spy()", async (t) => {
         const fake = Fake(Resource).create();
 
         // Now we're going to spy on the fake's `methodThatLogs()` method.
-        // We set the return value to what it would return originally so it does not return "stubbed"
+        // We set the return value to what it would return originally so it does not return "spy-stubbed"
         const spyMethod = Spy(
           fake,
           "methodThatGets",
@@ -314,7 +317,7 @@ Deno.test("Spy()", async (t) => {
       const fake = Fake(ResourceParameterized).create();
 
       // Now we're going to spy on the fake's `methodThatLogs()` method.
-      // We set the return value to what it would return originally so it does not return "stubbed"
+      // We set the return value to what it would return originally so it does not return "spy-stubbed"
       const spyMethod = Spy(
         fake,
         "methodThatGets",
@@ -350,7 +353,7 @@ Deno.test("Spy()", async (t) => {
         const fake = Fake(ResourceParameterized).create();
 
         // Now we're going to spy on the fake's `methodThatLogs()` method.
-        // We set the return value to what it would return originally so it does not return "stubbed"
+        // We set the return value to what it would return originally so it does not return "spy-stubbed"
         const spyMethod = Spy(
           fake,
           "methodThatGets",
@@ -406,14 +409,15 @@ Deno.test("Spy()", async (t) => {
       // be used
       assertEquals(spyHello(), "spy-stubbed");
 
-      // Here we give `hello` a new return value. The return value must have of
-      // the same type since we cannot reassign a new type.
+      // Here we give `hello` a new return value. The return value must be of
+      // the same return type.
       spyHello = Spy(hello, { some: "other return value" });
+      // Assert that the specified return value is actually returned
       assertEquals(spyHello(), { some: "other return value" });
       // Since we reassigned `spyHello`, its calls should be reset to 0 and we
       // should expect the number of calls to be 1 because we called it in the
-      // above `assertEquals()` call
-      spyHello.verify().toBeCalled(1);
+      // above `assertEquals()` call (also called without args)
+      spyHello.verify().toBeCalled().toBeCalledWithoutArgs();
     });
   });
 });

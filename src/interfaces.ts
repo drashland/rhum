@@ -1,4 +1,4 @@
-import type { MethodCalls, MethodOf } from "./types.ts";
+import type { MethodOf, MockMethodCalls } from "./types.ts";
 
 export interface IMethodExpectation {
   toBeCalled(expectedCalls: number): void;
@@ -18,7 +18,7 @@ export interface IMethodVerification {
    * @returns `this` To allow method chaining.
    */
   toBeCalled(expectedCalls?: number): this;
-  toBeCalledWithArgs(...args: unknown[]): this;
+  toBeCalledWithArgs(firstArg: unknown, ...restOfArgs: unknown[]): this;
   toBeCalledWithoutArgs(): this;
 }
 
@@ -60,7 +60,14 @@ export interface IFake<OriginalObject> {
 }
 
 export interface IMock<OriginalObject> {
-  calls: MethodCalls<OriginalObject>;
+  /**
+   * Property to track method calls.
+   */
+  calls: MockMethodCalls<OriginalObject>;
+
+  /**
+   * Helper property to see that this is a mock object and not the original.
+   */
   is_mock: boolean;
 
   /**

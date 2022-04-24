@@ -81,7 +81,7 @@ export function createSpy<OriginalConstructor, OriginalObject>(
       methodsToTrack.forEach((method: string) => {
         const spyMethod = new SpyStubBuilder(this)
           .method(method as MethodOf<this>)
-          .returnValue("stubbed")
+          .returnValue("spy-stubbed")
           .createForObjectMethod();
         stubbedMethods[method as MethodOf<OriginalObject>] = spyMethod;
       });

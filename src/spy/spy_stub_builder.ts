@@ -1,45 +1,49 @@
 import type { MethodOf } from "../types.ts";
 import type { IMethodVerification, ISpyStub } from "../interfaces.ts";
-import { MethodVerifier } from "../method_verifier.ts";
+import { MethodVerifier } from "../verifiers/method_verifier.ts";
+import { FunctionExpressionVerifier } from "../verifiers/function_expression_verifier.ts";
 
-class SpyStubFunctionExpressionVerifier<OriginalObject> {
+class SpyStubFunctionExpressionVerifier extends FunctionExpressionVerifier {
   #calls: number;
   #args: unknown[];
-  #verifier: MethodVerifier<OriginalObject>;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
+   * @param name - The name of the function using this verifier.
    * @param calls - See `this.#calls`.
    * @param args - See `this.#args`.
    */
   constructor(
+    name: string,
     calls: number,
     args: unknown[],
   ) {
+    super(name);
     this.#calls = calls;
     this.#args = args;
-    this.#verifier = new MethodVerifier();
   }
+
   public toBeCalled(expectedCalls?: number): this {
-    this.#verifier.toBeCalled(
+    return super.toBeCalled(
       this.#calls,
-      expectedCalls ?? -1,
-      `.verify().toBeCalled()`,
+      expectedCalls,
     );
-    return this;
   }
+
   public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
-    this.#verifier.toBeCalledWithArgs(
+    return super.toBeCalledWithArgs(
       this.#args,
       expectedArgs,
-      `.verify().toBeCalledWithArgs()`,
     );
-    return this;
   }
   public toBeCalledWithoutArgs() {
+    super.toBeCalledWithoutArgs(
+      this.#args,
+      `.verify().toBeCalledWithoutArgs()`,
+    );
     return this;
   }
 }
@@ -110,15 +114,10 @@ class SpyStubMethodVerifier<
    * @returns this To allow method chaining.
    */
   public toBeCalled(expectedCalls?: number): this {
-    const calls = expectedCalls ?? "";
-
-    super.toBeCalled(
+    return super.toBeCalled(
       this.calls,
-      expectedCalls ?? -1,
-      `.verify("${this.method_name}").toBeCalled(${calls})`,
+      expectedCalls,
     );
-
-    return this;
   }
 
   /**
@@ -130,32 +129,10 @@ class SpyStubMethodVerifier<
    * @returns this To allow method chaining.
    */
   public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
-    // Make a user friendly version of the expected args. This will be displayed
-    // in the error stack trace the parent class throws. For example:
-    //
-    //    [true, false, "hello"] -> true, false, "hello"
-    //
-    // The above would result in the following stack trace message:
-    //
-    //     .toBeCalledWith(true, false, "hello")
-    //
-    // If we do not do this, then the following stack trace message will show,
-    // which is not really clear because the args are in an array and the
-    // "hello" string has its quotes missing:
-    //
-    //     .toBeCalledWith([true, false, hello])
-    //
-    const expectedArgsAsString = JSON.stringify(expectedArgs)
-      .slice(1, -1)
-      .replace(/,/g, ", ");
-
-    super.toBeCalledWithArgs(
+    return super.toBeCalledWithArgs(
       this.args,
       expectedArgs,
-      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`,
     );
-
-    return this;
   }
 
   /**
@@ -164,12 +141,9 @@ class SpyStubMethodVerifier<
    * @returns this To allow method chaining.
    */
   public toBeCalledWithoutArgs(): this {
-    super.toBeCalledWithoutArgs(
+    return super.toBeCalledWithoutArgs(
       this.args,
-      `.verify().toBeCalledWithoutArgs()`,
     );
-
-    return this;
   }
 }
 
@@ -254,6 +228,7 @@ export class SpyStubBuilder<OriginalObject, ReturnValue> {
 
     ret.verify = () =>
       new SpyStubFunctionExpressionVerifier(
+        (this.#original as unknown as { name: string }).name,
         this.#calls,
         this.#last_called_with_args,
       );
@@ -281,7 +256,7 @@ export class SpyStubBuilder<OriginalObject, ReturnValue> {
 
         return this.#return_value !== undefined
           ? this.#return_value
-          : "stubbed";
+          : "spy-stubbed";
       },
       writable: true,
     });
