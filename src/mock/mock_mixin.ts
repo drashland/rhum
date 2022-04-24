@@ -1,7 +1,7 @@
 import type { IMock } from "../interfaces.ts";
-import type { Constructor, MethodCalls, MethodOf } from "../types.ts";
+import type { Constructor, MethodOf, MockMethodCalls } from "../types.ts";
 
-import { MethodVerifier } from "../method_verifier.ts";
+import { MethodVerifier } from "../verifiers/method_verifier.ts";
 import { MockError } from "../errors.ts";
 import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
@@ -12,7 +12,7 @@ class MethodExpectation<OriginalObject> {
   /**
    * Property to hold the number of expected calls this method should receive.
    */
-  #expected_calls = 0;
+  #expected_calls?: number | undefined;
 
   /**
    * See `MethodVerifier#method_name`.
@@ -55,7 +55,7 @@ class MethodExpectation<OriginalObject> {
    * to -1 to tell `MethodVerifier` to "just check that the method was called".
    */
   public toBeCalled(expectedCalls?: number): void {
-    this.#expected_calls = expectedCalls ?? -1;
+    this.#expected_calls = expectedCalls;
   }
 
   // public verify(actualCalls: number, actualArgs: unknown[]): void {
@@ -68,24 +68,9 @@ class MethodExpectation<OriginalObject> {
    * @param actualCalls - The number of actual calls.
    */
   public verifyCalls(actualCalls: number): void {
-    // If the expected calls is -1, then we do not show anything in the third
-    // argument to `this.#verifier.toBeCalled()`. Reason being we want to show
-    // this in the error stack trace ...
-    //
-    //     .expects("someMethod").toBeCalled()
-    //
-    // ... and not this ...
-    //
-    //     .expects("someMethod").toBeCalled(-1)
-    //
-    const expectedCalls = this.#expected_calls !== -1
-      ? ""
-      : `${this.#expected_calls}`;
-
     this.#verifier.toBeCalled(
       actualCalls,
       this.#expected_calls,
-      `.expects("${this.#method_name}").toBeCalled(${expectedCalls})`,
     );
   }
 }
@@ -106,14 +91,14 @@ export function createMock<OriginalConstructor, OriginalObject>(
   >;
   return new class MockExtension extends Original {
     /**
-     * Helper property to see that this is a mock object and not the original.
+     * See `IMock#is_mock`.
      */
     is_mock = true;
 
     /**
-     * Property to track method calls.
+     * See `IMock#calls`.
      */
-    #calls!: MethodCalls<OriginalObject>;
+    #calls!: MockMethodCalls<OriginalObject>;
 
     /**
      * An array of expectations to verify (if any).
@@ -129,7 +114,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     // FILE MARKER - GETTERS / SETTERS /////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    get calls(): MethodCalls<OriginalObject> {
+    get calls(): MockMethodCalls<OriginalObject> {
       return this.#calls;
     }
 

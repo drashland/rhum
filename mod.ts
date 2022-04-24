@@ -1,4 +1,4 @@
-import type { Callable, Constructor, MethodOf, StubReturnValue } from "./src/types.ts";
+import type { Constructor, MethodOf } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
 import { SpyBuilder } from "./src/spy/spy_builder.ts";
@@ -76,9 +76,11 @@ export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
 ////////////////////////////////////////////////////////////////////////////////
 
 export function Spy<ReturnValue>(
-  fn: (...args: unknown[]) => ReturnValue,
+  // deno-lint-ignore no-explicit-any
+  fn: (...args: any[]) => ReturnValue,
   returnValue?: ReturnValue
-): Interfaces.ISpyStubFunctionExpression & Callable<ReturnValue>;
+  // deno-lint-ignore no-explicit-any
+): Interfaces.ISpyStubFunctionExpression & ((...args: any[]) => ReturnValue);
 
 /**
  * Create spy out of a class. Example:
@@ -203,7 +205,7 @@ export function Stub<OriginalObject, ReturnValue>(
   obj: OriginalObject,
   dataMember: keyof OriginalObject,
   returnValue?: ReturnValue,
-): StubReturnValue<OriginalObject, ReturnValue>;
+): void;
 /**
  * Take the given object and stub its given data member to return the given
  * return value.
