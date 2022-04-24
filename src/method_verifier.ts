@@ -7,37 +7,55 @@ import { MethodVerificationError } from "./errors.ts";
  * arguments, and so on.
  */
 export class MethodVerifier<OriginalObject> {
-  #method_name: MethodOf<OriginalObject>;
+  /**
+   * The name of the method using this class. This is only used for display in
+   * error stack traces if this class throws.
+   */
+  #method_name: MethodOf<OriginalObject> | null;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  constructor(methodName: MethodOf<OriginalObject>) {
-    this.#method_name = methodName;
+  /**
+   * @param methodName - See this#method_name.
+   */
+  constructor(methodName?: MethodOf<OriginalObject>) {
+    this.#method_name = methodName ?? null;
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  // FILE MARKER - GETTERS / SETTERS ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  get method_name(): MethodOf<OriginalObject> | null {
+    return this.#method_name;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Verify that the actual calls match the expected calls.
    *
-   * @param expectedCalls - (optional) The number of calls expected. If this is
-   * not specified, then this method checks that the actual calls is greater
-   * than one -- denoting that there was call.
+   * @param actualCalls - The number of actual calls.
+   * @param expectedCalls - The number of calls expected. If this is -1, then
+   * just verify that the method was called without checking how many times it
+   * was called.
+   * @param codeThatThrew - See `MethodVerificationError` constructor's
+   * `codeThatThrew` param.
    */
   public toBeCalled(
     actualCalls: number,
     expectedCalls: number,
-    codeLocation: string,
+    codeThatThrew: string,
   ): void {
     if (expectedCalls === -1) {
       if (actualCalls <= 0) {
         throw new MethodVerificationError(
           `Method "${this.#method_name}" received incorrect number of calls.`,
-          codeLocation,
+          codeThatThrew,
           `Expected calls -> 1 (or more)`,
           `Actual calls   -> 0`,
         );
@@ -48,7 +66,7 @@ export class MethodVerifier<OriginalObject> {
     if (actualCalls !== expectedCalls) {
       throw new MethodVerificationError(
         `Method "${this.#method_name}" received incorrect number of calls.`,
-        codeLocation,
+        codeThatThrew,
         `Expected calls -> ${expectedCalls}`,
         `Actual calls   -> ${actualCalls}`,
       );
@@ -56,12 +74,17 @@ export class MethodVerifier<OriginalObject> {
   }
 
   /**
-   * Verify that the actual arguments match the expected arguments.
+   * Verify that this method was called with the given args.
+   *
+   * @param actualArgs - The actual args that this method was called with.
+   * @param expectedArgs - The args this method is expected to have received.
+   * @param codeThatThrew - See `MethodVerificationError` constructor's
+   * `codeThatThrew` param.
    */
   public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
-    codeLocation: string,
+    codeThatThrew: string,
   ): void {
     const expectedArgsAsString = JSON.stringify(expectedArgs)
       .slice(1, -1)
@@ -73,7 +96,7 @@ export class MethodVerifier<OriginalObject> {
     if (expectedArgs.length != actualArgs.length) {
       throw new MethodVerificationError(
         `Method "${this.#method_name}" received incorrect number of arguments.`,
-        codeLocation,
+        codeThatThrew,
         `Expected args -> [${expectedArgsAsString}]`,
         `Actual args   -> [${actualArgsAsString}]`,
       );
@@ -109,9 +132,17 @@ export class MethodVerifier<OriginalObject> {
     });
   }
 
+  /**
+   * Verify that this method was called without arguments.
+   *
+   * @param actualArgs - The actual args that this method was called with. This
+   * method expects it to be an empty array.
+   * @param codeThatThrew - See `MethodVerificationError` constructor's
+   * `codeThatThrew` param.
+   */
   public toBeCalledWithoutArgs(
     actualArgs: unknown[],
-    codeLocation: string,
+    codeThatThrew: string,
   ): void {
     const actualArgsAsString = JSON.stringify(actualArgs)
       .slice(1, -1)
@@ -120,11 +151,39 @@ export class MethodVerifier<OriginalObject> {
     if (actualArgs.length > 0) {
       throw new MethodVerificationError(
         `Method "${this.#method_name}" received incorrect number of arguments.`,
-        codeLocation,
+        codeThatThrew,
         `Expected args -> none`,
         `Actual args   -> [${actualArgsAsString}]`,
       );
     }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Check that the given arrays are exactly equal.
+   *
+   * @param a - The first array.
+   * @param b - The second array (which should match the first array).
+   *
+   * @returns True if the arrays match, false if not.
+   */
+  #compareArrays(a: unknown[], b: unknown[]): boolean {
+    return a.length === b.length && a.every((val, index) => val === b[index]);
+  }
+
+  /**
+   * Are we comparing arrays?
+   *
+   * @param obj1 - Object to evaluate if it is an array.
+   * @param obj2 - Object to evaluate if it is an array.
+   *
+   * @returns True if yes, false if no.
+   */
+  #comparingArrays(obj1: unknown, obj2: unknown): boolean {
+    return Array.isArray(obj1) && Array.isArray(obj2);
   }
 
   /**
@@ -143,29 +202,5 @@ export class MethodVerifier<OriginalObject> {
     }
 
     return "<" + typeof arg + ">";
-  }
-
-  /**
-   * Are we comparing arrays?
-   *
-   * @param obj1 - Object to evaluate if it is an array.
-   * @param obj2 - Object to evaluate if it is an array.
-   *
-   * @returns True if yes, false if no.
-   */
-  #comparingArrays(obj1: unknown, obj2: unknown): boolean {
-    return Array.isArray(obj1) && Array.isArray(obj2);
-  }
-
-  /**
-   * Check that the given arrays are exactly equal.
-   *
-   * @param a - The first array.
-   * @param b - The second array (which should match the first array).
-   *
-   * @returns True if the arrays match, false if not.
-   */
-  #compareArrays(a: unknown[], b: unknown[]): boolean {
-    return a.length === b.length && a.every((val, index) => val === b[index]);
   }
 }
