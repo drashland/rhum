@@ -59,6 +59,7 @@ export class MethodVerificationError extends RhumError {
       "deno:runtime",
       "method_verifier.ts",
       "_mixin.ts",
+      ".toBeCalled",
     ];
 
     if (!this.stack) {
