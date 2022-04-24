@@ -124,3 +124,12 @@ export class MockError extends RhumError {
     super("MockError", message);
   }
 }
+
+/**
+ * Error to throw in relation to spy logic.
+ */
+export class SpyError extends RhumError {
+  constructor(message: string) {
+    super("SpyError", message);
+  }
+}
