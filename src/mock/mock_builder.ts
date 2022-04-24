@@ -139,6 +139,7 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
         // Use `return` because the original function could return a value
         return bound(...args);
       },
+      writable: true,
     });
   }
 }
