@@ -60,13 +60,15 @@ export class MethodVerificationError extends RhumError {
       "method_verifier.ts",
       "_mixin.ts",
       ".toBeCalled",
+      ".toBeCalledWithArgs",
+      ".toBeCalledWithoutArgs",
     ];
 
     if (!this.stack) {
       return;
     }
 
-    const conciseStack = this.stack.split("\n").filter((line: string) => {
+    let conciseStackArray = this.stack.split("\n").filter((line: string) => {
       try {
         return ignoredLines.filter((ignoredLine: string) => {
           return line.includes(ignoredLine);
@@ -77,7 +79,15 @@ export class MethodVerificationError extends RhumError {
         // trace. No biggie.
       }
       return false;
-    }).join("\n");
+    });
+
+    // Sometimes, the error stack will contain the problematic file twice. We only care about showing the problematic file once in this "concise" stack.
+    // In order to check for this, we check to see if the array contains more than 2 values. The first value should be the MethodVerificationError message. The second value should be the first instance of the problematic file. Knowing this, we can slice the array to contain only the error message and the first instance of the problematic file.
+    if (conciseStackArray.length > 2) {
+      conciseStackArray = conciseStackArray.slice(0, 2);
+    }
+
+    const conciseStack = conciseStackArray.join("\n");
 
     const extractedFilenameWithLineAndColumnNumbers = conciseStack.match(
       /\/[a-zA-Z0-9\(\)\[\]_-\d.]+\.ts:\d+:\d+/,

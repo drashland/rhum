@@ -1,6 +1,11 @@
 import type { MethodOf } from "./types.ts";
 import { MethodVerificationError } from "./errors.ts";
 
+/**
+ * Test doubles use this class to verify that their methods were called, were
+ * called with a number of arguments, were called with specific types of
+ * arguments, and so on.
+ */
 export class MethodVerifier<OriginalObject> {
   #method_name: MethodOf<OriginalObject>;
 
@@ -25,23 +30,25 @@ export class MethodVerifier<OriginalObject> {
    */
   public toBeCalled(
     actualCalls: number,
-    expectedCalls?: number,
+    expectedCalls: number,
+    codeLocation: string,
   ): void {
-    if (!expectedCalls) {
+    if (expectedCalls === -1) {
       if (actualCalls <= 0) {
         throw new MethodVerificationError(
           `Method "${this.#method_name}" received incorrect number of calls.`,
-          `.method("${this.#method_name}").toBeCalled(${expectedCalls})`,
+          codeLocation,
           `Expected calls -> 1 (or more)`,
-          `Actual calls   ->   0`,
+          `Actual calls   -> 0`,
         );
       }
+      return;
     }
 
     if (actualCalls !== expectedCalls) {
       throw new MethodVerificationError(
         `Method "${this.#method_name}" received incorrect number of calls.`,
-        `.method("${this.#method_name}").toBeCalled(${expectedCalls})`,
+        codeLocation,
         `Expected calls -> ${expectedCalls}`,
         `Actual calls   -> ${actualCalls}`,
       );
@@ -51,16 +58,24 @@ export class MethodVerifier<OriginalObject> {
   /**
    * Verify that the actual arguments match the expected arguments.
    */
-  public toBeCalledWith(
+  public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
+    codeLocation: string,
   ): void {
+    const expectedArgsAsString = JSON.stringify(expectedArgs)
+      .slice(1, -1)
+      .replace(/,/g, ", ");
+    const actualArgsAsString = JSON.stringify(actualArgs)
+      .slice(1, -1)
+      .replace(/,/g, ", ");
+
     if (expectedArgs.length != actualArgs.length) {
       throw new MethodVerificationError(
         `Method "${this.#method_name}" received incorrect number of arguments.`,
-        `.method("${this.#method_name}").toBeCalledWith(...)`,
-        `Expected args -> [${expectedArgs.join(", ")}]`,
-        `Actual args   -> [${actualArgs.join(", ")}]`,
+        codeLocation,
+        `Expected args -> [${expectedArgsAsString}]`,
+        `Actual args   -> [${actualArgsAsString}]`,
       );
     }
 
@@ -82,7 +97,7 @@ export class MethodVerifier<OriginalObject> {
 
         throw new MethodVerificationError(
           `Method "${this.#method_name}" received incorrect argument type at parameter position ${parameterPosition}.`,
-          `.method("${this.#method_name}").toBeCalledWith(...)`,
+          `.method("${this.#method_name}").toBeCalledWithArgs(...)`,
           `Expected arg type -> ${arg}${expectedArgType}`,
           `Actual arg type   ->   ${actualArgs[index]}${actualArgType}`,
         );
@@ -92,6 +107,24 @@ export class MethodVerifier<OriginalObject> {
     actualArgs.every((arg: unknown) => {
       return expectedArgs.indexOf(arg) >= 0;
     });
+  }
+
+  public toBeCalledWithoutArgs(
+    actualArgs: unknown[],
+    codeLocation: string,
+  ): void {
+    const actualArgsAsString = JSON.stringify(actualArgs)
+      .slice(1, -1)
+      .replace(/,/g, ", ");
+
+    if (actualArgs.length > 0) {
+      throw new MethodVerificationError(
+        `Method "${this.#method_name}" received incorrect number of arguments.`,
+        codeLocation,
+        `Expected args -> none`,
+        `Actual args   -> [${actualArgsAsString}]`,
+      );
+    }
   }
 
   /**
