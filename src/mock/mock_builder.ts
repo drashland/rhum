@@ -68,25 +68,6 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Add an original object's method to a mock object without doing anything
-   * else.
-   *
-   * @param original - The original object containing the method to mock.
-   * @param mock - The mock object receiving the method to mock.
-   * @param method - The name of the method to mock -- callable via
-   * `mock[method](...)`.
-   */
-  #addMethodToMockObject(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
-    method: string,
-  ): void {
-    Object.defineProperty(mock, method, {
-      value: original[method as keyof ClassToMock],
-    });
-  }
-
-  /**
    * Add an original object's method to a mock object -- determining whether the
    * method should or should not be trackable.
    *
@@ -103,7 +84,7 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
     // If this is a native method, then do not do anything fancy. Just add it to
     // the mock.
     if (this.native_methods.indexOf(method as string) !== -1) {
-      return this.#addOriginalMethodWithoutTracking(
+      return this.addOriginalMethodWithoutTracking(
         original,
         mock,
         method,
@@ -115,41 +96,6 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
       mock,
       method as keyof ClassToMock,
     );
-  }
-
-  /**
-   * Add an original object's property to a mock object.
-   *
-   * @param original The original object containing the property.
-   * @param mock The mock object receiving the property.
-   * @param property The name of the property -- retrievable via
-   * `mock[property]`.
-   */
-  #addOriginalMethodWithoutTracking(
-    original: ClassToMock,
-    mock: IMock<ClassToMock>,
-    property: string,
-  ): void {
-    const desc = Object.getOwnPropertyDescriptor(original, property) ??
-      Object.getOwnPropertyDescriptor(
-        this.constructor_fn.prototype,
-        property,
-      );
-
-    // If we do not have a desc, then we have no idea what the value should be.
-    // Also, we have no idea what we are copying, so we should just not do it.
-    if (!desc) {
-      return;
-    }
-
-    // Basic property (e.g., public test = "hello"). We do not handle get() and
-    // set() because those are handled by the mock mixin.
-    if (("value" in desc)) {
-      Object.defineProperty(mock, property, {
-        value: desc.value,
-        writable: true,
-      });
-    }
   }
 
   /**
