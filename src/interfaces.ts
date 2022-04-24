@@ -2,12 +2,13 @@ import type { MethodArguments, MethodCalls, MethodOf } from "./types.ts";
 
 export interface IMethodExpectation {
   toBeCalled(expectedCalls: number): void;
-  // toBeCalledWith(...args: unknown[]): this;
+  // toBeCalledWithArgs(...args: unknown[]): this;
 }
 
 export interface IMethodVerification {
-  toBeCalled(expectedCalls: number): this;
-  toBeCalledWith(...args: unknown[]): this;
+  toBeCalled(expectedCalls?: number): this;
+  toBeCalledWithArgs(...args: unknown[]): this;
+  toBeCalledWithoutArgs(): this;
 }
 
 export interface IPreProgrammedMethod<ReturnValue> {

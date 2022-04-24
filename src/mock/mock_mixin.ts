@@ -24,15 +24,22 @@ class MethodExpectation<OriginalObject> {
    *
    * @param expectedCalls - The number of calls to receive.
    */
-  public toBeCalled(expectedCalls: number): void {
-    this.#expected_calls = expectedCalls;
+  public toBeCalled(expectedCalls?: number): void {
+    this.#expected_calls = expectedCalls ?? -1;
   }
 
   /**
    * Verify all expected calls were made.
    */
   public verifyCalls(actualCalls: number): void {
-    this.#verifier.toBeCalled(actualCalls, this.#expected_calls);
+    const expectedCalls = this.#expected_calls !== -1
+      ? ""
+      : `${this.#expected_calls}`;
+    this.#verifier.toBeCalled(
+      actualCalls,
+      this.#expected_calls,
+      `.expects("${this.#method_name}").toBeCalled(${expectedCalls})`,
+    );
   }
 }
 
