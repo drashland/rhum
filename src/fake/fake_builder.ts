@@ -131,6 +131,7 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
         // Use `return` because the original function could return a value
         return bound(...args);
       },
+      writable: true,
     });
   }
 }
