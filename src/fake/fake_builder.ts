@@ -47,20 +47,6 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
     return fake as ClassToFake & IFake<ClassToFake>;
   }
 
-  /**
-   * Before constructing the fake object, track any constructor function args
-   * that need to be passed in when constructing the fake object.
-   *
-   * @param args - A rest parameter of arguments that will get passed in to the
-   * constructor function of the object being faked.
-   *
-   * @returns `this` so that methods in this class can be chained.
-   */
-  public withConstructorArgs(...args: unknown[]): this {
-    this.constructor_args = args;
-    return this;
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

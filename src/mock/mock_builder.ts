@@ -49,20 +49,6 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
     return mock as ClassToMock & IMock<ClassToMock>;
   }
 
-  /**
-   * Before constructing the mock object, track any constructor function args
-   * that need to be passed in when constructing the mock object.
-   *
-   * @param args - A rest parameter of arguments that will get passed in to the
-   * constructor function of the object being mocked.
-   *
-   * @returns `this` so that methods in this class can be chained.
-   */
-  public withConstructorArgs(...args: unknown[]): this {
-    this.constructor_args = args;
-    return this;
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
