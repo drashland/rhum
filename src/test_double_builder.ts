@@ -11,8 +11,8 @@ export class TestDoubleBuilder<OriginalClass> {
   protected constructor_fn: Constructor<OriginalClass>;
 
   /**
-   * A list of arguments the class constructor takes. This is used to
-   * instantiate the original with arguments (if needed).
+   * A list of args the class constructor takes. This is used to instantiate the
+   * original with args (if needed).
    */
   protected constructor_args: unknown[] = [];
 
@@ -43,7 +43,7 @@ export class TestDoubleBuilder<OriginalClass> {
   /**
    * Construct an object of this class.
    *
-   * @param constructorFn - See this#constructor_fn.
+   * @param constructorFn - See `this.constructor_fn`.
    */
   constructor(constructorFn: Constructor<OriginalClass>) {
     this.constructor_fn = constructorFn;
@@ -57,7 +57,7 @@ export class TestDoubleBuilder<OriginalClass> {
    * Before constructing the fake object, track any constructor function args
    * that need to be passed in when constructing the fake object.
    *
-   * @param args - A rest parameter of arguments that will get passed in to the
+   * @param args - A rest parameter of args that will get passed in to the
    * constructor function of the object being faked.
    *
    * @returns `this` so that methods in this class can be chained.

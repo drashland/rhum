@@ -1,13 +1,21 @@
-import { MethodVerificationError } from "../errors.ts";
+import { VerificationError } from "../errors.ts";
 
 export class CallableVerifier {
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
-   * Make a user friendly version of the expected args. This will be displayed
-   * in the `MethodVerificationError` stack trace. For example:
+   * Make a user friendly version of the args. This is for display in the
+   * `VerificationError` stack trace. For example, the original args ...
    *
-   *    [true, false, "hello"] -> true, false, "hello"
+   *     [true, false, "hello"]
    *
-   * The above would result in the following stack trace message:
+   * ... becomes ...
+   *
+   *     true, false, "hello"
+   *
+   * The above will ultimately end up in stack trace messages like:
    *
    *     .toBeCalledWith(true, false, "hello")
    *
@@ -16,13 +24,30 @@ export class CallableVerifier {
    * "hello" string has its quotes missing:
    *
    *     .toBeCalledWith([true, false, hello])
+   *
+   * @param args - The args to convert to a string.
+   *
+   * @returns The args as a string.
    */
-  protected argsAsString(expectedArgs: unknown[]): string {
-    return JSON.stringify(expectedArgs)
+  protected argsAsString(args: unknown[]): string {
+    return JSON.stringify(args)
       .slice(1, -1)
       .replace(/,/g, ", ");
   }
 
+  /**
+   * Same as `this.argsAsString()`, but add typings to the args. For example:
+   *
+   *     [true, false, "hello"]
+   *
+   * ... becomes ...
+   *
+   *     true<boolean>, false<boolean>, "hello"<string>
+   *
+   * @param args - The args to convert to a string.
+   *
+   * @returns The args as a string with typings.
+   */
   protected argsAsStringWithTypes(args: unknown[]): string {
     return args.map((arg: unknown) => {
       return `${JSON.stringify(arg)}${this.getArgType(arg)}`;
@@ -47,42 +72,69 @@ export class CallableVerifier {
     return "<" + typeof arg + ">";
   }
 
+  /**
+   * Verify that the number of actual calls matches the number of expected
+   * calls.
+   *
+   * @param actualCalls - The actual number of calls.
+   * @param expectedCalls - The expected number of calls.
+   * @param errorMessage - The error message to show in the stack trace.
+   * @param codeThatThrew - The code using this verification.
+   *
+   * @returns `this` To allow method chaining.
+   */
   protected verifyToBeCalled(
     actualCalls: number,
     expectedCalls: number | undefined,
     errorMessage: string,
     codeThatThrew: string,
   ): void {
+    // If expected calls were not specified, then just check that the method was
+    // called at least once
     if (!expectedCalls) {
-      if (actualCalls <= 0) {
-        throw new MethodVerificationError(
-          errorMessage,
-          codeThatThrew,
-          `Expected calls -> 1 (or more)`,
-          `Actual calls   -> 0`,
-        );
+      if (actualCalls > 0) {
+        return;
       }
+
+      throw new VerificationError(
+        errorMessage,
+        codeThatThrew,
+        `Expected calls -> 1 (or more)`,
+        `Actual calls   -> 0`,
+      );
+    }
+
+    // If we get here, then we gucci. No need to process further.
+    if (actualCalls === expectedCalls) {
       return;
     }
 
-    if (actualCalls !== expectedCalls) {
-      throw new MethodVerificationError(
-        errorMessage,
-        codeThatThrew,
-        `Expected calls -> ${expectedCalls}`,
-        `Actual calls   -> ${actualCalls}`,
-      );
-    }
+    // If we get here, then the actual number of calls do not match the expected
+    // number of calls, so we should throw an error
+    throw new VerificationError(
+      errorMessage,
+      codeThatThrew,
+      `Expected calls -> ${expectedCalls}`,
+      `Actual calls   -> ${actualCalls}`,
+    );
   }
 
-  protected verifyToBeCalledWithArgsTooManyArguments(
+  /**
+   * Verify that the number of expected args is not more than the actual args.
+   *
+   * @param actualArgs - The actual args.
+   * @param expectedArgs - The expected args.
+   * @param errorMessage - The error message to show in the stack trace.
+   * @param codeThatThrew - The code using this verification.
+   */
+  protected verifyToBeCalledWithArgsTooManyArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
     errorMessage: string,
     codeThatThrew: string,
   ): void {
     if (expectedArgs.length > actualArgs.length) {
-      throw new MethodVerificationError(
+      throw new VerificationError(
         errorMessage,
         codeThatThrew,
         `Expected args -> ${this.argsAsStringWithTypes(expectedArgs)}`,
@@ -95,14 +147,22 @@ export class CallableVerifier {
     }
   }
 
-  protected verifyToBeCalledWithArgsTooFewArguments(
+  /**
+   * Verify that the number of expected args is not less than the actual args.
+   *
+   * @param actualArgs - The actual args.
+   * @param expectedArgs - The expected args.
+   * @param errorMessage - The error message to show in the stack trace.
+   * @param codeThatThrew - The code using this verification.
+   */
+  protected verifyToBeCalledWithArgsTooFewArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
     errorMessage: string,
     codeThatThrew: string,
   ): void {
     if (expectedArgs.length < actualArgs.length) {
-      throw new MethodVerificationError(
+      throw new VerificationError(
         errorMessage,
         codeThatThrew,
         `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
@@ -111,6 +171,14 @@ export class CallableVerifier {
     }
   }
 
+  /**
+   * Verify that the expected args match the actual args by value and type.
+   *
+   * @param actualArgs - The actual args.
+   * @param expectedArgs - The expected args.
+   * @param errorMessage - The error message to show in the stack trace.
+   * @param codeThatThrew - The code using this verification.
+   */
   protected verifyToBeCalledWithArgsUnexpectedValues(
     actualArgs: unknown[],
     expectedArgs: unknown[],
@@ -119,49 +187,73 @@ export class CallableVerifier {
   ): void {
     expectedArgs.forEach((arg: unknown, index: number) => {
       const parameterPosition = index + 1;
-      if (actualArgs[index] !== arg) {
-        if (this.#comparingArrays(actualArgs[index], arg)) {
-          const match = this.#compareArrays(
-            actualArgs[index] as unknown[],
-            arg as unknown[],
-          );
-          if (match) {
-            return;
-          }
-        }
 
-        const unexpectedArg = `\`${arg}${this.getArgType(arg)}\``;
-
-        throw new MethodVerificationError(
-          errorMessage
-            .replace("{{ unexpected_arg }}", unexpectedArg)
-            .replace("{{ parameter_position }}", parameterPosition.toString()),
-          codeThatThrew,
-          `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
-          `Actual call   -> (${this.argsAsStringWithTypes(actualArgs)})`,
-        );
+      // Args match? We gucci.
+      if (actualArgs[index] === arg) {
+        return;
       }
+
+      // Args do not match? Check if we are comparing arrays and see if they
+      // match
+      if (this.#comparingArrays(actualArgs[index], arg)) {
+        const match = this.#compareArrays(
+          actualArgs[index] as unknown[],
+          arg as unknown[],
+        );
+        // Arrays match? We gucci.
+        if (match) {
+          return;
+        }
+      }
+
+      // Alright, we have an unexpected arg, so throw an error
+      const unexpectedArg = `\`${arg}${this.getArgType(arg)}\``;
+
+      throw new VerificationError(
+        errorMessage
+          .replace("{{ unexpected_arg }}", unexpectedArg)
+          .replace("{{ parameter_position }}", parameterPosition.toString()),
+        codeThatThrew,
+        `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
+        `Actual call   -> (${this.argsAsStringWithTypes(actualArgs)})`,
+      );
     });
   }
 
+  /**
+   * Verify that the no args were used.
+   *
+   * @param actualArgs - The actual args (if any).
+   * @param errorMessage - The error message to show in the stack trace.
+   * @param codeThatThrew - The code using this verification.
+   */
   protected verifyToBeCalledWithoutArgs(
     actualArgs: unknown[],
     errorMessage: string,
     codeThatThrew: string,
-  ): void {
+  ): this {
     const actualArgsAsString = JSON.stringify(actualArgs)
       .slice(1, -1)
       .replace(/,/g, ", ");
 
-    if (actualArgs.length > 0) {
-      throw new MethodVerificationError(
-        errorMessage,
-        codeThatThrew,
-        `Expected args -> (no args)`,
-        `Actual args   -> (${actualArgsAsString})`,
-      );
+    if (actualArgs.length === 0) {
+      return this;
     }
+
+    // One arg? Say "arg". More than one arg? Say "args". Yaaaaaarg.
+    const argNoun = actualArgs.length > 1 ? "args" : "arg";
+
+    throw new VerificationError(
+      errorMessage,
+      codeThatThrew.replace("{{ arg_noun }}", argNoun),
+      `Expected args -> (no args)`,
+      `Actual args   -> (${actualArgsAsString})`,
+    );
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * Check that the given arrays are exactly equal.

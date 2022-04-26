@@ -15,6 +15,16 @@ class MethodExpectation<OriginalObject> {
   #expected_calls?: number | undefined;
 
   /**
+   * Property to hold the expected args this method should use.
+   */
+  #expected_args?: unknown[] | undefined;
+
+  /**
+   * Property to hold the args this method was called with.
+   */
+  #args?: unknown[] | undefined;
+
+  /**
    * See `MethodVerifier#method_name`.
    */
   #method_name: MethodOf<OriginalObject>;
@@ -29,7 +39,7 @@ class MethodExpectation<OriginalObject> {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param methodName See `MethodVerifier#method_name`.
+   * @param methodName - See `MethodVerifier#method_name`.
    */
   constructor(methodName: MethodOf<OriginalObject>) {
     this.#method_name = methodName;
@@ -49,18 +59,28 @@ class MethodExpectation<OriginalObject> {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Set an expected number of calls.
-   *
-   * @param expectedCalls - (Optional) The number of calls to receive. Defaults
-   * to -1 to tell `MethodVerifier` to "just check that the method was called".
+   * See `IMethodExpectation.toBeCalled()`.
    */
-  public toBeCalled(expectedCalls?: number): void {
+  public toBeCalled(expectedCalls?: number): this {
     this.#expected_calls = expectedCalls;
+    return this;
   }
 
-  // public verify(actualCalls: number, actualArgs: unknown[]): void {
-  //   this.verifyCalls(
-  // }
+  /**
+   * See `IMethodExpectation.toBeCalledWithArgs()`.
+   */
+  public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
+    this.#expected_args = expectedArgs;
+    return this;
+  }
+
+  /**
+   * See `IMethodExpectation.toBeCalledWithoutArgs()`.
+   */
+  public toBeCalledWithoutArgs(): this {
+    this.#expected_args = undefined;
+    return this;
+  }
 
   /**
    * Verify all expected calls were made.
@@ -68,10 +88,8 @@ class MethodExpectation<OriginalObject> {
    * @param actualCalls - The number of actual calls.
    */
   public verifyCalls(actualCalls: number): void {
-    this.#verifier.toBeCalled(
-      actualCalls,
-      this.#expected_calls,
-    );
+    this.#verifier.toBeCalled(actualCalls, this.#expected_calls);
+    this.#verifier.toBeCalledWithoutArgs(this.#args ?? []);
   }
 }
 
@@ -141,10 +159,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Create a method expectation, which is basically asserting calls.
-     *
-     * @param method - The method to create an expectation for.
-     * @returns A method expectation.
+     * See `IMock.expects()`.
      */
     public expects(
       method: MethodOf<OriginalObject>,
@@ -155,10 +170,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Pre-program a method on the original to return a specific value.
-     *
-     * @param methodName The method name on the original.
-     * @returns A pre-programmed method that will be called instead of original.
+     * See `IMock.method()`.
      */
     public method<ReturnValueType>(
       methodName: MethodOf<OriginalObject>,
@@ -185,7 +197,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Verify all expectations created in this mock.
+     * See `IMock.verifyExpectations()`.
      */
     public verifyExpectations(): void {
       this.#expectations.forEach((e: MethodExpectation<OriginalObject>) => {
@@ -200,8 +212,10 @@ export function createMock<OriginalConstructor, OriginalObject>(
     /**
      * Construct the calls property. Only construct it, do not set it. The
      * constructor will set it.
+     *
      * @param methodsToTrack - All of the methods on the original object to make
      * trackable.
+     *
      * @returns - Key-value object where the key is the method name and the value
      * is the number of calls. All calls start at 0.
      */

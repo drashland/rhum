@@ -1,32 +1,13 @@
 import type { MethodOf, MockMethodCalls } from "./types.ts";
 
-export interface IMethodExpectation {
-  toBeCalled(expectedCalls: number): void;
-  // toBeCalledWithArgs(...args: unknown[]): this;
-}
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IERROR ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-export interface IMethodVerification {
-  /**
-   * Verify that this method was called. Optionally, verify that it was called a
-   * specific number of times.
-   *
-   * @param expectedCalls - (Optional) The number of calls this method is
-   * expected to have received. If not provided, then the verification process
-   * will assume "just verify that the method was called" instead of verifying
-   * that it was called a specific number of times.
-   *
-   * @returns `this` To allow method chaining.
-   */
-  toBeCalled(expectedCalls?: number): this;
-  toBeCalledWithArgs(firstArg: unknown, ...restOfArgs: unknown[]): this;
-  toBeCalledWithoutArgs(): this;
-}
-
-export interface IPreProgrammedMethod<ReturnValue> {
-  willReturn(returnValue: ReturnValue): void;
-  willThrow(error: IError): void;
-}
-
+/**
+ * Interface that all errors must follow. This is useful when a client wants to
+ * throw a custom error class via `.willThrow()` for mocks and fakes.
+ */
 export interface IError {
   /**
    * The name of the error (shown before the error message when thrown).
@@ -40,6 +21,10 @@ export interface IError {
   message?: string;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IFAKE /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 export interface IFake<OriginalObject> {
   /**
    * Helper property to show that this object is a fake.
@@ -47,17 +32,112 @@ export interface IFake<OriginalObject> {
   is_fake: boolean;
 
   /**
-   * Entry point to shortcut a method. Example:
+   * Access the method shortener to make the given method take a shortcut.
    *
-   * ```ts
-   * fake.method("methodName").willReturn(...);
-   * fake.method("methodName").willThrow(...);
-   * ```
+   * @param method - The name of the method to shorten.
    */
-  method<ReturnValueType>(
-    methodName: MethodOf<OriginalObject>,
-  ): IPreProgrammedMethod<ReturnValueType>;
+  method(
+    method: MethodOf<OriginalObject>,
+  ): IMethodChanger;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IFUNCTIONEXPRESSIONVERIFIER ///////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Interface of verifier that verifies function expression calls.
+ */
+export interface IFunctionExpressionVerifier extends IVerifier {
+  /**
+   * The args used when called.
+   */
+  args: unknown[];
+
+  /**
+   * The number of calls made.
+   */
+  calls: number;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IMETHODEXPECTATION ////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+export interface IMethodExpectation {
+  /**
+   * Set an expectation that the given number of expected calls should be made.
+   *
+   * @param expectedCalls - (Optional) The number of expected calls. If not
+   * specified, then verify that there was at least one call.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalled(expectedCalls?: number): this;
+
+  /**
+   * Set an expectation that the given args should be used during a method call.
+   *
+   * @param requiredArg - Used to make this method require at least one arg.
+   * @param restOfArgs - Any other args to check during verification.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalledWithArgs(requiredArg: unknown, ...restOfArgs: unknown[]): this;
+
+  /**
+   * Set an expectation that a method call should be called without args.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalledWithoutArgs(): this;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IMETHODCHANGER ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+export interface IMethodChanger {
+  /**
+   * Make the given method return the given `returnValue`.
+   *
+   * @param returnValue - The value to make the method return.
+   */
+  willReturn<T>(returnValue: T): void;
+
+  /**
+   * Make the given method throw the given error.
+   *
+   * @param error - An error which extends the `Error` class or has the same
+   * interface as the `Error` class.
+   */
+  willThrow<T>(error: IError & T): void;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IMETHODVERIFIER ///////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Interface of verifier that verifies method calls.
+ */
+export interface IMethodVerifier extends IVerifier {
+  /**
+   * Property to hold the args used when the method using this verifier was
+   * called.
+   */
+  args: unknown[];
+
+  /**
+   * Property to hold the number of times the method using this verifier was
+   * called.
+   */
+  calls: number;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IMOCK /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 export interface IMock<OriginalObject> {
   /**
@@ -71,70 +151,92 @@ export interface IMock<OriginalObject> {
   is_mock: boolean;
 
   /**
-   * Entry point to set an expectation on a method. Example:
+   * Access the method expectation creator to create an expectation for the
+   * given method.
    *
-   * ```ts
-   * mock.expects("doSomething").toBeCalled(1); // Expect to call it once
-   * mock.doSomething(); // Call it once
-   * mock.verifyExpectations(); // Verify doSomething() was called once
-   * ```
+   * @param method - The name of the method to create an expectation for.
    */
   expects(
     method: MethodOf<OriginalObject>,
   ): IMethodExpectation;
 
   /**
-   * Entry point to pre-program a method. Example:
+   * Access the method pre-programmer to change the behavior of the given method.
    *
-   * ```ts
-   * mock.method("methodName").willReturn(someValue);
-   * mock.method("methodName").willThrow(new Error("Nope."));
-   * ```
+   * @param method - The name of the method to pre-program.
    */
-  method<ReturnValueType>(
-    methodName: MethodOf<OriginalObject>,
-  ): IPreProgrammedMethod<ReturnValueType>;
+  method(
+    method: MethodOf<OriginalObject>,
+  ): IMethodChanger;
 
   /**
-   * Call this method after setting expectations on a method. Example:
-   *
-   * ```ts
-   * mock.expects("doSomething").toBeCalled(1); // Expect to call it once
-   * mock.doSomething(); // Call it once
-   * mock.verifyExpectations(); // Verify doSomething() was called once
-   * ```
+   * Verify that all expectations from the `.expects()` calls.
    */
   verifyExpectations(): void;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - ISPY //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 export interface ISpy<OriginalObject> {
-  is_spy: boolean;
-  stubbed_methods: Record<MethodOf<OriginalObject>, ISpyStub>;
-
-  verify(
-    methodName: MethodOf<OriginalObject>,
-  ): IMethodVerification;
-}
-
-export interface ISpyStub {
   /**
-   * Access the method verifier in order to call verification methods like `.toBeCalled()`. Example:
-   *
-   * @example
-   * ```ts
-   * // Spying on an object's method
-   * const spy = Spy(obj, "someMethod");
-   * obj.someMethod();
-   * spy.verify().toBeCalled();
-   *
-   * // Spy on a function
-   * const spy = Spy(someFunction);
-   * someFunction();
-   * spy.verify().toBeCalled();
-   * ```
+   * Helper property to see that this is a spy object and not the original.
    */
-  verify(): IMethodVerification;
+  is_spy: boolean;
+
+  /**
+   * Property to track all stubbed methods. This property is used when calling
+   * `.verify("someMethod")`. The `.verify("someMethod")` call will return the
+   * `ISpyStubMethod` object via `stubbed_methods["someMethod"]`.
+   */
+  stubbed_methods: Record<MethodOf<OriginalObject>, ISpyStubMethod>;
+
+  /**
+   * Access the method verifier.
+   *
+   * @returns A verifier to verify method calls.
+   */
+  verify(
+    method: MethodOf<OriginalObject>,
+  ): IMethodVerifier;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - ISPYSTUBFUNCTIONEXPRESSION ////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Interface for spies on function expressions.
+ */
+export interface ISpyStubFunctionExpression {
+  /**
+   * Access the function expression verifier.
+   *
+   * @returns A verifier to verify function expression calls.
+   */
+  verify(): IFunctionExpressionVerifier;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - ISPYSTUBMETHOD ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Interface for spies on object methods.
+ */
+export interface ISpyStubMethod {
+  /**
+   * Access the method verifier.
+   *
+   * @returns A verifier to verify method calls.
+   */
+  verify(): IMethodVerifier;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - ITESTDOUBLE ///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 export interface ITestDouble<OriginalObject> {
   init(
@@ -143,6 +245,40 @@ export interface ITestDouble<OriginalObject> {
   ): void;
 }
 
-export interface ISpyStubFunctionExpression {
-  verify(): IMethodVerification;
+////////////////////////////////////////////////////////////////////////////////
+// FILE MARKER - IVERIFIER /////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Base interface for verifiers.
+ */
+export interface IVerifier {
+  /**
+   * Verify that calls were made.
+   *
+   * @param expectedCalls - (Optional) The number of expected calls. If not
+   * specified, then verify that there was at least one call.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalled(expectedCalls?: number): this;
+
+  /**
+   * Verify that the given args were used. Takes a rest parameter of args to use
+   * during verification. At least one arg is required to use this method, which
+   * is the `requiredArg` param.
+   *
+   * @param requiredArg - Used to make this method require at least one arg.
+   * @param restOfArgs - Any other args to check during verification.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalledWithArgs(requiredArg: unknown, ...restOfArgs: unknown[]): this;
+
+  /**
+   * Verify that no args were used.
+   *
+   * @returns `this` To allow method chaining.
+   */
+  toBeCalledWithoutArgs(): this;
 }

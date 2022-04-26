@@ -8,11 +8,11 @@ import { TestDoubleBuilder } from "../test_double_builder.ts";
  * create a spy object. Its `create()` method returns an instance of `Spy`,
  * which is basically an original object with stubbed data members.
  *
- * This builder differs from the `SpyStub` because it stubs out the
- * entire class, whereas the `SpyStub` stubs specific data members.
+ * This builder differs from the `SpyStub` because it stubs out the entire
+ * class, whereas the `SpyStub` stubs specific data members.
  *
- * Under the hood, this builder uses `SpyStub` to stub the data members
- * in the class.
+ * Under the hood, this builder uses `SpyStub` to stub the data members in the
+ * class.
  */
 export class SpyBuilder<ClassToSpy> extends TestDoubleBuilder<ClassToSpy> {
   //////////////////////////////////////////////////////////////////////////////

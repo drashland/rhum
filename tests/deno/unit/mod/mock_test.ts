@@ -270,7 +270,7 @@ Deno.test("Mock()", async (t) => {
         const mock = Mock(TestObjectThree).create();
         assertEquals(mock.is_mock, true);
 
-        mock.expects("hello").toBeCalled(2);
+        mock.expects("hello").toBeCalled(2).toBeCalledWithoutArgs();
         mock.test();
         mock.verifyExpectations();
       },
