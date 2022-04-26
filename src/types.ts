@@ -1,12 +1,17 @@
 /**
- * Describes the type as a constructable object using the `new` keyword.
+ * Describes the type as something that is callable.
  */
 // deno-lint-ignore no-explicit-any
-export type Constructor<T extends any> = new (...args: any[]) => T;
+export type Callable<ReturnValue> = (...args: any[]) => ReturnValue;
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+/**
+ * Describes the type as a constructable object using the `new` keyword.
+ */
+// deno-lint-ignore no-explicit-any
+export type Constructor<Class extends any> = new (...args: any[]) => Class;
 
 /**
  * Describes the `MockExtension#calls` property.
