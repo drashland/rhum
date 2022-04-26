@@ -128,7 +128,7 @@ export function Spy<OriginalClass>(
  * record some information based on how they were called. One form of this might
  * be an email service that records how many messages it was sent."
  *
- * @param obj - The object to turn into a spy.
+ * @param original - The original to turn into a spy.
  * @param methodOrReturnValue - (Optional) If creating a spy out of an object's method, then
  * this would be the method name. If creating a spy out of a function
  * expression, then this would be the return value.
@@ -136,19 +136,19 @@ export function Spy<OriginalClass>(
  * this would be the return value.
  */
 export function Spy<OriginalObject, ReturnValue>(
-  obj: unknown,
+  original: unknown,
   methodOrReturnValue?: unknown,
   returnValue?: unknown,
 ): unknown {
-  if (typeof obj === "function") {
+  if (typeof original === "function") {
     // If the function has the prototype field, the it's a constructor function.
     //
     // Examples:
     //     class Hello { }
     //     function Hello() { }
     //
-    if ("prototype" in obj) {
-      return new SpyBuilder(obj as Constructor<OriginalObject>).create();
+    if ("prototype" in original) {
+      return new SpyBuilder(original as Constructor<OriginalObject>).create();
     }
 
     // Otherwise, it's just a function.
@@ -158,14 +158,14 @@ export function Spy<OriginalObject, ReturnValue>(
     //
     // Not that function declarations (e.g., function hello() { }) will have
     // "prototype" and will go through the SpyBuilder() flow above.
-    return new SpyStubBuilder(obj as OriginalObject)
+    return new SpyStubBuilder(original as OriginalObject)
       .returnValue(methodOrReturnValue as ReturnValue)
       .createForFunctionExpression();
   }
 
   // If we get here, then we are not spying on a class or function. We must be
   // spying on an object's method.
-  return new SpyStubBuilder(obj as OriginalObject)
+  return new SpyStubBuilder(original as OriginalObject)
     .method(methodOrReturnValue as MethodOf<OriginalObject>)
     .returnValue(returnValue as ReturnValue)
     .createForObjectMethod();
@@ -177,6 +177,8 @@ export function Spy<OriginalObject, ReturnValue>(
 
 /**
  * Create a stub function that returns "stubbed".
+ *
+ * @returns A function that returns "stubbed".
  */
 export function Stub<OriginalObject>(): () => "stubbed";
 
