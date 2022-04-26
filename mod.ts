@@ -75,78 +75,67 @@ export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
 // FILE MARKER - SPY ///////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Create a spy out of a function expression.
+ *
+ * @param functionExpression - The function expression to turn into a spy.
+ * @param returnValue - (Optional) The value the spy should return when called.
+ * Defaults to "spy-stubbed".
+ *
+ * @returns The original function expression with spying capabilities.
+ */
 export function Spy<ReturnValue>(
   // deno-lint-ignore no-explicit-any
-  fn: (...args: any[]) => ReturnValue,
-  returnValue?: ReturnValue
+  functionExpression: (...args: any[]) => ReturnValue,
+  returnValue?: ReturnValue,
   // deno-lint-ignore no-explicit-any
 ): Interfaces.ISpyStubFunctionExpression & ((...args: any[]) => ReturnValue);
 
 /**
- * Create spy out of a class. Example:
+ * Create a spy out of an object's method.
  *
- * ```ts
- * const spy = Spy(MyClass);
- * const stubbedReturnValue = spy.someMethod();   // We called it, ...
- * spy.verify("someMethod").toBeCalled();         // ... so we can verify it was called ...
- * console.log(stubbedReturnValue === "stubbed"); // ... and that the return value is stubbed
- * ```
+ * @param obj - The object containing the method to spy on.
+ * @param dataMember - The method to spy on.
+ * @param returnValue - (Optional) The value the spy should return when called.
+ * Defaults to "spy-stubbed".
  *
- * @param constructorFn - The constructor function to create a spy out of. This
- * can be `class Something{ }` or `function Something() { }`.
- *
- * @returns Instance of `Spy`, which is an extension of the o.
- */
-export function Spy<OriginalClass>(
-  constructorFn: Constructor<OriginalClass>
-): Interfaces.ISpy<OriginalClass> & OriginalClass;
-
-/**
- * Create a spy out of an object's data member. Example:
- *
- * ```ts
- * const testSubject = new MyClass();
- * const spyMethod = Spy(testSubject, "doSomething");
- * // or const spyMethod = Spy(testSubject, "doSomething", "some return value");
- *
- * spyMethod.verify().toNotBeCalled(); // We can verify it was not called yet
- *
- * testSubject.doSomething(); // Now we called it, ...
- * spyMethod.verify().toBeCalled(); // ... so we can verify it was called
- * ```
- *
- * @param obj - The object containing the data member to spy on.
- * @param dataMember - The data member to spy on.
- * @param returnValue - (Optional) Make the data member return a specific value.
- * Defaults to "stubbed" if not specified.
- *
- * @returns A spy stub that can be verified.
+ * @returns The original method with spying capabilities.
  */
 export function Spy<OriginalObject, ReturnValue>(
   obj: OriginalObject,
   dataMember: MethodOf<OriginalObject>,
-  returnValue?: ReturnValue
-): Interfaces.ISpyStub;
+  returnValue?: ReturnValue,
+): Interfaces.ISpyStubMethod;
+
+/**
+ * Create spy out of a class.
+ *
+ * @param constructorFn - The constructor function of the object to spy on.
+ *
+ * @returns The original object with spying capabilities.
+ */
+export function Spy<OriginalClass>(
+  constructorFn: Constructor<OriginalClass>,
+): Interfaces.ISpy<OriginalClass> & OriginalClass;
 
 /**
  * Create a spy out of a class, class method, or function.
  *
  * Per Martin Fowler (based on Gerard Meszaros), "Spies are stubs that also
- * record some information based on how they were called. One form of this might be an email service that records how many messages it was sent."
+ * record some information based on how they were called. One form of this might
+ * be an email service that records how many messages it was sent."
  *
- * @param obj - (Optional) The object receiving the stub. Defaults to a stub
- * function.
- * @param arg2 - (Optional) The data member on the object to be stubbed.
- * Only used if `obj` is an object.
- * @param arg3 - (Optional) What the stub should return. Defaults to
- * "stubbed" for class properties and a function that returns "stubbed" for
- * class methods. Only used if `object` is an object and `dataMember` is a
- * member of that object.
+ * @param obj - The object to turn into a spy.
+ * @param methodOrReturnValue - (Optional) If creating a spy out of an object's method, then
+ * this would be the method name. If creating a spy out of a function
+ * expression, then this would be the return value.
+ * @param returnValue - (Optional) If creating a spy out of an object's method, then
+ * this would be the return value.
  */
 export function Spy<OriginalObject, ReturnValue>(
   obj: unknown,
-  arg2?: unknown,
-  arg3?: unknown
+  methodOrReturnValue?: unknown,
+  returnValue?: unknown,
 ): unknown {
   if (typeof obj === "function") {
     // If the function has the prototype field, the it's a constructor function.
@@ -167,20 +156,16 @@ export function Spy<OriginalObject, ReturnValue>(
     // Not that function declarations (e.g., function hello() { }) will have
     // "prototype" and will go through the SpyBuilder() flow above.
     return new SpyStubBuilder(obj as OriginalObject)
-      .returnValue(arg2 as ReturnValue)
+      .returnValue(methodOrReturnValue as ReturnValue)
       .createForFunctionExpression();
   }
 
   // If we get here, then we are not spying on a class or function. We must be
   // spying on an object's method.
-  if (arg2 !== undefined) {
-    return new SpyStubBuilder(obj as OriginalObject)
-      .method(arg2 as MethodOf<OriginalObject>)
-      .returnValue(arg3 as ReturnValue)
-      .createForObjectMethod();
-  }
-
-  throw new Error(`Incorrect use of Spy().`);
+  return new SpyStubBuilder(obj as OriginalObject)
+    .method(methodOrReturnValue as MethodOf<OriginalObject>)
+    .returnValue(returnValue as ReturnValue)
+    .createForObjectMethod();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +221,7 @@ export function Stub<OriginalObject, ReturnValue>(
 
   // If we get here, then we know for a fact that we are stubbing object
   // properties. Also, we do not care if `returnValue` was passed in here. If it
-  // is not passed in, then `returnValue` defaults to "stubbed". Otherwise, use
+  // is not passed in, then `returnValue` defaults to "spy-stubbed". Otherwise, use
   // the value of `returnValue`.
   if (typeof obj === "object" && dataMember !== undefined) {
     // If we are stubbing a method, then make sure the method is still callable

@@ -1,20 +1,38 @@
 import type { MethodOf } from "../types.ts";
-import type { IMethodVerification, ISpyStub } from "../interfaces.ts";
+import type {
+  IFunctionExpressionVerifier,
+  IMethodVerifier,
+  ISpyStubFunctionExpression,
+  ISpyStubMethod,
+} from "../interfaces.ts";
 import { MethodVerifier } from "../verifiers/method_verifier.ts";
 import { FunctionExpressionVerifier } from "../verifiers/function_expression_verifier.ts";
 
+/**
+ * This class helps verifying function expression calls. It's a wrapper for
+ * `FunctionExpressionVerifier` only to make the verification methods (e.g.,
+ * `toBeCalled()`) have a shorter syntax -- allowing the user of this library to
+ * only pass in expected calls as opposed to expected calls and actual calls.
+ */
 class SpyStubFunctionExpressionVerifier extends FunctionExpressionVerifier {
-  #calls: number;
+  /**
+   * See `IFunctionExpressionVerifier.args`.
+   */
   #args: unknown[];
+
+  /**
+   * See `IFunctionExpressionVerifier.calls`.
+   */
+  #calls: number;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param name - The name of the function using this verifier.
-   * @param calls - See `this.#calls`.
-   * @param args - See `this.#args`.
+   * @param name - See `FunctionExpressionVerifier.#name`.
+   * @param calls - See `IFunctionExpressionVerifier.calls`.
+   * @param args - See `IFunctionExpressionVerifier.args`.
    */
   constructor(
     name: string,
@@ -26,6 +44,25 @@ class SpyStubFunctionExpressionVerifier extends FunctionExpressionVerifier {
     this.#args = args;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - GETTERS / SETTERS /////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  get args(): unknown[] {
+    return this.#args;
+  }
+
+  get calls(): number {
+    return this.#calls;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * See `IVerifier.toBeCalled()`.
+   */
   public toBeCalled(expectedCalls?: number): this {
     return super.toBeCalled(
       this.#calls,
@@ -33,37 +70,42 @@ class SpyStubFunctionExpressionVerifier extends FunctionExpressionVerifier {
     );
   }
 
+  /**
+   * See `IVerifier.toBeCalledWithArgs()`.
+   */
   public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
     return super.toBeCalledWithArgs(
       this.#args,
       expectedArgs,
     );
   }
+
+  /**
+   * See `IVerifier.toBeCalledWithoutArgs()`.
+   */
   public toBeCalledWithoutArgs() {
     super.toBeCalledWithoutArgs(
       this.#args,
-      `.verify().toBeCalledWithoutArgs()`,
     );
     return this;
   }
 }
 
 /**
- * The `SpyStub` class' verifier. It extends the `MethodVerifier` just to use
- * its verification methods. In order to properly show stack traces in the
- * context of the `SpyStub`, this verifier is used to provide the
- * `codeThatThrew` argument to the `MethodVerifier` class' methods.
+ * This class helps verifying object method calls. It's a wrapper for
+ * `MethodVerifier` only to make the verification methods (e.g., `toBeCalled()`)
+ * have a shorter syntax -- allowing the user of this library to only pass in
+ * expected calls as opposed to expected calls and actual calls.
  */
-class SpyStubMethodVerifier<
-  OriginalObject,
-> extends MethodVerifier<OriginalObject> {
+class SpyStubMethodVerifier<OriginalObject>
+  extends MethodVerifier<OriginalObject> {
   /**
-   * Property to hold the arguments this method was called with.
+   * See `IMethodVerifier.args`.
    */
   #args: unknown[];
 
   /**
-   * Property to hold the number of time this method was called.
+   * See `IMethodVerifier.calls`.
    */
   #calls: number;
 
@@ -72,9 +114,9 @@ class SpyStubMethodVerifier<
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param methodName - See `MethodVerifier#method_name`.
-   * @param calls - See `this.#calls`.
-   * @param args - See `this.#args`.
+   * @param methodName - See `MethodVerifier.method_name`.
+   * @param calls - See `IMethodVerifier.calls`.
+   * @param args - See `IMethodVerifier.args`.
    */
   constructor(
     methodName: MethodOf<OriginalObject>,
@@ -103,15 +145,7 @@ class SpyStubMethodVerifier<
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Verify that this method was called. Optionally, verify that it was called a
-   * specific number of times.
-   *
-   * @param expectedCalls - (Optional) The number of calls this method is
-   * expected to have received. If not provided, then the verification process
-   * will assume "just verify that the method was called" instead of verifying
-   * that it was called a specific number of times.
-   *
-   * @returns this To allow method chaining.
+   * See `IVerifier.toBeCalled()`.
    */
   public toBeCalled(expectedCalls?: number): this {
     return super.toBeCalled(
@@ -121,12 +155,7 @@ class SpyStubMethodVerifier<
   }
 
   /**
-   * Verify that this method was called with the following arguments.
-   *
-   * @param expectedArgs - The expected arguments that this method should be
-   * called with.
-   *
-   * @returns this To allow method chaining.
+   * See `IVerifier.toBeCalledWithArgs()`.
    */
   public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
     return super.toBeCalledWithArgs(
@@ -136,9 +165,7 @@ class SpyStubMethodVerifier<
   }
 
   /**
-   * Verify that this method was called without arguments.
-   *
-   * @returns this To allow method chaining.
+   * See `IVerifier.toBeCalledWithoutArgs()`.
    */
   public toBeCalledWithoutArgs(): this {
     return super.toBeCalledWithoutArgs(
@@ -160,7 +187,7 @@ export class SpyStubBuilder<OriginalObject, ReturnValue> {
   #calls = 0;
 
   /**
-   * Property to hold the arguments this method was last called with.
+   * Property to hold the args this method was last called with.
    */
   #last_called_with_args: unknown[] = [];
 
@@ -194,17 +221,42 @@ export class SpyStubBuilder<OriginalObject, ReturnValue> {
     this.#original = original;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Set the name of the method this spy stub is stubbing.
+   *
+   * @param method - The name of the method. This must be a method of the
+   * original object.
+   *
+   * @returns `this` To allow method chaining.
+   */
   public method(method: MethodOf<OriginalObject>): this {
     this.#method = method;
     return this;
   }
 
+  /**
+   * Set the return value of this spy stub.
+   *
+   * @param returnValue - The value to return when this spy stub is called.
+   *
+   * @returns `this` To allow method chaining.
+   */
   public returnValue(returnValue: ReturnValue): this {
     this.#return_value = returnValue;
     return this;
   }
 
-  public createForObjectMethod(): ISpyStub {
+  /**
+   * Create this spy stub for an object's method.
+   *
+   * @returns `this` behind the `ISpyStubMethod` interface so that only
+   * `ISpyStubMethod` data members can be seen/called.
+   */
+  public createForObjectMethod(): ISpyStubMethod {
     this.#stubOriginalMethodWithTracking();
 
     Object.defineProperty(this, "verify", {
@@ -216,22 +268,29 @@ export class SpyStubBuilder<OriginalObject, ReturnValue> {
         ),
     });
 
-    return this as unknown as ISpyStub & { verify: IMethodVerification };
+    return this as unknown as ISpyStubMethod & { verify: IMethodVerifier };
   }
 
-  public createForFunctionExpression(): ISpyStub {
+  /**
+   * Create this spy stub for a function expression.
+   *
+   * @returns `this` behind the `ISpyStubFunctionExpression` interface so that
+   * only `ISpyStubFunctionExpression` data members can be seen/called.
+   */
+  public createForFunctionExpression(): ISpyStubFunctionExpression {
     const ret = (...args: unknown[]) => {
       this.#calls++;
       this.#last_called_with_args = args;
       return this.#return_value ?? "spy-stubbed";
     };
 
-    ret.verify = () =>
+    ret.verify = (): IFunctionExpressionVerifier =>
       new SpyStubFunctionExpressionVerifier(
         (this.#original as unknown as { name: string }).name,
         this.#calls,
         this.#last_called_with_args,
       );
+
     return ret;
   }
 

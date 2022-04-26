@@ -35,7 +35,7 @@ class ResourceParameterized {
   // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
-  public methodThatGets(paramString1: string, paramString2: string) {
+  public methodThatGets(_paramString1: string, _paramString2: string) {
     this.methodThatLogs("Handle GET");
     return "Do GET";
   }
@@ -44,9 +44,9 @@ class ResourceParameterized {
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
   public methodThatPosts(
-    paramBool1: boolean,
-    paramBool2: boolean,
-    paramArray: string[],
+    _paramBool1: boolean,
+    _paramBool2: boolean,
+    _paramArray: string[],
   ) {
     this.methodThatLogs("Handle POSt");
     return "Do POST";
@@ -70,6 +70,7 @@ Deno.test("Spy()", async (t) => {
         const spy2 = Spy(Resource);
         const stubbedReturnValue = spy2.methodThatLogs(); // We called it, ...
         spy2.verify("methodThatLogs").toBeCalled(); // ... so we can verify it was called ...
+        assertEquals(stubbedReturnValue, "spy-stubbed");
       },
     );
 

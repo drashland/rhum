@@ -1,5 +1,5 @@
 import type { Constructor, MethodOf } from "../types.ts";
-import type { IMethodVerification, ISpy, ISpyStub } from "../interfaces.ts";
+import type { IMethodVerifier, ISpy, ISpyStubMethod } from "../interfaces.ts";
 import { SpyStubBuilder } from "./spy_stub_builder.ts";
 
 /**
@@ -14,16 +14,17 @@ export function createSpy<OriginalConstructor, OriginalObject>(
   >;
   return new class SpyExtension extends Original {
     /**
-     * Helper property to see that this is a mock object and not the original.
+     * See `ISpy#is_spy`.
      */
     is_spy = true;
 
     /**
-     * Property of stubbed methods. Each stubbed method has tracking (e.g., `spy.verify("someMethod").toBeCalled()`.
+     * See `ISpy#stubbed_methods`.
      */
-    #stubbed_methods!: Record<MethodOf<OriginalObject>, ISpyStub>;
+    #stubbed_methods!: Record<MethodOf<OriginalObject>, ISpyStubMethod>;
+
     /**
-     * The original object that this class creates a mock of.
+     * The original object that this class creates a spy out of.
      */
     #original!: OriginalObject;
 
@@ -31,7 +32,7 @@ export function createSpy<OriginalConstructor, OriginalObject>(
     // FILE MARKER - GETTERS / SETTERS /////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    get stubbed_methods(): Record<MethodOf<OriginalObject>, ISpyStub> {
+    get stubbed_methods(): Record<MethodOf<OriginalObject>, ISpyStubMethod> {
       return this.#stubbed_methods;
     }
 
@@ -40,7 +41,7 @@ export function createSpy<OriginalConstructor, OriginalObject>(
     ////////////////////////////////////////////////////////////////////////////
 
     /**
-     * @param original - The original object to mock.
+     * @param original - The original object to create a spy out of.
      * @param methodsToTrack - The original object's method to make trackable.
      */
     public init(original: OriginalObject, methodsToTrack: string[]) {
@@ -51,11 +52,11 @@ export function createSpy<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Get the verifier for the given method to do actual verification using
+     * Get the verifier for the given method to do actual verification.
      */
     public verify(
       methodName: MethodOf<OriginalObject>,
-    ): IMethodVerification {
+    ): IMethodVerifier {
       return this.#stubbed_methods[methodName].verify();
     }
 
@@ -66,16 +67,18 @@ export function createSpy<OriginalConstructor, OriginalObject>(
     /**
      * Construct the calls property. Only construct it, do not set it. The
      * constructor will set it.
+     *
      * @param methodsToTrack - All of the methods on the original object to make
      * trackable.
+     *
      * @returns - Key-value object where the key is the method name and the
      * value is the number of calls. All calls start at 0.
      */
     #constructStubbedMethodsProperty(
       methodsToTrack: string[],
-    ): Record<MethodOf<OriginalObject>, ISpyStub> {
+    ): Record<MethodOf<OriginalObject>, ISpyStubMethod> {
       const stubbedMethods: Partial<
-        Record<MethodOf<OriginalObject>, ISpyStub>
+        Record<MethodOf<OriginalObject>, ISpyStubMethod>
       > = {};
 
       methodsToTrack.forEach((method: string) => {
@@ -86,7 +89,10 @@ export function createSpy<OriginalConstructor, OriginalObject>(
         stubbedMethods[method as MethodOf<OriginalObject>] = spyMethod;
       });
 
-      return stubbedMethods as Record<MethodOf<OriginalObject>, ISpyStub>;
+      return stubbedMethods as Record<
+        MethodOf<OriginalObject>,
+        ISpyStubMethod
+      >;
     }
   }();
 }

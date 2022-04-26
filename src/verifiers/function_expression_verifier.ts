@@ -1,10 +1,9 @@
-import { MethodVerificationError } from "../errors.ts";
 import { CallableVerifier } from "./callable_verifier.ts";
 
 /**
  * Test doubles use this class to verify that their methods were called, were
- * called with a number of arguments, were called with specific types of
- * arguments, and so on.
+ * called with a number of args, were called with specific types of args, and so
+ * on.
  */
 export class FunctionExpressionVerifier extends CallableVerifier {
   /**
@@ -17,7 +16,7 @@ export class FunctionExpressionVerifier extends CallableVerifier {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param name - See this#name.
+   * @param name - See `this.#name`.
    */
   constructor(name: string) {
     super();
@@ -64,92 +63,52 @@ export class FunctionExpressionVerifier extends CallableVerifier {
    *
    * @param actualArgs - The actual args that this method was called with.
    * @param expectedArgs - The args this method is expected to have received.
-   * @param codeThatThrew - See `MethodVerificationError` constructor's
-   * `codeThatThrew` param.
    */
   protected toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
   ): this {
     const expectedArgsAsString = this.argsAsString(expectedArgs);
+    const codeThatThrew =
+      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`;
 
-    this.verifyToBeCalledWithArgsTooManyArguments(
+    this.verifyToBeCalledWithArgsTooManyArgs(
       actualArgs,
       expectedArgs,
-      `Function "${this.#name}" received too many arguments.`,
-      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`,
+      `Function "${this.#name}" received too many args.`,
+      codeThatThrew,
     );
 
-    this.verifyToBeCalledWithArgsTooFewArguments(
+    this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
-      `Function "${this.#name}" was called with ${actualArgs.length} ${
-        actualArgs.length > 1 ? "args" : "arg"
-      } instead of ${expectedArgs.length}.`,
-      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`,
+      `Function "${this.#name}" was called with ${actualArgs.length} {{ arg_noun }} instead of ${expectedArgs.length}.`,
+      codeThatThrew,
     );
 
     this.verifyToBeCalledWithArgsUnexpectedValues(
       actualArgs,
       expectedArgs,
       `Function "${this.#name}" received unexpected arg {{ unexpected_arg }} at parameter position {{ parameter_position }}.`,
-      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`,
+      codeThatThrew,
     );
 
     return this;
   }
 
   /**
-   * Verify that this method was called without arguments.
+   * Verify that this method was called without args.
    *
    * @param actualArgs - The actual args that this method was called with. This
    * method expects it to be an empty array.
-   * @param codeThatThrew - See `MethodVerificationError` constructor's
-   * `codeThatThrew` param.
    */
-  public toBeCalledWithoutArgs(
+  protected toBeCalledWithoutArgs(
     actualArgs: unknown[],
-    codeThatThrew: string,
-  ): void {
-    const actualArgsAsString = JSON.stringify(actualArgs)
-      .slice(1, -1)
-      .replace(/,/g, ", ");
-
-    if (actualArgs.length > 0) {
-      throw new MethodVerificationError(
-        `Function "${this.#name}" was called with args when expected to receive no args.`,
-        codeThatThrew,
-        `Expected -> (no args)`,
-        `Actual   -> (${actualArgsAsString})`,
-      );
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Check that the given arrays are exactly equal.
-   *
-   * @param a - The first array.
-   * @param b - The second array (which should match the first array).
-   *
-   * @returns True if the arrays match, false if not.
-   */
-  #compareArrays(a: unknown[], b: unknown[]): boolean {
-    return a.length === b.length && a.every((val, index) => val === b[index]);
-  }
-
-  /**
-   * Are we comparing arrays?
-   *
-   * @param obj1 - Object to evaluate if it is an array.
-   * @param obj2 - Object to evaluate if it is an array.
-   *
-   * @returns True if yes, false if no.
-   */
-  #comparingArrays(obj1: unknown, obj2: unknown): boolean {
-    return Array.isArray(obj1) && Array.isArray(obj2);
+  ): this {
+    return super.verifyToBeCalledWithoutArgs(
+      actualArgs,
+      `Function "${this.#name}" was called with args when expected to receive no args.`,
+      `.verify().toBeCalledWithoutArgs()`,
+    );
   }
 }

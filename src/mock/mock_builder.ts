@@ -19,7 +19,7 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
   /**
    * Create the mock object.
    *
-   * @returns The original object with capabilities from the Mock class.
+   * @returns The original object with mocking capabilities.
    */
   public create(): ClassToMock & IMock<ClassToMock> {
     const original = new this.constructor_fn(...this.constructor_args);
@@ -99,6 +99,7 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
       value: (...args: unknown[]) => {
         // Track that this method was called
         mock.calls[method]++;
+        // TODO: copy spy approach because we need mock.expected_args
 
         // Make sure the method calls its original self
         const methodToCall =

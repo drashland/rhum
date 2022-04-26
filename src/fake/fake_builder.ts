@@ -17,7 +17,7 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
   /**
    * Create the fake object.
    *
-   * @returns The original object with capabilities from the fake class.
+   * @returns The original object with faking capabilities.
    */
   public create(): ClassToFake & IFake<ClassToFake> {
     const original = new this.constructor_fn(...this.constructor_args);

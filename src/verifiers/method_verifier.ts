@@ -1,11 +1,10 @@
 import type { MethodOf } from "../types.ts";
-import { MethodVerificationError } from "../errors.ts";
 import { CallableVerifier } from "./callable_verifier.ts";
 
 /**
  * Test doubles use this class to verify that their methods were called, were
- * called with a number of arguments, were called with specific types of
- * arguments, and so on.
+ * called with a number of args, were called with specific types of args, and so
+ * on.
  */
 export class MethodVerifier<OriginalObject> extends CallableVerifier {
   /**
@@ -19,7 +18,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param methodName - See this#method_name.
+   * @param methodName - See `this.#method_name`.
    */
   constructor(methodName?: MethodOf<OriginalObject>) {
     super();
@@ -35,7 +34,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - METHODS - PROTECTED /////////////////////////////////////////
+  // FILE MARKER - METHODS - PUBLIC ////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -45,6 +44,8 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    * @param expectedCalls - The number of calls expected. If this is -1, then
    * just verify that the method was called without checking how many times it
    * was called.
+   *
+   * @returns `this` To allow method chaining.
    */
   public toBeCalled(
     actualCalls: number,
@@ -66,44 +67,50 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    *
    * @param actualArgs - The actual args that this method was called with.
    * @param expectedArgs - The args this method is expected to have received.
+   *
+   * @returns `this` To allow method chaining.
    */
   public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
   ): this {
     const expectedArgsAsString = this.argsAsString(expectedArgs);
+    const codeThatThrew =
+      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
 
-    this.verifyToBeCalledWithArgsTooManyArguments(
+    this.verifyToBeCalledWithArgsTooManyArgs(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" received too many arguments.`,
-      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`,
+      `Method "${this.#method_name}" received too many args.`,
+      codeThatThrew,
     );
 
-    this.verifyToBeCalledWithArgsTooFewArguments(
+    this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
       `Method "${this.#method_name}" was called with ${actualArgs.length} ${
         actualArgs.length > 1 ? "args" : "arg"
       } instead of ${expectedArgs.length}.`,
-      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`,
+      codeThatThrew,
     );
 
     this.verifyToBeCalledWithArgsUnexpectedValues(
       actualArgs,
       expectedArgs,
       `Method "${this.#method_name}" received unexpected arg {{ unexpected_arg }} at parameter position {{ parameter_position }}.`,
-      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`,
+      codeThatThrew,
     );
 
     return this;
   }
 
   /**
-   * Verify that this method was called without arguments.
+   * Verify that this method was called without args.
    *
    * @param actualArgs - The actual args that this method was called with. This
    * method expects it to be an empty array.
+   *
+   * @returns `this` To allow method chaining.
    */
   public toBeCalledWithoutArgs(
     actualArgs: unknown[],

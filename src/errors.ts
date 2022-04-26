@@ -20,11 +20,29 @@ export class FakeError extends RhumError {
 }
 
 /**
+ * Error to thrown in relation to mock logic.
+ */
+export class MockError extends RhumError {
+  constructor(message: string) {
+    super("MockError", message);
+  }
+}
+
+/**
+ * Error to throw in relation to spy logic.
+ */
+export class SpyError extends RhumError {
+  constructor(message: string) {
+    super("SpyError", message);
+  }
+}
+
+/**
  * Error to throw in relation to method verification logic. For example, when a
  * method is being verified that it was called once via
  * `mock.method("doSomething").toBeCalled(1)`.
  */
-export class MethodVerificationError extends RhumError {
+export class VerificationError extends RhumError {
   #actual_results: string;
   #code_that_threw: string;
   #expected_results: string;
@@ -44,7 +62,7 @@ export class MethodVerificationError extends RhumError {
     actualResults: string,
     expectedResults: string,
   ) {
-    super("MethodVerificationError", message);
+    super("VerificationError", message);
     this.#code_that_threw = codeThatThrew;
     this.#actual_results = actualResults;
     this.#expected_results = expectedResults;
@@ -63,7 +81,9 @@ export class MethodVerificationError extends RhumError {
     const ignoredLines = [
       "<anonymous>",
       "deno:runtime",
+      "callable_verifier.ts",
       "method_verifier.ts",
+      "function_expression_verifier.ts",
       "_mixin.ts",
       ".toBeCalled",
       ".toBeCalledWithArgs",
@@ -87,8 +107,13 @@ export class MethodVerificationError extends RhumError {
       return false;
     });
 
-    // Sometimes, the error stack will contain the problematic file twice. We only care about showing the problematic file once in this "concise" stack.
-    // In order to check for this, we check to see if the array contains more than 2 values. The first value should be the MethodVerificationError message. The second value should be the first instance of the problematic file. Knowing this, we can slice the array to contain only the error message and the first instance of the problematic file.
+    // Sometimes, the error stack will contain the problematic file twice. We
+    // only care about showing the problematic file once in this "concise"
+    // stack.  In order to check for this, we check to see if the array contains
+    // more than 2 values. The first value should be the `VerificationError`
+    // message. The second value should be the first instance of the problematic
+    // file. Knowing this, we can slice the array to contain only the error
+    // message and the first instance of the problematic file.
     if (conciseStackArray.length > 2) {
       conciseStackArray = conciseStackArray.slice(0, 2);
     }
@@ -111,31 +136,13 @@ export class MethodVerificationError extends RhumError {
     newStack += `\n    ${this.#expected_results}`;
 
     if (lineNumber) {
-      newStack += `\n\nCheck the above '${
+      newStack += `\n\nCheck the above "${
         filename.replace("/", "")
-      }' file at/around line ${lineNumber} for the following code to fix this error:`;
+      }" file at/around line ${lineNumber} for code like the following to fix this error:`;
       newStack += `\n    ${this.#code_that_threw}`;
     }
     newStack += "\n\n\n"; // Give spacing when displayed in the console
 
     this.stack = newStack;
-  }
-}
-
-/**
- * Error to thrown in relation to mock logic.
- */
-export class MockError extends RhumError {
-  constructor(message: string) {
-    super("MockError", message);
-  }
-}
-
-/**
- * Error to throw in relation to spy logic.
- */
-export class SpyError extends RhumError {
-  constructor(message: string) {
-    super("SpyError", message);
   }
 }
