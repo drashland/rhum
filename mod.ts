@@ -1,4 +1,4 @@
-import type { Constructor, MethodOf } from "./src/types.ts";
+import type { Callable, Constructor, MethodOf } from "./src/types.ts";
 import { MockBuilder } from "./src/mock/mock_builder.ts";
 import { FakeBuilder } from "./src/fake/fake_builder.ts";
 import { SpyBuilder } from "./src/spy/spy_builder.ts";
@@ -84,12 +84,15 @@ export function Mock<T>(constructorFn: Constructor<T>): MockBuilder<T> {
  *
  * @returns The original function expression with spying capabilities.
  */
-export function Spy<ReturnValue>(
+export function Spy<
+  OriginalFunction extends Callable<ReturnValue>,
+  ReturnValue,
+>(
   // deno-lint-ignore no-explicit-any
-  functionExpression: (...args: any[]) => ReturnValue,
+  functionExpression: OriginalFunction,
   returnValue?: ReturnValue,
   // deno-lint-ignore no-explicit-any
-): Interfaces.ISpyStubFunctionExpression & ((...args: any[]) => ReturnValue);
+): Interfaces.ISpyStubFunctionExpression & OriginalFunction;
 
 /**
  * Create a spy out of an object's method.
