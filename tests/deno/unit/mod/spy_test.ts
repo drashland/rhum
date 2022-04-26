@@ -386,7 +386,7 @@ Deno.test("Spy()", async (t) => {
       },
     );
 
-    await t.step("can spy on a function expression", () => {
+    await t.step("can spy on a function expression (non-parameterized)", () => {
       const hello = (): { some: string } => {
         return {
           some: "value",
@@ -395,6 +395,8 @@ Deno.test("Spy()", async (t) => {
 
       let spyHello = Spy(hello);
 
+      // Create a function to call the spy to see if the spy works when not
+      // directly called
       function thingThatCallsTheSpy() {
         spyHello();
       }
@@ -413,12 +415,66 @@ Deno.test("Spy()", async (t) => {
       // Here we give `hello` a new return value. The return value must be of
       // the same return type.
       spyHello = Spy(hello, { some: "other return value" });
+
       // Assert that the specified return value is actually returned
       assertEquals(spyHello(), { some: "other return value" });
+
       // Since we reassigned `spyHello`, its calls should be reset to 0 and we
-      // should expect the number of calls to be 1 because we called it in the
-      // above `assertEquals()` call (also called without args)
+      // should expect the number of calls to be 1 because we called it above.
+      // Also, we called it without args.
       spyHello.verify().toBeCalled().toBeCalledWithoutArgs();
+    });
+
+    await t.step("can spy on a function expression (parameterized)", () => {
+      const hello = (param1: string, param2: boolean): {
+        param1Val: string;
+        param2Val: boolean;
+      } => {
+        return {
+          param1Val: param1,
+          param2Val: param2,
+        };
+      };
+
+      let spyHello = Spy(hello);
+
+      // Create a function to call the spy to see if the spy works when not
+      // directly called
+      function thingThatCallsTheSpy() {
+        spyHello("doth mother know you weareth her drapes", true);
+      }
+
+      thingThatCallsTheSpy(); // Call 1
+      spyHello.verify().toBeCalled(1);
+
+      thingThatCallsTheSpy(); // Call 2
+      thingThatCallsTheSpy(); // Call 3
+      spyHello.verify().toBeCalled(3);
+
+      // Since no return value was specified, the default "spy-stubbed" should
+      // be used
+      assertEquals(
+        spyHello("doth mother know you weareth her drapes", true),
+        "spy-stubbed",
+      );
+
+      // Here we give `hello` a new return value. The return value must be of
+      // the same return type.
+      spyHello = Spy(hello, {
+        param1Val: "YOU GOT CHANGED!",
+        param2Val: false,
+      });
+
+      // Assert that the specified return value is actually returned
+      assertEquals(spyHello("sup", true), {
+        param1Val: "YOU GOT CHANGED!",
+        param2Val: false,
+      });
+
+      // Since we reassigned `spyHello`, its calls should be reset to 0 and we
+      // should expect the number of calls to be 1 because we called it above.
+      // Also, we called it with args.
+      spyHello.verify().toBeCalled().toBeCalledWithArgs("sup", true);
     });
   });
 });
