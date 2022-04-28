@@ -2,16 +2,16 @@ const { Fake, Spy } = require("../../../../lib/cjs/mod");
 const { assertEquals } = require("../../jest_assertions");
 
 class Resource {
-   greeting = "hello";
+  greeting = "hello";
 
-   methodThatLogs() {
+  methodThatLogs() {
     return "Resource is running!";
   }
 
   // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
-   methodThatGets() {
+  methodThatGets() {
     this.methodThatLogs();
     return "Do GET";
   }
@@ -19,23 +19,23 @@ class Resource {
   // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
-   methodThatPosts() {
+  methodThatPosts() {
     this.methodThatLogs();
     return "Do POST";
   }
 }
 
 class ResourceParameterized {
-   greeting = "hello";
+  greeting = "hello";
 
-   methodThatLogs(message) {
+  methodThatLogs(message) {
     return message;
   }
 
   // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
-   methodThatGets(_paramString1, _paramString2) {
+  methodThatGets(_paramString1, _paramString2) {
     this.methodThatLogs("Handle GET");
     return "Do GET";
   }
@@ -43,7 +43,7 @@ class ResourceParameterized {
   // This method will be stubbed to return "spy-stubbed", so during
   // `spy.verify().toBeCalled()`, `this.methodThatLogs()` should not be expected
   // to be called.
-   methodThatPosts(
+  methodThatPosts(
     _paramBool1,
     _paramBool2,
     _paramArray,
