@@ -99,8 +99,8 @@ export class CallableVerifier {
       throw new VerificationError(
         errorMessage,
         codeThatThrew,
-        `Expected calls -> 1 (or more)`,
         `Actual calls   -> 0`,
+        `Expected calls -> 1 (or more)`,
       );
     }
 
@@ -114,8 +114,8 @@ export class CallableVerifier {
     throw new VerificationError(
       errorMessage,
       codeThatThrew,
-      `Expected calls -> ${expectedCalls}`,
       `Actual calls   -> ${actualCalls}`,
+      `Expected calls -> ${expectedCalls}`,
     );
   }
 
@@ -137,12 +137,12 @@ export class CallableVerifier {
       throw new VerificationError(
         errorMessage,
         codeThatThrew,
-        `Expected args -> ${this.argsAsStringWithTypes(expectedArgs)}`,
         `Actual args   -> ${
           actualArgs.length > 0
-            ? this.argsAsStringWithTypes(actualArgs)
+            ? `(${this.argsAsStringWithTypes(actualArgs)})`
             : "(no args)"
         }`,
+        `Expected args -> ${this.argsAsStringWithTypes(expectedArgs)}`,
       );
     }
   }
@@ -165,8 +165,8 @@ export class CallableVerifier {
       throw new VerificationError(
         errorMessage,
         codeThatThrew,
-        `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
         `Actual call   -> (${this.argsAsStringWithTypes(actualArgs)})`,
+        `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
       );
     }
   }
@@ -214,8 +214,8 @@ export class CallableVerifier {
           .replace("{{ unexpected_arg }}", unexpectedArg)
           .replace("{{ parameter_position }}", parameterPosition.toString()),
         codeThatThrew,
-        `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
         `Actual call   -> (${this.argsAsStringWithTypes(actualArgs)})`,
+        `Expected call -> (${this.argsAsStringWithTypes(expectedArgs)})`,
       );
     });
   }
@@ -246,8 +246,8 @@ export class CallableVerifier {
     throw new VerificationError(
       errorMessage,
       codeThatThrew.replace("{{ arg_noun }}", argNoun),
-      `Expected args -> (no args)`,
       `Actual args   -> (${actualArgsAsString})`,
+      `Expected args -> (no args)`,
     );
   }
 

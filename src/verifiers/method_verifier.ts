@@ -88,9 +88,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" was called with ${actualArgs.length} ${
-        actualArgs.length > 1 ? "args" : "arg"
-      } instead of ${expectedArgs.length}.`,
+      `Method "${this.#method_name}" was called with ${actualArgs.length} {{ arg_noun }} instead of ${expectedArgs.length}.`,
       codeThatThrew,
     );
 
@@ -117,7 +115,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
   ): this {
     this.verifyToBeCalledWithoutArgs(
       actualArgs,
-      `Method "${this.#method_name}" was called with unexpected args.`,
+      `Method "${this.#method_name}" was called with args when expected to receive no args.`,
       `.verify("${this.method_name}").toBeCalledWithoutArgs()`,
     );
 
