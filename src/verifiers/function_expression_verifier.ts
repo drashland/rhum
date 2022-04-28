@@ -43,7 +43,7 @@ export class FunctionExpressionVerifier extends CallableVerifier {
    * just verify that the method was called without checking how many times it
    * was called.
    */
-  protected toBeCalled(
+  public toBeCalled(
     actualCalls: number,
     expectedCalls?: number,
   ): this {
@@ -64,7 +64,7 @@ export class FunctionExpressionVerifier extends CallableVerifier {
    * @param actualArgs - The actual args that this method was called with.
    * @param expectedArgs - The args this method is expected to have received.
    */
-  protected toBeCalledWithArgs(
+  public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
   ): this {
@@ -102,7 +102,7 @@ export class FunctionExpressionVerifier extends CallableVerifier {
    * @param actualArgs - The actual args that this method was called with. This
    * method expects it to be an empty array.
    */
-  protected toBeCalledWithoutArgs(
+  public toBeCalledWithoutArgs(
     actualArgs: unknown[],
   ): this {
     return super.verifyToBeCalledWithoutArgs(
