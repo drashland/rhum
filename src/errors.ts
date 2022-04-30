@@ -66,16 +66,9 @@ export class MethodVerificationError extends RhumError {
     }
 
     const conciseStack = this.stack.split("\n").filter((line: string) => {
-      try {
-        return ignoredLines.filter((ignoredLine: string) => {
-          return line.includes(ignoredLine);
-        }).length === 0;
-      } catch (_error) {
-        // Do nothing. If we can't filter because the `ignoredLines.filter()`
-        // call errored out. Whatev... we just move on and show a full stack
-        // trace. No biggie.
-      }
-      return false;
+      return ignoredLines.filter((ignoredLine: string) => {
+        return line.includes(ignoredLine);
+      }).length === 0;
     }).join("\n");
 
     const extractedFilenameWithLineAndColumnNumbers = conciseStack.match(
