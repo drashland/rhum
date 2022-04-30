@@ -38,9 +38,23 @@ export class SpyError extends RhumError {
 }
 
 /**
- * Error to throw in relation to method verification logic. For example, when a
- * method is being verified that it was called once via
- * `mock.method("doSomething").toBeCalled(1)`.
+ * Error to throw in relation to verification logic. For example, when a method
+ * or function expression is being verified that it was called once via
+ * `.verify("someMethod").toBeCalled(1)`. The stack trace shown with this error
+ * is modified to look like the following example:
+ *
+ * @example
+ * ```text
+ * VerificationError: Method "someMethod" was called with args when expected to receive no args.
+ *     at file:///path/to/some/file.ts:99:14
+ *
+ * Verification Results:
+ *     Actual args   -> (2, "hello", {})
+ *     Expected args -> (no args)
+ *
+ * Check the above "file.ts" file at/around line 99 for code like the following to fix this error:
+ *     .verify("someMethod").toBeCalledWithoutArgs()
+ * ```
  */
 export class VerificationError extends RhumError {
   #actual_results: string;
@@ -70,12 +84,8 @@ export class VerificationError extends RhumError {
   }
 
   /**
-   * Shorten the stack trace to show exactly what file threw the error. For
-   * example:
-   *
-   * ```ts
-   *
-   * ```
+   * Shorten the stack trace to show exactly what file threw the error. This
+   * redefines the stack trace (if there is a stack trace).
    */
   #makeStackConcise(): void {
     const ignoredLines = [
@@ -117,24 +127,29 @@ export class VerificationError extends RhumError {
       /\/[a-zA-Z0-9\(\)\[\]_-\d.]+\.ts:\d+:\d+/,
     );
 
-    const [filename, lineNumber] = extractedFilenameWithLineAndColumnNumbers
+    let [filename, lineNumber] = extractedFilenameWithLineAndColumnNumbers
       ? extractedFilenameWithLineAndColumnNumbers[0].split(":")
       : "";
 
-    let newStack = "\n\n"; // Give spacing when displayed in the console
-    newStack += conciseStack;
+    filename = filename.replace("/", "");
 
-    newStack += `\n\nVerification Results:`;
-    newStack += `\n    ${this.#actual_results}`;
-    newStack += `\n    ${this.#expected_results}`;
+    let newStack = `
+
+${conciseStack}
+
+Verification Results:
+    ${this.#actual_results}
+    ${this.#expected_results}
+`;
 
     if (lineNumber) {
-      newStack += `\n\nCheck the above "${
-        filename.replace("/", "")
-      }" file at/around line ${lineNumber} for code like the following to fix this error:`;
-      newStack += `\n    ${this.#code_that_threw}`;
+      newStack += `
+Check the above "${filename}" file at/around line ${lineNumber} for code like the following to fix this error:
+    ${this.#code_that_threw}
+
+
+`;
     }
-    newStack += "\n\n\n"; // Give spacing when displayed in the console
 
     this.stack = newStack;
   }
