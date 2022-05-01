@@ -45,6 +45,7 @@ export class FakeBuilder<ClassToFake> {
 
     const fake = createFake<Constructor<ClassToFake>, ClassToFake>(
       this.#constructor_fn,
+      ...this.#constructor_args,
     );
     fake.init(original, this.#getAllFunctionNames(original));
 

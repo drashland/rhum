@@ -47,6 +47,7 @@ export class MockBuilder<ClassToMock> {
 
     const mock = createMock<Constructor<ClassToMock>, ClassToMock>(
       this.#constructor_fn,
+      ...this.#constructor_args,
     );
     mock.init(original, this.#getAllFunctionNames(original));
 
