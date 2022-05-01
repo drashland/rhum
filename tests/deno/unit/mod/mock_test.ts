@@ -63,10 +63,6 @@ Deno.test("Mock()", async (t) => {
     await t.step({
       name: "can set test double as arg and call it",
       fn(): void {
-        const mock = Mock(TestObjectTwoMore)
-          .withConstructorArgs("some name", ["hello"])
-          .create();
-
         const mockPrivateService = Mock(PrivateService)
           .create();
         const mockTestObject = Mock(TestObjectLotsOfDataMembers)

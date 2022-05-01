@@ -1,7 +1,7 @@
 import { MethodVerifier } from "../../../../src/verifiers/method_verifier.ts";
 import { assertEquals } from "../../deps.ts";
 
-class MyClass {
+class _MyClass {
   public doSomething(): void {
     return;
   }
@@ -31,7 +31,7 @@ Deno.test("MethodVerifier", async (t) => {
     await t.step(
       "shows error message, code that threw, actual and expected results",
       () => {
-        const mv = new MethodVerifier<MyClass>("doSomething");
+        const mv = new MethodVerifier<_MyClass>("doSomething");
 
         const error = throwError(() => mv.toBeCalled(1, 2));
 
@@ -62,7 +62,7 @@ Check the above "method_verifier_test.ts" file at/around line {line} for code li
     await t.step(
       "shows error message, code that threw, actual and expected results",
       () => {
-        const mv = new MethodVerifier<MyClass>("doSomething");
+        const mv = new MethodVerifier<_MyClass>("doSomething");
 
         const error = throwError(() => mv.toBeCalledWithArgs([1], [2]));
 
@@ -93,7 +93,7 @@ Check the above "method_verifier_test.ts" file at/around line {line} for code li
     await t.step(
       "shows error message, code that threw, actual and expected results",
       () => {
-        const mv = new MethodVerifier<MyClass>("doSomething");
+        const mv = new MethodVerifier<_MyClass>("doSomething");
 
         const error = throwError(() =>
           mv.toBeCalledWithoutArgs([2, "hello", {}])
