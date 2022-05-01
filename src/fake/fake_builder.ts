@@ -24,6 +24,7 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
 
     const fake = createFake<Constructor<ClassToFake>, ClassToFake>(
       this.constructor_fn,
+      ...this.constructor_args,
     );
 
     (fake as IFake<ClassToFake> & ITestDouble<ClassToFake>).init(

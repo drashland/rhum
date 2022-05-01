@@ -102,6 +102,7 @@ class MethodExpectation<OriginalObject> {
  */
 export function createMock<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
+  ...originalConstructorArgs: unknown[]
 ): IMock<OriginalObject> {
   const Original = OriginalClass as unknown as Constructor<
     // deno-lint-ignore no-explicit-any
@@ -127,6 +128,14 @@ export function createMock<OriginalConstructor, OriginalObject>(
      * The original object that this class creates a mock of.
      */
     #original!: OriginalObject;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // FILE MARKER - CONSTRUCTOR ///////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    constructor() {
+      super(...originalConstructorArgs);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - GETTERS / SETTERS /////////////////////////////////////////

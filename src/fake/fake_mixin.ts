@@ -13,6 +13,7 @@ import { PreProgrammedMethod } from "../pre_programmed_method.ts";
  */
 export function createFake<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
+  ...originalConstructorArgs: unknown[]
 ): IFake<OriginalObject> {
   const Original = OriginalClass as unknown as Constructor<
     // deno-lint-ignore no-explicit-any
@@ -28,6 +29,14 @@ export function createFake<OriginalConstructor, OriginalObject>(
      * The original object that this class creates a fake of.
      */
     #original!: OriginalObject;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // FILE MARKER - CONSTRUCTOR ///////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    constructor() {
+      super(...originalConstructorArgs);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - METHODS - PUBLIC //////////////////////////////////////////

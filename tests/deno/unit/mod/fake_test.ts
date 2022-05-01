@@ -1,4 +1,4 @@
-import { Fake } from "../../../../mod.ts";
+import { Fake, Mock } from "../../../../mod.ts";
 import { assertEquals, assertThrows } from "../../../deps.ts";
 
 Deno.test("Fake()", async (t) => {
@@ -42,6 +42,21 @@ Deno.test("Fake()", async (t) => {
         assertEquals(fake.name, "some name");
         assertEquals(fake.array, ["hello"]);
         assertEquals(fake.is_fake, true);
+      },
+    });
+
+    await t.step({
+      name: "can set test double as arg and call it",
+      fn(): void {
+        const mock = Mock(PrivateService).create();
+
+        const fake = Fake(TestObjectFour)
+          .withConstructorArgs(mock)
+          .create();
+
+        mock.expects("doSomething").toBeCalled(1);
+        fake.callPrivateService();
+        mock.verifyExpectations();
       },
     });
   });
@@ -283,6 +298,22 @@ class TestObjectThree {
     this.hello();
     this.hello();
     return "World";
+  }
+}
+
+class TestObjectFour {
+  #private_service: PrivateService;
+  constructor(privateService: PrivateService) {
+    this.#private_service = privateService;
+  }
+  public callPrivateService() {
+    this.#private_service.doSomething();
+  }
+}
+
+class PrivateService {
+  public doSomething(): boolean {
+    return true;
   }
 }
 
