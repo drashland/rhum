@@ -1,5 +1,5 @@
 import { VerificationError } from "../../../src/errors.ts";
-import { assertEquals, assertThrows } from "../../deps.ts";
+import { assertEquals } from "../../deps.ts";
 
 function throwError(
   message: string,
