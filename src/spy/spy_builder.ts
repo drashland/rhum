@@ -29,6 +29,7 @@ export class SpyBuilder<ClassToSpy> extends TestDoubleBuilder<ClassToSpy> {
 
     const spy = createSpy<Constructor<ClassToSpy>, ClassToSpy>(
       this.constructor_fn,
+      ...this.constructor_args,
     );
 
     (spy as ISpy<ClassToSpy> & ITestDouble<ClassToSpy>).init(

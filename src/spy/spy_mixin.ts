@@ -7,6 +7,7 @@ import { SpyStubBuilder } from "./spy_stub_builder.ts";
  */
 export function createSpy<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
+  ...originalConstructorArgs: unknown[]
 ): ISpy<OriginalObject> {
   const Original = OriginalClass as unknown as Constructor<
     // deno-lint-ignore no-explicit-any
@@ -27,6 +28,14 @@ export function createSpy<OriginalConstructor, OriginalObject>(
      * The original object that this class creates a spy out of.
      */
     #original!: OriginalObject;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // FILE MARKER - CONSTRUCTOR ///////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    constructor() {
+      super(...originalConstructorArgs);
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - GETTERS / SETTERS /////////////////////////////////////////
