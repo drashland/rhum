@@ -148,9 +148,12 @@ class SpyStubMethodVerifier<OriginalObject>
    * See `IVerifier.toBeCalled()`.
    */
   public toBeCalled(expectedCalls?: number): this {
+    const calls = expectedCalls ?? "";
+
     return super.toBeCalled(
       this.calls,
       expectedCalls,
+      `.verify().toBeCalled(${calls})`,
     );
   }
 
@@ -158,9 +161,12 @@ class SpyStubMethodVerifier<OriginalObject>
    * See `IVerifier.toBeCalledWithArgs()`.
    */
   public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
+    const expectedArgsAsString = this.argsAsString(expectedArgs);
+
     return super.toBeCalledWithArgs(
       this.args,
       expectedArgs,
+      `.verify().toBeCalledWithArgs(${expectedArgsAsString})`,
     );
   }
 
@@ -170,6 +176,7 @@ class SpyStubMethodVerifier<OriginalObject>
   public toBeCalledWithoutArgs(): this {
     return super.toBeCalledWithoutArgs(
       this.args,
+      `.verify().toBeCalledWithoutArgs()`,
     );
   }
 }
