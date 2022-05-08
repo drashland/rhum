@@ -83,14 +83,14 @@ export interface IMethodExpectation {
    *
    * @returns `this` To allow method chaining.
    */
-  toBeCalledWithArgs(requiredArg: unknown, ...restOfArgs: unknown[]): this;
+  // toBeCalledWithArgs(requiredArg: unknown, ...restOfArgs: unknown[]): this;
 
   /**
    * Set an expectation that a method call should be called without args.
    *
    * @returns `this` To allow method chaining.
    */
-  toBeCalledWithoutArgs(): this;
+  // toBeCalledWithoutArgs(): this;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
