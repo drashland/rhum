@@ -44,14 +44,17 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    * @param expectedCalls - The number of calls expected. If this is -1, then
    * just verify that the method was called without checking how many times it
    * was called.
+   * @param codeThatThrew - (Optional) A custom display of code that throws.
    *
    * @returns `this` To allow method chaining.
    */
   public toBeCalled(
     actualCalls: number,
     expectedCalls?: number,
+    codeThatThrew?: string
   ): this {
     const calls = expectedCalls ?? "";
+    codeThatThrew = codeThatThrew ?? `.verify("${this.#method_name}").toBeCalled(${calls})`;
 
     const errorMessage = expectedCalls
       ? `Method "${this.#method_name}" was not called ${calls} time(s).`
@@ -61,7 +64,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
       actualCalls,
       expectedCalls,
       errorMessage,
-      `.verify("${this.#method_name}").toBeCalled(${calls})`,
+      codeThatThrew
     );
 
     return this;
@@ -72,16 +75,17 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    *
    * @param actualArgs - The actual args that this method was called with.
    * @param expectedArgs - The args this method is expected to have received.
+   * @param codeThatThrew - (Optional) A custom display of code that throws.
    *
    * @returns `this` To allow method chaining.
    */
   public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
+    codeThatThrew?: string
   ): this {
     const expectedArgsAsString = this.argsAsString(expectedArgs);
-    const codeThatThrew =
-      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
+    codeThatThrew = codeThatThrew ?? `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
 
     this.verifyToBeCalledWithArgsTooManyArgs(
       actualArgs,
@@ -112,16 +116,20 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    *
    * @param actualArgs - The actual args that this method was called with. This
    * method expects it to be an empty array.
+   * @param codeThatThrew - (Optional) A custom display of code that throws.
    *
    * @returns `this` To allow method chaining.
    */
   public toBeCalledWithoutArgs(
     actualArgs: unknown[],
+    codeThatThrew?: string
   ): this {
+    codeThatThrew = codeThatThrew ?? `.verify("${this.method_name}").toBeCalledWithoutArgs()`;
+
     this.verifyToBeCalledWithoutArgs(
       actualArgs,
       `Method "${this.#method_name}" was called with args when expected to receive no args.`,
-      `.verify("${this.method_name}").toBeCalledWithoutArgs()`,
+      codeThatThrew
     );
 
     return this;
