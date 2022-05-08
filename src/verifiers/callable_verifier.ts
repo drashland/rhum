@@ -207,7 +207,7 @@ export class CallableVerifier {
       }
 
       // Alright, we have an unexpected arg, so throw an error
-      const unexpectedArg = `\`${arg}${this.getArgType(arg)}\``;
+      const unexpectedArg = `\`${actualArgs[index]}${this.getArgType(actualArgs[index])}\``;
 
       throw new VerificationError(
         errorMessage
@@ -240,12 +240,9 @@ export class CallableVerifier {
       return this;
     }
 
-    // One arg? Say "arg". More than one arg? Say "args". Yaaaaaarg.
-    const argNoun = actualArgs.length > 1 ? "args" : "arg";
-
     throw new VerificationError(
       errorMessage,
-      codeThatThrew.replace("{{ arg_noun }}", argNoun),
+      codeThatThrew,
       `Actual args   -> (${actualArgsAsString})`,
       `Expected args -> (no args)`,
     );
