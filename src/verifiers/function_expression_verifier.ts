@@ -48,10 +48,15 @@ export class FunctionExpressionVerifier extends CallableVerifier {
     expectedCalls?: number,
   ): this {
     const calls = expectedCalls ?? "";
+
+    const errorMessage = expectedCalls
+      ? `Function "${this.#name}" was not called ${calls} time(s).`
+      : `Function "${this.#name}" was not called.`;
+
     this.verifyToBeCalled(
       actualCalls,
       expectedCalls,
-      `Function "${this.#name}" was not called.`,
+      errorMessage,
       `.verify().toBeCalled(${calls})`,
     );
 
@@ -82,7 +87,7 @@ export class FunctionExpressionVerifier extends CallableVerifier {
     this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
-      `Function "${this.#name}" was called with ${actualArgs.length} {{ arg_noun }} instead of ${expectedArgs.length}.`,
+      `Function "${this.#name}" was called with ${actualArgs.length} arg(s) instead of ${expectedArgs.length}.`,
       codeThatThrew,
     );
 

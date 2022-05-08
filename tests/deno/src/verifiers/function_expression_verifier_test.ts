@@ -31,7 +31,7 @@ Deno.test("FunctionExpressionVerifier", async (t) => {
 
         const expected = `
 
-VerificationError: Function "doSomething" was not called.
+VerificationError: Function "doSomething" was not called 2 time(s).
     at /deno/src/verifiers/function_expression_verifier_test.ts:{line}:{column}
 
 Verification Results:
@@ -62,7 +62,7 @@ Check the above "function_expression_verifier_test.ts" file at/around line {line
 
         const expected = `
 
-VerificationError: Function "doSomething" received unexpected arg \`2<number>\` at parameter position 1.
+VerificationError: Function "doSomething" received unexpected arg \`1<number>\` at parameter position 1.
     at /deno/src/verifiers/function_expression_verifier_test.ts:{line}:{column}
 
 Verification Results:

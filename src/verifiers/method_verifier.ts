@@ -52,10 +52,15 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     expectedCalls?: number,
   ): this {
     const calls = expectedCalls ?? "";
+
+    const errorMessage = expectedCalls
+      ? `Method "${this.#method_name}" was not called ${calls} time(s).`
+      : `Method "${this.#method_name}" was not called.`;
+
     this.verifyToBeCalled(
       actualCalls,
       expectedCalls,
-      `Method "${this.#method_name}" was not called.`,
+      errorMessage,
       `.verify("${this.#method_name}").toBeCalled(${calls})`,
     );
 
@@ -88,7 +93,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" was called with ${actualArgs.length} {{ arg_noun }} instead of ${expectedArgs.length}.`,
+      `Method "${this.#method_name}" was called with ${actualArgs.length} arg(s) instead of ${expectedArgs.length}.`,
       codeThatThrew,
     );
 

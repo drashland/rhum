@@ -37,7 +37,7 @@ Deno.test("MethodVerifier", async (t) => {
 
         const expected = `
 
-VerificationError: Method "doSomething" was not called.
+VerificationError: Method "doSomething" was not called 2 time(s).
     at /deno/src/verifiers/method_verifier_test.ts:{line}:{column}
 
 Verification Results:
@@ -68,7 +68,7 @@ Check the above "method_verifier_test.ts" file at/around line {line} for code li
 
         const expected = `
 
-VerificationError: Method "doSomething" received unexpected arg \`2<number>\` at parameter position 1.
+VerificationError: Method "doSomething" received unexpected arg \`1<number>\` at parameter position 1.
     at /deno/src/verifiers/method_verifier_test.ts:{line}:{column}
 
 Verification Results:
