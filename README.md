@@ -1,10 +1,9 @@
 # Rhum
 
-[![Latest Release](https://img.shields.io/github/release/drashland/rhum.svg?color=bright_green&label=latest)](#)
-[![CI master](https://img.shields.io/github/workflow/status/drashland/rhum/master?label=ci%20-%20master)](#)
-[![YouTube](https://img.shields.io/badge/tutorials-youtube-red)](https://rb.gy/vxmeed)
+[![Latest Release](https://img.shields.io/github/release/drashland/rhum.svg?color=bright_green&label=latest)](https://github.com/drashland/rhum/releases/latest)
+[![CI](https://img.shields.io/github/workflow/status/drashland/rhum/master?label=ci)](https://github.com/drashland/rhum/actions/workflows/master.yml)
 
-<img align="right" height="100" src="./logo.svg" alt="Rhum logo">
+<img align="right" src="./logo.svg" alt="Drash Land - Rhum logo" height="150" style="max-height: 150px">
 
 Rhum is a test double library that follows
 [test double definitions](https://martinfowler.com/bliki/TestDouble.html) from
