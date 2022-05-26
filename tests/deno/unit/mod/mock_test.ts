@@ -45,12 +45,37 @@ Deno.test("Mock()", async (t) => {
 
         const mockMathService = Mock(MathService)
           .create();
+        const mockPrivateService = Mock(PrivateService)
+          .create();
         const mockTestObject = Mock(TestObjectLotsOfDataMembers)
-          .withConstructorArgs("has mocked math service", mockMathService)
+          .withConstructorArgs(
+            "has mocked math service",
+            mockMathService,
+            mockPrivateService,
+          )
           .create();
         assertEquals(mockMathService.calls.add, 0);
         mockTestObject.sum(1, 1);
         assertEquals(mockMathService.calls.add, 1);
+      },
+    });
+
+    await t.step({
+      name: "can set test double as arg and call it",
+      fn(): void {
+        const mockPrivateService = Mock(PrivateService)
+          .create();
+        const mockTestObject = Mock(TestObjectLotsOfDataMembers)
+          .withConstructorArgs(
+            "has mocked math service",
+            Mock(MathService).create(),
+            mockPrivateService,
+          )
+          .create();
+
+        mockPrivateService.expects("doSomething").toBeCalled(1);
+        mockTestObject.callPrivateService();
+        mockPrivateService.verifyExpectations();
       },
     });
   });
@@ -420,11 +445,17 @@ class MathService {
 class TestObjectLotsOfDataMembers {
   public name: string;
   #age = 0;
+  #private_service: PrivateService;
   protected math_service: MathService;
   protected protected_property = "I AM PROTECTED PROPERTY.";
-  constructor(name: string, mathService: MathService) {
+  constructor(
+    name: string,
+    mathService: MathService,
+    privateService: PrivateService,
+  ) {
     this.math_service = mathService;
     this.name = name;
+    this.#private_service = privateService;
   }
   public sum(
     num1: number,
@@ -445,6 +476,10 @@ class TestObjectLotsOfDataMembers {
   public set age(val: number) {
     this.#age = val;
   }
+
+  public callPrivateService() {
+    this.#private_service.doSomething();
+  }
 }
 
 class TestRequestHandler {
@@ -462,5 +497,11 @@ class TestRequestHandler {
     }
 
     return "posted";
+  }
+}
+
+class PrivateService {
+  public doSomething(): boolean {
+    return true;
   }
 }
