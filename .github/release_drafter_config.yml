@@ -42,13 +42,25 @@ template: |
   ```typescript
   // deps.ts
 
-  export { Dummy, Fake, Mock, Stub } from "https://deno.land/x/rhum@v$RESOLVED_VERSION/mod.ts";
+  export {
+    Dummy,
+    Fake,
+    Mock,
+    Spy,
+    Stub
+  } from "https://deno.land/x/rhum@v$RESOLVED_VERSION/mod.ts";
   ```
 
   2. Import the test doubles from your `deps.ts` file.
 
   ```typescript
-  import { Dummy, Fake, Mock, Stub } from "./deps.ts"
+  import {
+    Dummy,
+    Fake,
+    Mock,
+    Spy,
+    Stub
+  } from "./deps.ts"
 
   ... your
   ... code
