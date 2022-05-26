@@ -25,8 +25,8 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
     const original = new this.constructor_fn(...this.constructor_args);
 
     const mock = createMock<Constructor<ClassToMock>, ClassToMock>(
-      this.#constructor_fn,
-      ...this.#constructor_args,
+      this.constructor_fn,
+      ...this.constructor_args,
     );
 
     (mock as IMock<ClassToMock> & ITestDouble<ClassToMock>).init(
