@@ -1,4 +1,4 @@
-import type { MethodArguments, MethodCalls, MethodOf } from "./types.ts";
+import type { MethodCalls, MethodOf } from "./types.ts";
 
 export interface IMethodExpectation {
   toBeCalled(expectedCalls: number): void;
@@ -6,6 +6,17 @@ export interface IMethodExpectation {
 }
 
 export interface IMethodVerification {
+  /**
+   * Verify that this method was called. Optionally, verify that it was called a
+   * specific number of times.
+   *
+   * @param expectedCalls - (Optional) The number of calls this method is
+   * expected to have received. If not provided, then the verification process
+   * will assume "just verify that the method was called" instead of verifying
+   * that it was called a specific number of times.
+   *
+   * @returns `this` To allow method chaining.
+   */
   toBeCalled(expectedCalls?: number): this;
   toBeCalledWithArgs(...args: unknown[]): this;
   toBeCalledWithoutArgs(): this;
@@ -90,13 +101,32 @@ export interface IMock<OriginalObject> {
 }
 
 export interface ISpy<OriginalObject> {
-  calls: MethodCalls<OriginalObject>;
-  calls_arguments: MethodArguments<OriginalObject>;
   is_spy: boolean;
+  stubbed_methods: Record<MethodOf<OriginalObject>, ISpyStub>;
 
   verify(
     methodName: MethodOf<OriginalObject>,
   ): IMethodVerification;
+}
+
+export interface ISpyStub {
+  /**
+   * Access the method verifier in order to call verification methods like `.toBeCalled()`. Example:
+   *
+   * @example
+   * ```ts
+   * // Spying on an object's method
+   * const spy = Spy(obj, "someMethod");
+   * obj.someMethod();
+   * spy.verify().toBeCalled();
+   *
+   * // Spy on a function
+   * const spy = Spy(someFunction);
+   * someFunction();
+   * spy.verify().toBeCalled();
+   * ```
+   */
+  verify(): IMethodVerification;
 }
 
 export interface ITestDouble<OriginalObject> {
@@ -104,4 +134,8 @@ export interface ITestDouble<OriginalObject> {
     original: OriginalObject,
     methodsToTrack: string[],
   ): void;
+}
+
+export interface ISpyStubFunctionExpression {
+  verify(): IMethodVerification;
 }

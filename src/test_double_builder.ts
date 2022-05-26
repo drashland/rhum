@@ -6,15 +6,22 @@ import type { Constructor } from "./types.ts";
  */
 export class TestDoubleBuilder<OriginalClass> {
   /**
-   * The class object passed into the constructor
+   * The constructor function of the objet to create a test double out of.
    */
   protected constructor_fn: Constructor<OriginalClass>;
 
   /**
-   * A list of arguments the class constructor takes
+   * A list of arguments the class constructor takes. This is used to
+   * instantiate the original with arguments (if needed).
    */
   protected constructor_args: unknown[] = [];
 
+  /**
+   * A list of native methods on an original object that should not be modified.
+   * When adding an original's methods to a test double, the copying process
+   * uses this array to skip adding these native methods with tracking. There is
+   * no reason to track these methods.
+   */
   protected native_methods = [
     "__defineGetter__",
     "__defineSetter__",
@@ -36,8 +43,7 @@ export class TestDoubleBuilder<OriginalClass> {
   /**
    * Construct an object of this class.
    *
-   * @param constructorFn - The constructor function of the object to create a
-   * test double out of.
+   * @param constructorFn - See this#constructor_fn.
    */
   constructor(constructorFn: Constructor<OriginalClass>) {
     this.constructor_fn = constructorFn;

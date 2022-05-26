@@ -5,36 +5,83 @@ import { MethodVerifier } from "../method_verifier.ts";
 import { MockError } from "../errors.ts";
 import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
+/**
+ * Class to help mocks create method expectations.
+ */
 class MethodExpectation<OriginalObject> {
+  /**
+   * Property to hold the number of expected calls this method should receive.
+   */
   #expected_calls = 0;
+
+  /**
+   * See `MethodVerifier#method_name`.
+   */
   #method_name: MethodOf<OriginalObject>;
+
+  /**
+   * The verifier to use when verifying expectations.
+   */
   #verifier: MethodVerifier<OriginalObject>;
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @param methodName See `MethodVerifier#method_name`.
+   */
   constructor(methodName: MethodOf<OriginalObject>) {
     this.#method_name = methodName;
     this.#verifier = new MethodVerifier(methodName);
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   get method_name(): MethodOf<OriginalObject> {
     return this.#method_name;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
    * Set an expected number of calls.
    *
-   * @param expectedCalls - The number of calls to receive.
+   * @param expectedCalls - (Optional) The number of calls to receive. Defaults
+   * to -1 to tell `MethodVerifier` to "just check that the method was called".
    */
   public toBeCalled(expectedCalls?: number): void {
     this.#expected_calls = expectedCalls ?? -1;
   }
 
+  // public verify(actualCalls: number, actualArgs: unknown[]): void {
+  //   this.verifyCalls(
+  // }
+
   /**
    * Verify all expected calls were made.
+   *
+   * @param actualCalls - The number of actual calls.
    */
   public verifyCalls(actualCalls: number): void {
+    // If the expected calls is -1, then we do not show anything in the third
+    // argument to `this.#verifier.toBeCalled()`. Reason being we want to show
+    // this in the error stack trace ...
+    //
+    //     .expects("someMethod").toBeCalled()
+    //
+    // ... and not this ...
+    //
+    //     .expects("someMethod").toBeCalled(-1)
+    //
     const expectedCalls = this.#expected_calls !== -1
       ? ""
       : `${this.#expected_calls}`;
+
     this.#verifier.toBeCalled(
       actualCalls,
       this.#expected_calls,

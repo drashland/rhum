@@ -11,9 +11,21 @@ export type MethodOf<Object> = {
     : never;
 }[keyof Object];
 
-export type SpyReturnValue<T, R> = T extends Constructor<T> ? () => R
-  : string;
+export type StubReturnValue<Object, ReturnValue> = Object extends
+  Constructor<Object> ? () => ReturnValue
+  : ReturnValue;
 
-export type StubReturnValue<T, R> = T extends (...args: unknown[]) => unknown
-  ? () => R
-  : string;
+/**
+ * This type is callable.
+ *
+ * @example
+ * ```ts
+ * const hello: Callable<string> = () => {
+ *   return "world";
+ * }
+ *
+ * // Since `hello` is callable, we can call it
+ * hello(); // => "world"
+ * ```
+ */
+export type Callable<ReturnValue> = (...args: unknown[]) => ReturnValue;

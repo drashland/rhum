@@ -30,7 +30,13 @@ export class MethodVerificationError extends RhumError {
   #expected_results: string;
 
   /**
-   * @param message - The error message.
+   * @param message - The error message (to be shown in the stack trace).
+   * @param codeThatThrew - An example of the code (or the exact code) that
+   * caused this error to be thrown.
+   * @param actualResults - A message stating the actual results (to be show in
+   * the stack trace).
+   * @param expectedResults - A message stating the expected results (to be
+   * shown in the stack trace).
    */
   constructor(
     message: string,
