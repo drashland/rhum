@@ -51,10 +51,11 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
   public toBeCalled(
     actualCalls: number,
     expectedCalls?: number,
-    codeThatThrew?: string
+    codeThatThrew?: string,
   ): this {
     const calls = expectedCalls ?? "";
-    codeThatThrew = codeThatThrew ?? `.verify("${this.#method_name}").toBeCalled(${calls})`;
+    codeThatThrew = codeThatThrew ??
+      `.verify("${this.#method_name}").toBeCalled(${calls})`;
 
     const errorMessage = expectedCalls
       ? `Method "${this.#method_name}" was not called ${calls} time(s).`
@@ -64,7 +65,7 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
       actualCalls,
       expectedCalls,
       errorMessage,
-      codeThatThrew
+      codeThatThrew,
     );
 
     return this;
@@ -82,10 +83,11 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
   public toBeCalledWithArgs(
     actualArgs: unknown[],
     expectedArgs: unknown[],
-    codeThatThrew?: string
+    codeThatThrew?: string,
   ): this {
     const expectedArgsAsString = this.argsAsString(expectedArgs);
-    codeThatThrew = codeThatThrew ?? `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
+    codeThatThrew = codeThatThrew ??
+      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
 
     this.verifyToBeCalledWithArgsTooManyArgs(
       actualArgs,
@@ -122,14 +124,15 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
    */
   public toBeCalledWithoutArgs(
     actualArgs: unknown[],
-    codeThatThrew?: string
+    codeThatThrew?: string,
   ): this {
-    codeThatThrew = codeThatThrew ?? `.verify("${this.method_name}").toBeCalledWithoutArgs()`;
+    codeThatThrew = codeThatThrew ??
+      `.verify("${this.method_name}").toBeCalledWithoutArgs()`;
 
     this.verifyToBeCalledWithoutArgs(
       actualArgs,
       `Method "${this.#method_name}" was called with args when expected to receive no args.`,
-      codeThatThrew
+      codeThatThrew,
     );
 
     return this;

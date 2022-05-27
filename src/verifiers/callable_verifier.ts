@@ -207,7 +207,9 @@ export class CallableVerifier {
       }
 
       // Alright, we have an unexpected arg, so throw an error
-      const unexpectedArg = `\`${actualArgs[index]}${this.getArgType(actualArgs[index])}\``;
+      const unexpectedArg = `\`${actualArgs[index]}${
+        this.getArgType(actualArgs[index])
+      }\``;
 
       throw new VerificationError(
         errorMessage
