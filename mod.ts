@@ -88,10 +88,8 @@ export function Spy<
   OriginalFunction extends Callable<ReturnValue>,
   ReturnValue,
 >(
-  // deno-lint-ignore no-explicit-any
   functionExpression: OriginalFunction,
   returnValue?: ReturnValue,
-  // deno-lint-ignore no-explicit-any
 ): Interfaces.ISpyStubFunctionExpression & OriginalFunction;
 
 /**
