@@ -75,6 +75,7 @@ export interface IMethodExpectation {
    */
   toBeCalled(expectedCalls?: number): this;
 
+  // TODO(crookse) Future release
   /**
    * Set an expectation that the given args should be used during a method call.
    *
@@ -85,6 +86,7 @@ export interface IMethodExpectation {
    */
   // toBeCalledWithArgs(requiredArg: unknown, ...restOfArgs: unknown[]): this;
 
+  // TODO(crookse) Future release
   /**
    * Set an expectation that a method call should be called without args.
    *
