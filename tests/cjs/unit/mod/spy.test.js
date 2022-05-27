@@ -417,6 +417,7 @@ describe("Spy()", () => {
 
         // Create a function to call the spy to see if the spy works when not
         // directly called
+        // deno-lint-ignore no-inner-declarations
         function thingThatCallsTheSpy() {
           spyHello();
         }
@@ -469,6 +470,7 @@ describe("Spy()", () => {
 
         // Create a function to call the spy to see if the spy works when not
         // directly called
+        // deno-lint-ignore no-inner-declarations
         function thingThatCallsTheSpy() {
           spyHello("doth mother know you weareth her drapes", true);
         }
