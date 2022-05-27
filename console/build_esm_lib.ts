@@ -27,8 +27,12 @@ for (const index in filesToRewrite) {
   let contents = decoder.decode(Deno.readFileSync(file));
 
   // Step 2: Create an array of import/export statements from the contents
-  const importStatements = contents.match(/(import.+\.ts";)|(import.+(\n\s.+)+\n.+\.ts";)/g);
-  const exportStatements = contents.match(/(export.+\.ts";)|(export.+(\n\s.+)+\n.+\.ts";)/g);
+  const importStatements = contents.match(
+    /(import.+\.ts";)|(import.+(\n\s.+)+\n.+\.ts";)/g,
+  );
+  const exportStatements = contents.match(
+    /(export.+\.ts";)|(export.+(\n\s.+)+\n.+\.ts";)/g,
+  );
 
   // Step 3: Remove all .ts extensions from the import/export statements
   const newImportStatements = importStatements?.map((statement: string) => {
