@@ -183,8 +183,9 @@ export function createMock<OriginalConstructor, OriginalObject>(
       );
 
       if (!((methodName as string) in this.#original)) {
+        const typeSafeMethodName = String(methodName);
         throw new MockError(
-          `Method "${methodName}" does not exist.`,
+          `Method "${typeSafeMethodName}" does not exist.`,
         );
       }
 

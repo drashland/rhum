@@ -33,14 +33,16 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   //////////////////////////////////////////////////////////////////////////////
 
   get error(): void {
+    const typeSafeMethodName = String(this.#method_name);
+
     if (!this.#will_throw) {
       throw new PreProgrammedMethodError(
-        `Pre-programmed method "${this.#method_name}" is not set up to throw an error.`,
+        `Pre-programmed method "${typeSafeMethodName}" is not set up to throw an error.`,
       );
     }
     if (this.#error === undefined) {
       throw new PreProgrammedMethodError(
-        `Pre-programmed method "${this.#method_name}" is set up to throw an error, but no error was provided.`,
+        `Pre-programmed method "${typeSafeMethodName}" is set up to throw an error, but no error was provided.`,
       );
     }
 
@@ -49,8 +51,10 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
 
   get return(): ReturnValue {
     if (this.#return === undefined) {
+      const typeSafeMethodName = String(this.#method_name);
+
       throw new PreProgrammedMethodError(
-        `Pre-programmed method "${this.#method_name}" does not have a return value.`,
+        `Pre-programmed method "${typeSafeMethodName}" does not have a return value.`,
       );
     }
 

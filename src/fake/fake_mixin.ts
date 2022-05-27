@@ -66,8 +66,10 @@ export function createFake<OriginalConstructor, OriginalObject>(
       );
 
       if (!((methodName as string) in this.#original)) {
+        const typeSafeMethodName = String(methodName as string);
+
         throw new FakeError(
-          `Method "${methodName}" does not exist.`,
+          `Method "${typeSafeMethodName}" does not exist.`,
         );
       }
 

@@ -53,13 +53,15 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     expectedCalls?: number,
     codeThatThrew?: string,
   ): this {
+    const typeSafeMethod = String(this.#method_name);
+
     const calls = expectedCalls ?? "";
     codeThatThrew = codeThatThrew ??
-      `.verify("${this.#method_name}").toBeCalled(${calls})`;
+      `.verify("${typeSafeMethod}").toBeCalled(${calls})`;
 
     const errorMessage = expectedCalls
-      ? `Method "${this.#method_name}" was not called ${calls} time(s).`
-      : `Method "${this.#method_name}" was not called.`;
+      ? `Method "${typeSafeMethod}" was not called ${calls} time(s).`
+      : `Method "${typeSafeMethod}" was not called.`;
 
     this.verifyToBeCalled(
       actualCalls,
@@ -85,28 +87,30 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     expectedArgs: unknown[],
     codeThatThrew?: string,
   ): this {
+    const typeSafeMethodName = String(this.#method_name);
+
     const expectedArgsAsString = this.argsAsString(expectedArgs);
     codeThatThrew = codeThatThrew ??
-      `.verify("${this.#method_name}").toBeCalledWithArgs(${expectedArgsAsString})`;
+      `.verify("${typeSafeMethodName}").toBeCalledWithArgs(${expectedArgsAsString})`;
 
     this.verifyToBeCalledWithArgsTooManyArgs(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" received too many args.`,
+      `Method "${typeSafeMethodName}" received too many args.`,
       codeThatThrew,
     );
 
     this.verifyToBeCalledWithArgsTooFewArgs(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" was called with ${actualArgs.length} arg(s) instead of ${expectedArgs.length}.`,
+      `Method "${typeSafeMethodName}" was called with ${actualArgs.length} arg(s) instead of ${expectedArgs.length}.`,
       codeThatThrew,
     );
 
     this.verifyToBeCalledWithArgsUnexpectedValues(
       actualArgs,
       expectedArgs,
-      `Method "${this.#method_name}" received unexpected arg {{ unexpected_arg }} at parameter position {{ parameter_position }}.`,
+      `Method "${typeSafeMethodName}" received unexpected arg {{ unexpected_arg }} at parameter position {{ parameter_position }}.`,
       codeThatThrew,
     );
 
@@ -126,12 +130,14 @@ export class MethodVerifier<OriginalObject> extends CallableVerifier {
     actualArgs: unknown[],
     codeThatThrew?: string,
   ): this {
+    const typeSafeMethodName = String(this.#method_name);
+
     codeThatThrew = codeThatThrew ??
-      `.verify("${this.method_name}").toBeCalledWithoutArgs()`;
+      `.verify("${typeSafeMethodName}").toBeCalledWithoutArgs()`;
 
     this.verifyToBeCalledWithoutArgs(
       actualArgs,
-      `Method "${this.#method_name}" was called with args when expected to receive no args.`,
+      `Method "${typeSafeMethodName}" was called with args when expected to receive no args.`,
       codeThatThrew,
     );
 
