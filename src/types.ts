@@ -1,20 +1,30 @@
+/**
+ * Describes the type as something that is callable.
+ */
 // deno-lint-ignore no-explicit-any
-export type Constructor<T extends any> = new (...args: any[]) => T;
+export type Callable<ReturnValue> = (...args: any[]) => ReturnValue;
 
-export type MethodCalls<Object> = Record<keyof Object, number>;
+/**
+ * Describes the type as a constructable object using the `new` keyword.
+ */
+// deno-lint-ignore no-explicit-any
+export type Constructor<Class extends any> = new (...args: any[]) => Class;
 
+/**
+ * Describes the `MockExtension#calls` property.
+ *
+ * This is a record where the key is the method that was called and the value is
+ * the number of times the method was called.
+ */
+export type MockMethodCalls<Object> = Record<keyof Object, number>;
+
+/**
+ * Describes the type as a method of the given generic `Object`.
+ *
+ * This is used for type-hinting in places like `.verify("someMethod")`.
+ */
 export type MethodOf<Object> = {
   // deno-lint-ignore no-explicit-any
   [K in keyof Object]: Object[K] extends (...args: any[]) => unknown ? K
     : never;
 }[keyof Object];
-
-export type MemberOf<Object> = {
-  [K in keyof Object]: Object[K];
-}[keyof Object];
-
-export type MockedObject = { [k: string]: unknown };
-
-export type StubReturnValue<T, R> = T extends (...args: unknown[]) => unknown
-  ? () => R
-  : string;

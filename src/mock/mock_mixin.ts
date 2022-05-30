@@ -1,30 +1,105 @@
-import type { Constructor, MethodCalls, MethodOf } from "../types.ts";
-import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 import type { IMock } from "../interfaces.ts";
+import type { Constructor, MethodOf, MockMethodCalls } from "../types.ts";
 
-class MockError extends Error {}
+import { MethodVerifier } from "../verifiers/method_verifier.ts";
+import { MockError } from "../errors.ts";
+import { PreProgrammedMethod } from "../pre_programmed_method.ts";
 
+/**
+ * Class to help mocks create method expectations.
+ */
 class MethodExpectation<OriginalObject> {
+  /**
+   * Property to hold the number of expected calls this method should receive.
+   */
+  #expected_calls?: number | undefined;
+
+  /**
+   * Property to hold the expected args this method should use.
+   */
+  #expected_args?: unknown[] | undefined;
+
+  /**
+   * Property to hold the args this method was called with.
+   */
+  #args?: unknown[] | undefined;
+
+  /**
+   * See `MethodVerifier#method_name`.
+   */
   #method_name: MethodOf<OriginalObject>;
-  #expected_calls = 0;
+
+  /**
+   * The verifier to use when verifying expectations.
+   */
+  #verifier: MethodVerifier<OriginalObject>;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @param methodName - See `MethodVerifier#method_name`.
+   */
+  constructor(methodName: MethodOf<OriginalObject>) {
+    this.#method_name = methodName;
+    this.#verifier = new MethodVerifier(methodName);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   get method_name(): MethodOf<OriginalObject> {
     return this.#method_name;
   }
 
-  get expected_calls(): number {
-    return this.#expected_calls;
-  }
+  //////////////////////////////////////////////////////////////////////////////
+  // FILE MARKER - METHODS - PRIVATE ///////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
-  constructor(methodName: MethodOf<OriginalObject>) {
-    this.#method_name = methodName;
-  }
-
-  public toBeCalled(expectedCalls: number) {
+  /**
+   * See `IMethodExpectation.toBeCalled()`.
+   */
+  public toBeCalled(expectedCalls?: number): this {
     this.#expected_calls = expectedCalls;
+    return this;
+  }
+
+  /**
+   * See `IMethodExpectation.toBeCalledWithArgs()`.
+   */
+  public toBeCalledWithArgs(...expectedArgs: unknown[]): this {
+    this.#expected_args = expectedArgs;
+    return this;
+  }
+
+  /**
+   * See `IMethodExpectation.toBeCalledWithoutArgs()`.
+   */
+  public toBeCalledWithoutArgs(): this {
+    this.#expected_args = undefined;
+    return this;
+  }
+
+  /**
+   * Verify all expected calls were made.
+   *
+   * @param actualCalls - The number of actual calls.
+   */
+  public verifyCalls(actualCalls: number): void {
+    this.#verifier.toBeCalled(actualCalls, this.#expected_calls);
+    this.#verifier.toBeCalledWithoutArgs(this.#args ?? []);
   }
 }
 
+/**
+ * Create a mock object as an extension of an original object.
+ *
+ * @param OriginalClass - The class the mock should extend.
+ *
+ * @returns A mock object of the `OriginalClass`.
+ */
 export function createMock<OriginalConstructor, OriginalObject>(
   OriginalClass: OriginalConstructor,
   ...originalConstructorArgs: unknown[]
@@ -35,14 +110,14 @@ export function createMock<OriginalConstructor, OriginalObject>(
   >;
   return new class MockExtension extends Original {
     /**
-     * Helper property to see that this is a mock object and not the original.
+     * See `IMock#is_mock`.
      */
     is_mock = true;
 
     /**
-     * Property to track method calls.
+     * See `IMock#calls`.
      */
-    #calls!: MethodCalls<OriginalObject>;
+    #calls!: MockMethodCalls<OriginalObject>;
 
     /**
      * An array of expectations to verify (if any).
@@ -66,7 +141,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     // FILE MARKER - GETTERS / SETTERS /////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    get calls(): MethodCalls<OriginalObject> {
+    get calls(): MockMethodCalls<OriginalObject> {
       return this.#calls;
     }
 
@@ -84,10 +159,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Create a method expectation, which is basically asserting calls.
-     *
-     * @param method - The method to create an expectation for.
-     * @returns A method expectation.
+     * See `IMock.expects()`.
      */
     public expects(
       method: MethodOf<OriginalObject>,
@@ -98,10 +170,7 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Pre-program a method on the original to return a specific value.
-     *
-     * @param methodName The method name on the original.
-     * @returns A pre-programmed method that will be called instead of original.
+     * See `IMock.method()`.
      */
     public method<ReturnValueType>(
       methodName: MethodOf<OriginalObject>,
@@ -114,8 +183,9 @@ export function createMock<OriginalConstructor, OriginalObject>(
       );
 
       if (!((methodName as string) in this.#original)) {
+        const typeSafeMethodName = String(methodName);
         throw new MockError(
-          `Method "${methodName}" does not exist.`,
+          `Method "${typeSafeMethodName}" does not exist.`,
         );
       }
 
@@ -128,17 +198,11 @@ export function createMock<OriginalConstructor, OriginalObject>(
     }
 
     /**
-     * Verify all expectations created in this mock.
+     * See `IMock.verifyExpectations()`.
      */
     public verifyExpectations(): void {
       this.#expectations.forEach((e: MethodExpectation<OriginalObject>) => {
-        const expectedCalls = e.expected_calls;
-        const actualCalls = this.#calls[e.method_name];
-        if (expectedCalls !== actualCalls) {
-          throw new MockError(
-            `Method "${e.method_name}" expected ${expectedCalls} call(s), but received ${actualCalls} call(s).`,
-          );
-        }
+        e.verifyCalls(this.#calls[e.method_name]);
       });
     }
 
@@ -149,8 +213,10 @@ export function createMock<OriginalConstructor, OriginalObject>(
     /**
      * Construct the calls property. Only construct it, do not set it. The
      * constructor will set it.
+     *
      * @param methodsToTrack - All of the methods on the original object to make
      * trackable.
+     *
      * @returns - Key-value object where the key is the method name and the value
      * is the number of calls. All calls start at 0.
      */

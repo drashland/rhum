@@ -264,17 +264,20 @@ Deno.test("Mock()", async (t) => {
       },
     });
 
-    await t.step({
-      name: ".expects(...).toBeCalled(...)",
-      fn(): void {
-        const mock = Mock(TestObjectThree).create();
-        assertEquals(mock.is_mock, true);
+    // TODO(crookse) Uncomment and fix test if needed when
+    // toBeCalledWithoutArgs() is released
+    //
+    // await t.step({
+    //   name: ".expects(...).toBeCalledWithoutArgs(...)",
+    //   fn(): void {
+    //     const mock = Mock(TestObjectThree).create();
+    //     assertEquals(mock.is_mock, true);
 
-        mock.expects("hello").toBeCalled(2);
-        mock.test();
-        mock.verifyExpectations();
-      },
-    });
+    //     mock.expects("hello").toBeCalled(2).toBeCalledWithoutArgs();
+    //     mock.test();
+    //     mock.verifyExpectations();
+    //   },
+    // });
   });
 
   // TODO(crookse) Put the below tests into one of the groups above this line
