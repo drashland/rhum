@@ -64,6 +64,11 @@ function removeTsExtensions(filename: string): void {
     });
   }
 
+  console.log(`New contents (without .ts extensions):`);
+  console.log(contents);
+
   // Step 5: Rewrite the original file without .ts extensions
+  console.log(`Overwriting ${filename} with new contents.`);
   Deno.writeFileSync(filename, encoder.encode(contents));
+  console.log("File written.");
 }
