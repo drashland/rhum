@@ -3,30 +3,41 @@ const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 const workspace = "./tmp/conversion_workspace";
 
+const debug = false;
+
+function logDebug(msg: unknown): void {
+  if (!debug) {
+    return;
+  }
+
+  console.log(msg);
+}
+
 try {
-  console.log(`Creating ${workspace}.`);
+  logDebug(`Creating ${workspace}.`);
   emptyDirSync(workspace);
   ensureDirSync(workspace);
-  console.log(`Copying Rhum source files to ${workspace}.`);
+  logDebug(`Copying Rhum source files to ${workspace}.`);
   copySync("./src", workspace + "/src", { overwrite: true });
   copySync("./mod.ts", workspace + "/mod.ts", { overwrite: true });
 } catch (error) {
-  console.log(error);
+  logDebug(error);
   Deno.exit(1);
 }
 
-console.log("Starting .ts extension removal process.");
+logDebug("Starting .ts extension removal process.");
 
 for await (const entry of walk(workspace)) {
   if (!entry.isFile) {
     continue;
   }
 
-  console.log(`Removing .ts extensions from ${entry.path}`);
+  logDebug(`Removing .ts extensions from ${entry.path}.`);
   removeTsExtensions(entry.path);
+  logDebug("Moving to next file.\n\n");
 }
 
-console.log("Done removing .ts extensions from source files.");
+logDebug("Done removing .ts extensions from source files.");
 
 /**
  * Remove the .ts extensions for runtimes that do not require it.
@@ -37,11 +48,19 @@ function removeTsExtensions(filename: string): void {
 
   // Step 2: Create an array of import/export statements from the contents
   const importStatements = contents.match(
-    /(import.+\.ts";)|(import.+(\n\s.+)+\n.+\.ts";)/g,
+    /(import.+\.ts";)|(import.+((\n|\r)\s.+)+(\n|\r).+\.ts";)/g,
   );
   const exportStatements = contents.match(
-    /(export.+\.ts";)|(export.+(\n\s.+)+\n.+\.ts";)/g,
+    /(export.+\.ts";)|(export.+((\n|\r)\s.+)+(\n|\r).+\.ts";)/g,
   );
+
+  // FIXME(crookse) This is a temporary fix for removing .ts extensions from the
+  // the `interfaces.ts` import statement in `spy_stub_builder.ts`. For some
+  // reason, Windows (in the CI) is not removing the `.ts` extension from the
+  // `interfaces.ts` import statement.
+  if (filename.includes("spy_stub_builder.ts")) {
+    contents = contents.replace("../interfaces.ts", "../interfaces")
+  }
 
   // Step 3: Remove all .ts extensions from the import/export statements
   const newImportStatements = importStatements?.map((statement: string) => {
@@ -64,11 +83,11 @@ function removeTsExtensions(filename: string): void {
     });
   }
 
-  console.log(`New contents (without .ts extensions):`);
-  console.log(contents);
+  logDebug(`New contents (without .ts extensions):`);
+  logDebug(contents);
 
   // Step 5: Rewrite the original file without .ts extensions
-  console.log(`Overwriting ${filename} with new contents.`);
+  logDebug(`Overwriting ${filename} with new contents.`);
   Deno.writeFileSync(filename, encoder.encode(contents));
-  console.log("File written.");
+  logDebug("File written.");
 }
