@@ -59,7 +59,7 @@ function removeTsExtensions(filename: string): void {
   // reason, Windows (in the CI) is not removing the `.ts` extension from the
   // `interfaces.ts` import statement.
   if (filename.includes("spy_stub_builder.ts")) {
-    contents = contents.replace("../interfaces.ts", "../interfaces")
+    contents = contents.replace("../interfaces.ts", "../interfaces");
   }
 
   // Step 3: Remove all .ts extensions from the import/export statements
