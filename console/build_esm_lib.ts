@@ -1,30 +1,39 @@
+import { copySync, emptyDirSync, ensureDirSync, walk } from "./deps.ts";
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
+const workspace = "./tmp/conversion_workspace";
 
-const filesToRewrite = [
-  "tmp/conversion_workspace/mod.ts",
-  "tmp/conversion_workspace/src/errors.ts",
-  "tmp/conversion_workspace/src/fake/fake_builder.ts",
-  "tmp/conversion_workspace/src/fake/fake_mixin.ts",
-  "tmp/conversion_workspace/src/interfaces.ts",
-  "tmp/conversion_workspace/src/mock/mock_builder.ts",
-  "tmp/conversion_workspace/src/mock/mock_mixin.ts",
-  "tmp/conversion_workspace/src/pre_programmed_method.ts",
-  "tmp/conversion_workspace/src/spy/spy_builder.ts",
-  "tmp/conversion_workspace/src/spy/spy_mixin.ts",
-  "tmp/conversion_workspace/src/spy/spy_stub_builder.ts",
-  "tmp/conversion_workspace/src/test_double_builder.ts",
-  "tmp/conversion_workspace/src/types.ts",
-  "tmp/conversion_workspace/src/verifiers/callable_verifier.ts",
-  "tmp/conversion_workspace/src/verifiers/function_expression_verifier.ts",
-  "tmp/conversion_workspace/src/verifiers/method_verifier.ts",
-];
+try {
+  console.log(`Creating ${workspace}.`);
+  emptyDirSync(workspace);
+  ensureDirSync(workspace);
+  console.log(`Copying Rhum source files to ${workspace}.`);
+  copySync("./src", workspace + "/src", { overwrite: true });
+  copySync("./mod.ts", workspace + "/mod.ts", { overwrite: true });
+} catch (error) {
+  console.log(error);
+  Deno.exit(1);
+}
 
-for (const index in filesToRewrite) {
-  const file = filesToRewrite[index];
+console.log("Starting .ts extension removal process.");
 
+for await (const entry of walk(workspace)) {
+  if (!entry.isFile) {
+    continue;
+  }
+
+  console.log(`Removing .ts extensions from ${entry.path}`);
+  removeTsExtensions(entry.path);
+}
+
+console.log("Done removing .ts extensions from source files.");
+
+/**
+ * Remove the .ts extensions for runtimes that do not require it.
+ */
+function removeTsExtensions(filename: string): void {
   // Step 1: Read contents
-  let contents = decoder.decode(Deno.readFileSync(file));
+  let contents = decoder.decode(Deno.readFileSync(filename));
 
   // Step 2: Create an array of import/export statements from the contents
   const importStatements = contents.match(
@@ -56,5 +65,5 @@ for (const index in filesToRewrite) {
   }
 
   // Step 5: Rewrite the original file without .ts extensions
-  Deno.writeFileSync(file, encoder.encode(contents));
+  Deno.writeFileSync(filename, encoder.encode(contents));
 }
