@@ -2,6 +2,8 @@ name: Release
 on:
   release:
     types: [published]
+
+  # In the even this workflow fails, it can be started manually via `workflow_dispatch`
   workflow_dispatch:
 
 jobs:
@@ -16,6 +18,10 @@ jobs:
       # We need deno because the "Build CJS and ESM" step runs `deno run`
       - name: Install Deno
         uses: denoland/setup-deno@v1
+
+      - name: Pre-check release version
+        run: |
+          deno run --allow-read ./console/pre_check_release.ts ${{ github.event.release.tag_name }}
 
       # Setup .npmrc file to publish to npm
       - name: Install Node

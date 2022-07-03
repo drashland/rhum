@@ -9,9 +9,10 @@
   "license": "MIT",
   "scripts": {
     "build": "console/build_esm_lib && yarn build:cjs && yarn build:esm",
-    "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:conversion-workspace": "deno run --allow-read --allow-write ./console/build_esm_lib.ts",
     "build:esm": "tsc --project tsconfig.esm.json",
+    "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
     "test": "jest"
   },
