@@ -301,41 +301,42 @@ Deno.test("Mock()", async (t) => {
         },
       });
 
-    await t.step({
-      name: `.willReturn(...) returns true or false depending on given args (multiple args)`,
-      fn(): void {
-        const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
-          .create();
+      await t.step({
+        name:
+          `.willReturn(...) returns true or false depending on given args (multiple args)`,
+        fn(): void {
+          const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
+            .create();
 
-        const mockFive = Mock(TestObjectFiveMultipleArgs)
-          .withConstructorArgs(mockFiveService)
-          .create();
+          const mockFive = Mock(TestObjectFiveMultipleArgs)
+            .withConstructorArgs(mockFiveService)
+            .create();
 
-        assertEquals(mockFive.is_mock, true);
-        assertEquals(mockFiveService.is_mock, true);
+          assertEquals(mockFive.is_mock, true);
+          assertEquals(mockFiveService.is_mock, true);
 
-        mockFiveService
-          .method("get")
-          .withArgs("host", "localhost")
-          .willReturn("locaaaaaal");
+          mockFiveService
+            .method("get")
+            .withArgs("host", "localhost")
+            .willReturn("locaaaaaal");
 
-        mockFiveService
-          .method("get")
-          .withArgs("port", 5000)
-          .willReturn(3000);
+          mockFiveService
+            .method("get")
+            .withArgs("port", 5000)
+            .willReturn(3000);
 
-        // `false` because `mockFiveService.get("port") == 3000`
-        assertEquals(mockFive.send(), false);
+          // `false` because `mockFiveService.get("port") == 3000`
+          assertEquals(mockFive.send(), false);
 
-        mockFiveService
-          .method("get")
-          .withArgs("port", 5000)
-          .willReturn(4000);
+          mockFiveService
+            .method("get")
+            .withArgs("port", 5000)
+            .willReturn(4000);
 
-        // `true` because `mockFiveService.get("port") != 3000`
-        assertEquals(mockFive.send(), true);
-      },
-    });
+          // `true` because `mockFiveService.get("port") != 3000`
+          assertEquals(mockFive.send(), true);
+        },
+      });
     });
 
     // TODO(crookse) Uncomment and fix test if needed when
@@ -529,7 +530,6 @@ class TestObjectFiveService {
     return this.#map.get(item) as T;
   }
 }
-
 
 class TestObjectFiveMultipleArgs {
   private readonly service: TestObjectFiveServiceMultipleArgs;

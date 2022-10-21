@@ -267,7 +267,8 @@ Deno.test("Fake()", async (t) => {
 
   await t.step(".withArgs(...)", async (t) => {
     await t.step({
-      name: `.willReturn(...) returns true or false depending on given args (one arg)`,
+      name:
+        `.willReturn(...) returns true or false depending on given args (one arg)`,
       fn(): void {
         const fakeFiveService = Fake(TestObjectFiveService)
           .create();
@@ -303,7 +304,8 @@ Deno.test("Fake()", async (t) => {
     });
 
     await t.step({
-      name: `.willReturn(...) returns true or false depending on given args (multiple args)`,
+      name:
+        `.willReturn(...) returns true or false depending on given args (multiple args)`,
       fn(): void {
         const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
           .create();
