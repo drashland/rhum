@@ -15,8 +15,7 @@
     "build:windows": "bash console/build_esm_lib && yarn build:cjs && yarn build:esm",
     "check": "rm -rf node_modules/ && rm yarn.lock && yarn install && yarn build && yarn test",
     "release": "yarn publish --access public",
-    "test:deno": "deno test --check -A tests/deno",
-    "test:node": "jest"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/preset-env": "7.x",

@@ -36,9 +36,9 @@ export interface IFake<OriginalObject> {
    *
    * @param method - The name of the method to shorten.
    */
-  method(
+  method<T>(
     method: MethodOf<OriginalObject>,
-  ): IMethodChanger;
+  ): IMethodChanger<T>;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,13 +99,13 @@ export interface IMethodExpectation {
 // FILE MARKER - IMETHODCHANGER ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IMethodChanger {
+export interface IMethodChanger<ReturnValue> {
   /**
    * Make the given method return the given `returnValue`.
    *
    * @param returnValue - The value to make the method return.
    */
-  willReturn<T>(returnValue: T): void;
+  willReturn<T>(returnValue: T): IMethodSetup<ReturnValue>;
 
   /**
    * Make the given method throw the given error.
@@ -113,7 +113,26 @@ export interface IMethodChanger {
    * @param error - An error which extends the `Error` class or has the same
    * interface as the `Error` class.
    */
-  willThrow<T>(error: IError & T): void;
+  willThrow<T>(error: IError & T): IMethodSetup<ReturnValue>;
+
+  withArgs(...args: unknown[]): IMethodSetup<ReturnValue>;
+}
+
+export interface IMethodSetup<ReturnValue> {
+  /**
+   * Make the given method return the given `returnValue`.
+   *
+   * @param returnValue - The value to make the method return.
+   */
+  willReturn(returnValue: ReturnValue): IMethodSetup<ReturnValue>;
+
+  /**
+   * Make the given method throw the given error.
+   *
+   * @param error - An error which extends the `Error` class or has the same
+   * interface as the `Error` class.
+   */
+  willThrow(error: IError): IMethodSetup<ReturnValue>;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,9 +186,9 @@ export interface IMock<OriginalObject> {
    *
    * @param method - The name of the method to pre-program.
    */
-  method(
+  method<ReturnValue>(
     method: MethodOf<OriginalObject>,
-  ): IMethodChanger;
+  ): IMethodChanger<ReturnValue>;
 
   /**
    * Verify that all expectations from the `.expects()` calls.

@@ -264,6 +264,80 @@ Deno.test("Fake()", async (t) => {
       },
     });
   });
+
+  await t.step(".withArgs(...)", async (t) => {
+    await t.step({
+      name: `.willReturn(...) returns true or false depending on given args (one arg)`,
+      fn(): void {
+        const fakeFiveService = Fake(TestObjectFiveService)
+          .create();
+
+        const fakeFive = Fake(TestObjectFive)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .withArgs("host")
+          .willReturn("locaaaaaal");
+
+        fakeFiveService
+          .method("get")
+          .withArgs("port")
+          .willReturn(3000);
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .withArgs("port")
+          .willReturn(4000);
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
+      },
+    });
+
+    await t.step({
+      name: `.willReturn(...) returns true or false depending on given args (multiple args)`,
+      fn(): void {
+        const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
+          .create();
+
+        const fakeFive = Fake(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .withArgs("host", "localhost")
+          .willReturn("locaaaaaal");
+
+        fakeFiveService
+          .method("get")
+          .withArgs("port", 5000)
+          .willReturn(3000);
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .withArgs("port", 5000)
+          .willReturn(4000);
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
+      },
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -311,30 +385,6 @@ class TestObjectFour {
   }
 }
 
-class PrivateService {
-  public doSomething(): boolean {
-    return true;
-  }
-}
-
-class Resource {
-  #repository: Repository;
-
-  constructor(
-    serviceOne: Repository,
-  ) {
-    this.#repository = serviceOne;
-  }
-
-  public getUsers() {
-    this.#repository.findAllUsers();
-  }
-
-  public getUser(id: number) {
-    this.#repository.findUserById(id);
-  }
-}
-
 class TestObjectFourBuilder {
   #something_one?: string;
   #something_two?: string;
@@ -363,6 +413,94 @@ class TestObjectFourBuilder {
 
   #setSomethingTwo(): void {
     this.#something_two = "two";
+  }
+}
+
+class TestObjectFive {
+  private readonly service: TestObjectFiveService;
+
+  public constructor(service: TestObjectFiveService) {
+    this.service = service;
+  }
+
+  public send(): boolean {
+    const host = this.service.get<string>("host");
+    const port = this.service.get<number>("port");
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveService {
+  #map = new Map<string, unknown>();
+  constructor() {
+    this.#map.set("host", "locaaaaaal");
+    this.#map.set("port", 3000);
+  }
+  public get<T>(item: string): T {
+    return this.#map.get(item) as T;
+  }
+}
+
+class TestObjectFiveMultipleArgs {
+  private readonly service: TestObjectFiveServiceMultipleArgs;
+
+  public constructor(service: TestObjectFiveServiceMultipleArgs) {
+    this.service = service;
+  }
+
+  public send(): boolean {
+    const host = this.service.get<string>("host", "localhost");
+    const port = this.service.get<number>("port", 5000);
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveServiceMultipleArgs {
+  #map = new Map<string, unknown>();
+  public get<T>(key: string, defaultValue: T): T {
+    return this.#map.get(key) as T ?? defaultValue;
+  }
+}
+
+class PrivateService {
+  public doSomething(): boolean {
+    return true;
+  }
+}
+
+class Resource {
+  #repository: Repository;
+
+  constructor(
+    serviceOne: Repository,
+  ) {
+    this.#repository = serviceOne;
+  }
+
+  public getUsers() {
+    this.#repository.findAllUsers();
+  }
+
+  public getUser(id: number) {
+    this.#repository.findUserById(id);
   }
 }
 

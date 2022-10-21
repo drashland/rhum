@@ -112,10 +112,13 @@ export class MockBuilder<ClassToMock> extends TestDoubleBuilder<ClassToMock> {
         // something. If it was, then we make sure that this method we are
         // currently defining returns that pre-programmed value.
         if (methodToCall instanceof PreProgrammedMethod) {
-          if (methodToCall.will_throw) {
-            throw methodToCall.error;
+          const methodSetup = methodToCall.findSetupByArgs(args);
+
+          if (methodSetup?.will_throw) {
+            throw methodSetup.throw();
           }
-          return methodToCall.return;
+
+          return methodSetup?.return();
         }
 
         // When method calls its original self, let the `this` context of the
