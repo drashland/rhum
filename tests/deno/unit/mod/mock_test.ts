@@ -264,79 +264,103 @@ Deno.test("Mock()", async (t) => {
       },
     });
 
-    await t.step(".withArgs(...)", async (t) => {
-      await t.step({
-        name: `.willReturn(...) returns true or false depending on given args`,
-        fn(): void {
-          const mockFiveService = Mock(TestObjectFiveService)
-            .create();
+    await t.step({
+      name: `.willCall(...) returns true|false depending on given args`,
+      fn(): void {
+        const mockFiveService = Mock(TestObjectFiveService)
+          .create();
 
-          const mockFive = Mock(TestObjectFive)
-            .withConstructorArgs(mockFiveService)
-            .create();
+        const mockFive = Mock(TestObjectFive)
+          .withConstructorArgs(mockFiveService)
+          .create();
 
-          assertEquals(mockFive.is_mock, true);
-          assertEquals(mockFiveService.is_mock, true);
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
 
-          mockFiveService
-            .method("get")
-            .withArgs("host")
-            .willReturn("locaaaaaal");
+        mockFiveService
+          .method("get")
+          .willCall((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
 
-          mockFiveService
-            .method("get")
-            .withArgs("port")
-            .willReturn(3000);
+            if (key == "port") {
+              return 3000;
+            }
 
-          // `false` because `mockFiveService.get("port") == 3000`
-          assertEquals(mockFive.send(), false);
+            return undefined;
+          });
 
-          mockFiveService
-            .method("get")
-            .withArgs("port")
-            .willReturn(4000);
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
 
-          // `true` because `mockFiveService.get("port") != 3000`
-          assertEquals(mockFive.send(), true);
-        },
-      });
+        mockFiveService
+          .method("get")
+          .willCall((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
 
-      await t.step({
-        name:
-          `.willReturn(...) returns true or false depending on given args (multiple args)`,
-        fn(): void {
-          const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
-            .create();
+            if (key == "port") {
+              return 4000;
+            }
 
-          const mockFive = Mock(TestObjectFiveMultipleArgs)
-            .withConstructorArgs(mockFiveService)
-            .create();
+            return undefined;
+          });
 
-          assertEquals(mockFive.is_mock, true);
-          assertEquals(mockFiveService.is_mock, true);
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
+      },
+    });
 
-          mockFiveService
-            .method("get")
-            .withArgs("host", "localhost")
-            .willReturn("locaaaaaal");
+    await t.step({
+      name:
+        `.willCall(...) returns true|false depending on given args (multiple args)`,
+      fn(): void {
+        const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
+          .create();
 
-          mockFiveService
-            .method("get")
-            .withArgs("port", 5000)
-            .willReturn(3000);
+        const mockFive = Mock(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(mockFiveService)
+          .create();
 
-          // `false` because `mockFiveService.get("port") == 3000`
-          assertEquals(mockFive.send(), false);
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
 
-          mockFiveService
-            .method("get")
-            .withArgs("port", 5000)
-            .willReturn(4000);
+        mockFiveService
+          .method("get")
+          .willCall((key: string, defaultValue: number | string) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return null;
+            }
 
-          // `true` because `mockFiveService.get("port") != 3000`
-          assertEquals(mockFive.send(), true);
-        },
-      });
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
+
+        mockFiveService
+          .method("get")
+          .willCall((key: string, defaultValue: string | number) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
+      },
     });
 
     // TODO(crookse) Uncomment and fix test if needed when

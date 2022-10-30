@@ -100,17 +100,11 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
             ...params: unknown[]
           ) => unknown);
 
-        // We need to check if the method was pre-preprogrammed to return
-        // something. If it was, then we make sure that this method we are
-        // currently defining returns that pre-programmed value.
+        // We need to check if the method was pre-preprogrammed to do something.
+        // If it was, then we make sure that this method we are currently
+        // defining returns that pre-programmed expectation.
         if (methodToCall instanceof PreProgrammedMethod) {
-          const methodSetup = methodToCall.findSetupByArgs(args);
-
-          if (methodSetup?.will_throw) {
-            methodSetup.throw();
-          }
-
-          return methodSetup?.return();
+          return methodToCall.run(args);
         }
 
         // When method calls its original self, let the `this` context of the

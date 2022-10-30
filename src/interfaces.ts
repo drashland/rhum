@@ -16,7 +16,7 @@ export interface IError {
   name: string;
 
   /**
-   * The error message.
+   * The error message. Allows undefined in case there is no message.
    */
   message?: string;
 }
@@ -100,12 +100,14 @@ export interface IMethodExpectation {
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IMethodChanger<ReturnValue> {
+  willCall<T>(args: T): void;
+
   /**
    * Make the given method return the given `returnValue`.
    *
    * @param returnValue - The value to make the method return.
    */
-  willReturn<T>(returnValue: T): IMethodSetup<ReturnValue>;
+  willReturn<T>(returnValue: T): void;
 
   /**
    * Make the given method throw the given error.
@@ -113,26 +115,7 @@ export interface IMethodChanger<ReturnValue> {
    * @param error - An error which extends the `Error` class or has the same
    * interface as the `Error` class.
    */
-  willThrow<T>(error: IError & T): IMethodSetup<ReturnValue>;
-
-  withArgs(...args: unknown[]): IMethodSetup<ReturnValue>;
-}
-
-export interface IMethodSetup<ReturnValue> {
-  /**
-   * Make the given method return the given `returnValue`.
-   *
-   * @param returnValue - The value to make the method return.
-   */
-  willReturn(returnValue: ReturnValue): IMethodSetup<ReturnValue>;
-
-  /**
-   * Make the given method throw the given error.
-   *
-   * @param error - An error which extends the `Error` class or has the same
-   * interface as the `Error` class.
-   */
-  willThrow(error: IError): IMethodSetup<ReturnValue>;
+  willThrow<T>(error: IError & T): void;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

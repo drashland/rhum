@@ -198,7 +198,8 @@ Deno.test("Fake()", async (t) => {
         assertEquals(fake1.something_one, "one");
         assertEquals(fake1.something_two, "two");
 
-        // Assert that the fake implementation will not set properties
+        // Assert that the fake implementation will not set properties due to
+        // taking a shortcut
         const fake2 = Fake(TestObjectFourBuilder).create();
         assertEquals(fake2.is_fake, true);
         fake2
@@ -217,6 +218,105 @@ Deno.test("Fake()", async (t) => {
         assertEquals(fake3.something_two, "two");
         fake3.something_one = "you got changed";
         assertEquals(fake3.something_one, "you got changed");
+      },
+    });
+
+    await t.step({
+      name: `.willCall(...) returns true|false depending on given args`,
+      fn(): void {
+        const fakeFiveService = Fake(TestObjectFiveService)
+          .create();
+
+        const fakeFive = Fake(TestObjectFive)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .willCall((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 3000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .willCall((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
+      },
+    });
+
+    await t.step({
+      name:
+        `.willCall(...) returns true|false depending on given args (multiple args)`,
+      fn(): void {
+        const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
+          .create();
+
+        const fakeFive = Fake(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .willCall((key: string, defaultValue: number | string) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return null;
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .willCall((key: string, defaultValue: string | number) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
       },
     });
 
@@ -261,82 +361,6 @@ Deno.test("Fake()", async (t) => {
           RandomError2,
           "Some message not by the constructor.",
         );
-      },
-    });
-  });
-
-  await t.step(".withArgs(...)", async (t) => {
-    await t.step({
-      name:
-        `.willReturn(...) returns true or false depending on given args (one arg)`,
-      fn(): void {
-        const fakeFiveService = Fake(TestObjectFiveService)
-          .create();
-
-        const fakeFive = Fake(TestObjectFive)
-          .withConstructorArgs(fakeFiveService)
-          .create();
-
-        assertEquals(fakeFive.is_fake, true);
-        assertEquals(fakeFiveService.is_fake, true);
-
-        fakeFiveService
-          .method("get")
-          .withArgs("host")
-          .willReturn("locaaaaaal");
-
-        fakeFiveService
-          .method("get")
-          .withArgs("port")
-          .willReturn(3000);
-
-        // `false` because `fakeFiveService.get("port") == 3000`
-        assertEquals(fakeFive.send(), false);
-
-        fakeFiveService
-          .method("get")
-          .withArgs("port")
-          .willReturn(4000);
-
-        // `true` because `fakeFiveService.get("port") != 3000`
-        assertEquals(fakeFive.send(), true);
-      },
-    });
-
-    await t.step({
-      name:
-        `.willReturn(...) returns true or false depending on given args (multiple args)`,
-      fn(): void {
-        const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
-          .create();
-
-        const fakeFive = Fake(TestObjectFiveMultipleArgs)
-          .withConstructorArgs(fakeFiveService)
-          .create();
-
-        assertEquals(fakeFive.is_fake, true);
-        assertEquals(fakeFiveService.is_fake, true);
-
-        fakeFiveService
-          .method("get")
-          .withArgs("host", "localhost")
-          .willReturn("locaaaaaal");
-
-        fakeFiveService
-          .method("get")
-          .withArgs("port", 5000)
-          .willReturn(3000);
-
-        // `false` because `fakeFiveService.get("port") == 3000`
-        assertEquals(fakeFive.send(), false);
-
-        fakeFiveService
-          .method("get")
-          .withArgs("port", 5000)
-          .willReturn(4000);
-
-        // `true` because `fakeFiveService.get("port") != 3000`
-        assertEquals(fakeFive.send(), true);
       },
     });
   });
