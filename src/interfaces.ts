@@ -100,18 +100,24 @@ export interface IMethodExpectation {
 ////////////////////////////////////////////////////////////////////////////////
 
 export interface IMethodChanger<ReturnValue> {
-  willCall<T>(args: T): void;
+  // TODO(crookse) Think about introducing this as an alias to willReturn().
+  // willCall<T>(args: T): void;
 
   /**
-   * Make the given method return the given `returnValue`.
-   *
-   * @param returnValue - The value to make the method return.
+   * Pre-program a method to return (and call) the following action.
+   * @param action The action the method will return and call.
+   */
+  willReturn(action: (...args: unknown[]) => ReturnValue): void;
+
+  /**
+   * Pre-program this method to return the given value.
+   * @param returnValue The value that should be returned when this object is
+   * being used in place of an original method.
    */
   willReturn<T>(returnValue: T): void;
 
   /**
-   * Make the given method throw the given error.
-   *
+   * Pre-program this method to throw the given error.
    * @param error - An error which extends the `Error` class or has the same
    * interface as the `Error` class.
    */

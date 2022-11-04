@@ -265,7 +265,8 @@ Deno.test("Mock()", async (t) => {
     });
 
     await t.step({
-      name: `.willCall(...) returns true|false depending on given args`,
+      name:
+        `.willReturn((...) => {...}) returns true|false depending on given args`,
       fn(): void {
         const mockFiveService = Mock(TestObjectFiveService)
           .create();
@@ -279,7 +280,7 @@ Deno.test("Mock()", async (t) => {
 
         mockFiveService
           .method("get")
-          .willCall((key: string, _defaultValue: number | string) => {
+          .willReturn((key: string, _defaultValue: number | string) => {
             if (key == "host") {
               return "locaaaaaal";
             }
@@ -296,7 +297,7 @@ Deno.test("Mock()", async (t) => {
 
         mockFiveService
           .method("get")
-          .willCall((key: string, _defaultValue: number | string) => {
+          .willReturn((key: string, _defaultValue: number | string) => {
             if (key == "host") {
               return "locaaaaaal";
             }
@@ -315,7 +316,7 @@ Deno.test("Mock()", async (t) => {
 
     await t.step({
       name:
-        `.willCall(...) returns true|false depending on given args (multiple args)`,
+        `.willReturn((...) => {...}) returns true|false depending on given args (multiple args)`,
       fn(): void {
         const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
           .create();
@@ -329,7 +330,7 @@ Deno.test("Mock()", async (t) => {
 
         mockFiveService
           .method("get")
-          .willCall((key: string, defaultValue: number | string) => {
+          .willReturn((key: string, defaultValue: number | string) => {
             if (key == "host" && defaultValue == "localhost") {
               return null;
             }
@@ -346,7 +347,7 @@ Deno.test("Mock()", async (t) => {
 
         mockFiveService
           .method("get")
-          .willCall((key: string, defaultValue: string | number) => {
+          .willReturn((key: string, defaultValue: string | number) => {
             if (key == "host" && defaultValue == "localhost") {
               return "locaaaaaal";
             }

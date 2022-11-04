@@ -1,7 +1,7 @@
-import type { IError } from "./interfaces.ts";
+import type { IError, IMethodChanger } from "./interfaces.ts";
 import type { MethodOf } from "./types.ts";
 
-class PreProgrammedMethodError extends Error {}
+type ReturnValueFunction<ReturnValue> = (...args: unknown[]) => ReturnValue;
 
 /**
  * Class that allows to be a "stand-in" for a method. For example, when used in
@@ -9,7 +9,8 @@ class PreProgrammedMethodError extends Error {}
  * methods (using this class), and have a system under test use the
  * pre-programmed methods.
  */
-export class PreProgrammedMethod<OriginalObject, ReturnValue> {
+export class PreProgrammedMethod<OriginalObject, ReturnValue>
+  implements IMethodChanger<ReturnValue> {
   /**
    * The original name of the method being pre-programmed.
    */
@@ -37,33 +38,32 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   // FILE MARKER - METHODS - PUBLIC  ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  public willCall(action: (...args: unknown[]) => ReturnValue): void {
-    this.#method_setup = new MethodSetupCallsCallback(
-      this.#method_name,
-      action,
-    );
-  }
+  // public willCall(action: (...args: unknown[]) => ReturnValue): void {
+  //   this.#method_setup = new MethodSetupCallsCallback(
+  //     this.#method_name,
+  //     action,
+  //   );
+  // }
 
-  /**
-   * Pre-program this method to return the given value.
-   *
-   * @param returnValue The value that should be returned when this object is
-   * being used in place of an original method.
-   */
+  // public willReturn(action: (...args: unknown[]) => ReturnValue): void;
+
   public willReturn(
-    returnValue: ReturnValue | ((...args: unknown[]) => ReturnValue),
+    returnValue: ReturnValue | ReturnValueFunction<ReturnValue>,
   ): void {
+    if (typeof returnValue === "function") {
+      this.#method_setup = new MethodSetupCallsCallback(
+        this.#method_name,
+        returnValue as ReturnValueFunction<ReturnValue>,
+      );
+      return;
+    }
+
     this.#method_setup = new MethodSetupReturnsStaticValue(
       this.#method_name,
       returnValue,
     );
   }
 
-  /**
-   * Pre-program this method to throw the given error.
-   *
-   * @param error - The error to throw.
-   */
   public willThrow(error: IError): void {
     this.#method_setup = new MethodSetupThrowsError<OriginalObject>(
       this.#method_name,
@@ -71,7 +71,12 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
     );
   }
 
-  public run(args: unknown[]): unknown {
+  /**
+   * Run this method.
+   * @param args
+   * @returns
+   */
+  public run(args?: unknown[]): unknown {
     if (!this.#method_setup) {
       throw new Error(
         `Pre-programmed method "${
