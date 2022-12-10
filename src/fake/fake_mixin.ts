@@ -79,7 +79,9 @@ export function createFake<OriginalConstructor, OriginalObject>(
         methodName,
       );
 
-      if (!((methodName as string) in (this.#original as Record<string, unknown>))) {
+      if (
+        !((methodName as string) in (this.#original as Record<string, unknown>))
+      ) {
         const typeSafeMethodName = String(methodName as string);
 
         throw new FakeError(
