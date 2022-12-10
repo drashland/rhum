@@ -4,6 +4,7 @@ const encoder = new TextEncoder();
 const workspace = "./tmp/conversion_workspace";
 
 const debug = false;
+const debugContents = false;
 
 function logDebug(msg: unknown): void {
   if (!debug) {
@@ -15,6 +16,7 @@ function logDebug(msg: unknown): void {
 
 try {
   logDebug(`Creating ${workspace}.`);
+  emptyDirSync("./node_modules");
   emptyDirSync(workspace);
   ensureDirSync(workspace);
   logDebug(`Copying Rhum source files to ${workspace}.`);
@@ -84,7 +86,9 @@ function removeTsExtensions(filename: string): void {
   }
 
   logDebug(`New contents (without .ts extensions):`);
-  logDebug(contents);
+  if (debugContents) {
+    logDebug(contents);
+  }
 
   // Step 5: Rewrite the original file without .ts extensions
   logDebug(`Overwriting ${filename} with new contents.`);
