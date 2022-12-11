@@ -251,17 +251,17 @@ describe("Fake()", () => {
     it(
       ".willReturn((...) => {...}) returns true|false depending on given args",
       (): void => {
-        const mockFiveService = Fake(TestObjectFiveService)
+        const fakeFiveService = Fake(TestObjectFiveService)
           .create();
 
-        const mockFive = Fake(TestObjectFive)
-          .withConstructorArgs(mockFiveService)
+        const fakeFive = Fake(TestObjectFive)
+          .withConstructorArgs(fakeFiveService)
           .create();
 
-        assertEquals(mockFive.is_fake, true);
-        assertEquals(mockFiveService.is_fake, true);
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
 
-        mockFiveService
+        fakeFiveService
           .method("get")
           .willReturn((key: string, _defaultValue: number | string) => {
             if (key == "host") {
@@ -275,10 +275,10 @@ describe("Fake()", () => {
             return undefined;
           });
 
-        // `false` because `mockFiveService.get("port") == 3000`
-        assertEquals(mockFive.send(), false);
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
 
-        mockFiveService
+        fakeFiveService
           .method("get")
           .willReturn((key: string, _defaultValue: number | string) => {
             if (key == "host") {
@@ -292,25 +292,25 @@ describe("Fake()", () => {
             return undefined;
           });
 
-        // `true` because `mockFiveService.get("port") != 3000`
-        assertEquals(mockFive.send(), true);
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
       },
     );
 
     it(
       `.willReturn((...) => {...}) returns true|false depending on given args (multiple args)`,
       (): void => {
-        const mockFiveService = Fake(TestObjectFiveServiceMultipleArgs)
+        const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
           .create();
 
-        const mockFive = Fake(TestObjectFiveMultipleArgs)
-          .withConstructorArgs(mockFiveService)
+        const fakeFive = Fake(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(fakeFiveService)
           .create();
 
-        assertEquals(mockFive.is_fake, true);
-        assertEquals(mockFiveService.is_fake, true);
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
 
-        mockFiveService
+        fakeFiveService
           .method("get")
           .willReturn((key: string, defaultValue: number | string) => {
             if (key == "host" && defaultValue == "localhost") {
@@ -324,10 +324,10 @@ describe("Fake()", () => {
             return undefined;
           });
 
-        // `false` because `mockFiveService.get("port") == 3000`
-        assertEquals(mockFive.send(), false);
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
 
-        mockFiveService
+        fakeFiveService
           .method("get")
           .willReturn((key: string, defaultValue: string | number) => {
             if (key == "host" && defaultValue == "localhost") {
@@ -341,8 +341,8 @@ describe("Fake()", () => {
             return undefined;
           });
 
-        // `true` because `mockFiveService.get("port") != 3000`
-        assertEquals(mockFive.send(), true);
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
       },
     );
   });

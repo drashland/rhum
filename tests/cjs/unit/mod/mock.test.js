@@ -122,9 +122,7 @@ class TestObjectFiveMultipleArgs {
 class TestObjectFiveServiceMultipleArgs {
   map = new Map();
   get(key, defaultValue) {
-    return this.map.has(key)
-      ? this.map.get(key)
-      : defaultValue;
+    return this.map.has(key) ? this.map.get(key) : defaultValue;
   }
 }
 

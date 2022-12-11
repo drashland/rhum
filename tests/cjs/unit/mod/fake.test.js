@@ -164,6 +164,104 @@ describe("Fake()", () => {
       expect(fake3.something_one).toBe("you got changed");
     });
 
+    it(
+      `.willReturn((...) => {...}) returns true|false depending on given args`,
+      () => {
+        const fakeFiveService = Fake(TestObjectFiveService)
+          .create();
+
+        const fakeFive = Fake(TestObjectFive)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .willReturn((key, _defaultValue) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 3000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .willReturn((key, _defaultValue) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
+      },
+    );
+
+    it(
+      `.willReturn((...) => {...}) returns true|false depending on given args (multiple args)`,
+      () => {
+        const fakeFiveService = Fake(TestObjectFiveServiceMultipleArgs)
+          .create();
+
+        const fakeFive = Fake(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(fakeFiveService)
+          .create();
+
+        assertEquals(fakeFive.is_fake, true);
+        assertEquals(fakeFiveService.is_fake, true);
+
+        fakeFiveService
+          .method("get")
+          .willReturn((key, defaultValue) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return null;
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `fakeFiveService.get("port") == 3000`
+        assertEquals(fakeFive.send(), false);
+
+        fakeFiveService
+          .method("get")
+          .willReturn((key, defaultValue) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `fakeFiveService.get("port") != 3000`
+        assertEquals(fakeFive.send(), true);
+      },
+    );
+
     it(".willThrow() causes throwing RandomError (with constructor)", () => {
       const fake = Fake(TestObjectThree).create();
       expect(fake.is_fake).toBe(true);
@@ -320,9 +418,7 @@ class TestObjectFiveMultipleArgs {
 class TestObjectFiveServiceMultipleArgs {
   map = new Map();
   get(key, defaultValue) {
-    return this.map.has(key)
-      ? this.map.get(key)
-      : defaultValue;
+    return this.map.has(key) ? this.map.get(key) : defaultValue;
   }
 }
 
