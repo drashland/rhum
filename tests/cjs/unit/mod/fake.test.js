@@ -1,4 +1,5 @@
 const { Fake } = require("../../../../lib/cjs/mod");
+const { assertEquals } = require("../../jest_assertions");
 
 describe("Fake()", () => {
   it("creates fake builder", () => {
@@ -260,6 +261,68 @@ class TestObjectFourBuilder {
 
   setSomethingTwo() {
     this.something_two = "two";
+  }
+}
+
+class TestObjectFive {
+  constructor(service) {
+    this.service = service;
+  }
+
+  send() {
+    const host = this.service.get("host");
+    const port = this.service.get("port");
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveService {
+  map = new Map();
+  constructor() {
+    this.map.set("host", "locaaaaaal");
+    this.map.set("port", 3000);
+  }
+  get(item) {
+    return this.map.get(item);
+  }
+}
+
+class TestObjectFiveMultipleArgs {
+  constructor(service) {
+    this.service = service;
+  }
+
+  send() {
+    const host = this.service.get("host", "localhost");
+    const port = this.service.get("port", 5000);
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveServiceMultipleArgs {
+  map = new Map();
+  get(key, defaultValue) {
+    return this.map.has(key)
+      ? this.map.get(key)
+      : defaultValue;
   }
 }
 
