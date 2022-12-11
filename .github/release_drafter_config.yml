@@ -43,7 +43,7 @@ template: |
   ## Compatibility
 
   * Requires Deno v<version>
-  * Requires Node v14, v16, v17, or v18
+  * Requires Node v14, v16, or v18
 
   ## Documentation
 
