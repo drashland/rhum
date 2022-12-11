@@ -69,15 +69,3 @@ jobs:
         run: yarn publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-egg:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Notify the castle about this release
-        run: |
-          curl -X POST \
-            -u "${{ secrets.CI_USER_NAME }}:${{ secrets.CI_USER_PAT }}" \
-            -H "Accept: application/vnd.github.everest-preview+json" \
-            -H "Content-Type: application/json" \
-            --data '{"event_type": "release", "client_payload": { "repo": "rhum", "module": "rhum", "version": "${{ github.ref }}" }}' \
-            https://api.github.com/repos/drashland/castle/dispatches
