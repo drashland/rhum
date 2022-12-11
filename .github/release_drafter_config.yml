@@ -26,6 +26,20 @@ version-resolver:
 
 # What our release will look like. If no draft has been created, then this will be used, otherwise $CHANGES just gets addedd
 template: |
+  ```
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  Before releasing, make sure the version in package.json matches the version being released here.
+
+  Delete this code block before publishing this release.
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ```
+
   ## Compatibility
 
   * Requires Deno v<version>
