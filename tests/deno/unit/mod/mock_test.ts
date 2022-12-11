@@ -162,7 +162,7 @@ Deno.test("Mock()", async (t) => {
             name: "something",
           });
 
-        assertEquals(mock.test(), { name: "something" });
+        assertEquals(mock.test() as unknown, { name: "something" });
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
       },

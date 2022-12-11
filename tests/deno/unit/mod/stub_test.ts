@@ -18,10 +18,10 @@ Deno.test("Stub()", async (t) => {
     Stub(server, "greeting", null);
     assertEquals(server.greeting, null);
     Stub(server, "greeting", true);
-    assertEquals(server.greeting, true);
+    assertEquals(server.greeting as unknown, true);
     const obj = { test: "hello" };
     Stub(server, "greeting", obj);
-    assertEquals(server.greeting, obj);
+    assertEquals(server.greeting as unknown, obj);
   });
 
   await t.step("can stub a class method", () => {
@@ -32,10 +32,10 @@ Deno.test("Stub()", async (t) => {
     Stub(server, "methodThatLogs", null);
     assertEquals(server.methodThatLogs(), null);
     Stub(server, "methodThatLogs", true);
-    assertEquals(server.methodThatLogs(), true);
+    assertEquals(server.methodThatLogs() as unknown, true);
     const obj = { test: "hello" };
     Stub(server, "methodThatLogs", obj);
-    assertEquals(server.methodThatLogs(), obj);
+    assertEquals(server.methodThatLogs() as unknown, obj);
   });
 
   await t.step("can return a stubbed function", () => {
