@@ -158,7 +158,7 @@ function logDebug(...msg: unknown[]): void {
  */
 function optionEnabled(option: string): boolean {
   const optionIndex = args.indexOf(option);
-  const enabled = optionIndex != -1;
+  const enabled = optionIndex !== -1;
 
   if (enabled) {
     args.splice(optionIndex, 1);
@@ -173,11 +173,7 @@ function optionEnabled(option: string): boolean {
  * @returns The value of the option if the option exists.
  */
 function optionValue(option: string): boolean {
-  const extractedOption = args.filter((arg: string) => {
-    if (arg.includes(option)) {
-      return true;
-    }
-  });
+  const extractedOption = args.filter(arg => arg.includes(option));
 
   if (!extractedOption.length) {
     return;
