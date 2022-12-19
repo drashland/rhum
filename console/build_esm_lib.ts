@@ -173,7 +173,7 @@ function optionEnabled(option: string): boolean {
  * @returns The value of the option if the option exists.
  */
 function optionValue(option: string): boolean {
-  const extractedOption = args.filter(arg => arg.includes(option));
+  const extractedOption = args.filter((arg) => arg.includes(option));
 
   if (!extractedOption.length) {
     return;
