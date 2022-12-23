@@ -217,7 +217,7 @@ export function Stub<OriginalObject, ReturnValue>(
   returnValue?: ReturnValue,
 ): unknown {
   if (obj === null) {
-    throw new Error(`Cannot create a stub using Stub(null)`)
+    throw new Error(`Cannot create a stub using Stub(null)`);
   }
 
   if (obj === undefined) {
