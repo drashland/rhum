@@ -42,4 +42,18 @@ Deno.test("Stub()", async (t) => {
     const stub = Stub();
     assertEquals(stub(), "stubbed");
   });
+
+  await t.step("throws error on Stub(null) calls", () => {
+    try {
+      // @ts-ignore This test ensures an error is thrown when `null` is being
+      // provided as the object containing the property or method to stub. It is
+      // the first check in the `Stub()` call. Even though `Stub(null)` cannot
+      // happen in TypeScript if type-checking is on, this can still happen in
+      // JS. This is ignored because it is being tested in TypeScript, but this
+      // SHOULD only happen in JavaScript.
+      Stub(null, "prop");
+    } catch (error) {
+      assertEquals(error.message, "Cannot create a stub using Stub(null)");
+    }
+  });
 });
