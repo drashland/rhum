@@ -42,4 +42,12 @@ Deno.test("Stub()", async (t) => {
     const stub = Stub();
     assertEquals(stub(), "stubbed");
   });
+
+  await t.step("throws error on Stub(null) calls", () => {
+    try {
+      const stub = Stub(null, "prop");
+    } catch (error) {
+      assertEquals(error.message, "Cannot create a stub using Stub(null)");
+    }
+  });
 });

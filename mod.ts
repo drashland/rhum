@@ -216,6 +216,10 @@ export function Stub<OriginalObject, ReturnValue>(
   dataMember?: keyof OriginalObject,
   returnValue?: ReturnValue,
 ): unknown {
+  if (obj === null) {
+    throw new Error(`Cannot create a stub using Stub(null)`)
+  }
+
   if (obj === undefined) {
     return function stubbed() {
       return "stubbed";
