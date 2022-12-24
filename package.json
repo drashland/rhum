@@ -27,7 +27,6 @@
     "@types/jest": "27.x",
     "@types/node": "16.x",
     "babel-jest": "27.x",
-    "global": "4.x",
     "jest": "27.x",
     "ts-jest": "27.x",
     "ts-node": "10.x",
