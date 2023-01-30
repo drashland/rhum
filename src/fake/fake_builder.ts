@@ -96,9 +96,9 @@ export class FakeBuilder<ClassToFake> extends TestDoubleBuilder<ClassToFake> {
       value: (...args: unknown[]) => {
         // Make sure the method calls its original self
         const methodToCall =
-          (original[method as keyof ClassToFake] as unknown as (
+          original[method as keyof ClassToFake] as unknown as (
             ...params: unknown[]
-          ) => unknown);
+          ) => unknown;
 
         // We need to check if the method was pre-preprogrammed to do something.
         // If it was, then we make sure that this method we are currently
