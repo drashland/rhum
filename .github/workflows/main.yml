@@ -1,4 +1,4 @@
-name: master
+name: Main
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
         # We only support until EOL
         # See https://nodejs.org/en/about/releases/
-        node: ['14', '16', '17', '18']
+        node: ['14', '16', '18']
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2

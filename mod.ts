@@ -232,7 +232,7 @@ export function Stub<OriginalObject, ReturnValue>(
   // the value of `returnValue`.
   if (typeof obj === "object" && dataMember !== undefined) {
     // If we are stubbing a method, then make sure the method is still callable
-    if (typeof obj[dataMember] === "function") {
+    if (typeof obj![dataMember] === "function") {
       Object.defineProperty(obj, dataMember, {
         value: () => returnValue !== undefined ? returnValue : "stubbed",
         writable: true,

@@ -1,4 +1,5 @@
 const { Mock } = require("../../../../lib/cjs/mod");
+const { assertEquals } = require("../../jest_assertions");
 
 class Request {
   constructor(
@@ -62,6 +63,66 @@ class TestObjectFourBuilder {
 
   setSomethingTwo() {
     this.something_two = "two";
+  }
+}
+
+class TestObjectFive {
+  constructor(service) {
+    this.service = service;
+  }
+
+  send() {
+    const host = this.service.get("host");
+    const port = this.service.get("port");
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveService {
+  map = new Map();
+  constructor() {
+    this.map.set("host", "locaaaaaal");
+    this.map.set("port", 3000);
+  }
+  get(item) {
+    return this.map.get(item);
+  }
+}
+
+class TestObjectFiveMultipleArgs {
+  constructor(service) {
+    this.service = service;
+  }
+
+  send() {
+    const host = this.service.get("host", "localhost");
+    const port = this.service.get("port", 5000);
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveServiceMultipleArgs {
+  map = new Map();
+  get(key, defaultValue) {
+    return this.map.has(key) ? this.map.get(key) : defaultValue;
   }
 }
 
@@ -306,6 +367,104 @@ describe("Mock()", () => {
       expect(mock3.something_one).toBe("you got changed");
       expect(mock3.calls.someComplexMethod).toBe(1);
     });
+
+    it(
+      `.willReturn((...) => {...}) returns true|false depending on given args`,
+      () => {
+        const mockFiveService = Mock(TestObjectFiveService)
+          .create();
+
+        const mockFive = Mock(TestObjectFive)
+          .withConstructorArgs(mockFiveService)
+          .create();
+
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key, _defaultValue) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 3000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key, _defaultValue) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
+      },
+    );
+
+    it(
+      `.willReturn((...) => {...}) returns true|false depending on given args (multiple args)`,
+      () => {
+        const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
+          .create();
+
+        const mockFive = Mock(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(mockFiveService)
+          .create();
+
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key, defaultValue) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return null;
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key, defaultValue) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
+      },
+    );
 
     it(
       ".willThrow() causes throwing RandomError (with constructor)",

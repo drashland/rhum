@@ -162,7 +162,7 @@ Deno.test("Mock()", async (t) => {
             name: "something",
           });
 
-        assertEquals(mock.test(), { name: "something" });
+        assertEquals(mock.test() as unknown, { name: "something" });
         assertEquals(mock.calls.test, 2);
         assertEquals(mock.calls.hello, 2);
       },
@@ -261,6 +261,106 @@ Deno.test("Mock()", async (t) => {
           "Some message not by the constructor.",
         );
         assertEquals(mock.calls.test, 2);
+      },
+    });
+
+    await t.step({
+      name:
+        `.willReturn((...) => {...}) returns true|false depending on given args`,
+      fn(): void {
+        const mockFiveService = Mock(TestObjectFiveService)
+          .create();
+
+        const mockFive = Mock(TestObjectFive)
+          .withConstructorArgs(mockFiveService)
+          .create();
+
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 3000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key: string, _defaultValue: number | string) => {
+            if (key == "host") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port") {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
+      },
+    });
+
+    await t.step({
+      name:
+        `.willReturn((...) => {...}) returns true|false depending on given args (multiple args)`,
+      fn(): void {
+        const mockFiveService = Mock(TestObjectFiveServiceMultipleArgs)
+          .create();
+
+        const mockFive = Mock(TestObjectFiveMultipleArgs)
+          .withConstructorArgs(mockFiveService)
+          .create();
+
+        assertEquals(mockFive.is_mock, true);
+        assertEquals(mockFiveService.is_mock, true);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key: string, defaultValue: number | string) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return null;
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `false` because `mockFiveService.get("port") == 3000`
+        assertEquals(mockFive.send(), false);
+
+        mockFiveService
+          .method("get")
+          .willReturn((key: string, defaultValue: string | number) => {
+            if (key == "host" && defaultValue == "localhost") {
+              return "locaaaaaal";
+            }
+
+            if (key == "port" && defaultValue == 5000) {
+              return 4000;
+            }
+
+            return undefined;
+          });
+
+        // `true` because `mockFiveService.get("port") != 3000`
+        assertEquals(mockFive.send(), true);
       },
     });
 
@@ -419,6 +519,70 @@ class TestObjectFourBuilder {
 
   #setSomethingTwo(): void {
     this.#something_two = "two";
+  }
+}
+
+class TestObjectFive {
+  private readonly service: TestObjectFiveService;
+
+  public constructor(service: TestObjectFiveService) {
+    this.service = service;
+  }
+
+  public send(): boolean {
+    const host = this.service.get<string>("host");
+    const port = this.service.get<number>("port");
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveService {
+  #map = new Map<string, unknown>();
+  constructor() {
+    this.#map.set("host", "locaaaaaal");
+    this.#map.set("port", 3000);
+  }
+  public get<T>(item: string): T {
+    return this.#map.get(item) as T;
+  }
+}
+
+class TestObjectFiveMultipleArgs {
+  private readonly service: TestObjectFiveServiceMultipleArgs;
+
+  public constructor(service: TestObjectFiveServiceMultipleArgs) {
+    this.service = service;
+  }
+
+  public send(): boolean {
+    const host = this.service.get<string>("host", "localhost");
+    const port = this.service.get<number>("port", 5000);
+
+    if (host == null) {
+      return false;
+    }
+
+    if (port === 3000) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class TestObjectFiveServiceMultipleArgs {
+  #map = new Map<string, unknown>();
+  public get<T>(key: string, defaultValue: T): T {
+    return this.#map.get(key) as T ?? defaultValue;
   }
 }
 

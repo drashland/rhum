@@ -16,7 +16,7 @@ export interface IError {
   name: string;
 
   /**
-   * The error message.
+   * The error message. Allows undefined in case there is no message.
    */
   message?: string;
 }
@@ -36,9 +36,9 @@ export interface IFake<OriginalObject> {
    *
    * @param method - The name of the method to shorten.
    */
-  method(
+  method<T>(
     method: MethodOf<OriginalObject>,
-  ): IMethodChanger;
+  ): IMethodChanger<T>;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,17 +99,25 @@ export interface IMethodExpectation {
 // FILE MARKER - IMETHODCHANGER ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-export interface IMethodChanger {
+export interface IMethodChanger<ReturnValue> {
+  // TODO(crookse) Think about introducing this as an alias to willReturn().
+  // willCall<T>(args: T): void;
+
   /**
-   * Make the given method return the given `returnValue`.
-   *
-   * @param returnValue - The value to make the method return.
+   * Pre-program a method to return (and call) the following action.
+   * @param action The action the method will return and call.
+   */
+  willReturn(action: (...args: unknown[]) => ReturnValue): void;
+
+  /**
+   * Pre-program this method to return the given value.
+   * @param returnValue The value that should be returned when this object is
+   * being used in place of an original method.
    */
   willReturn<T>(returnValue: T): void;
 
   /**
-   * Make the given method throw the given error.
-   *
+   * Pre-program this method to throw the given error.
    * @param error - An error which extends the `Error` class or has the same
    * interface as the `Error` class.
    */
@@ -167,9 +175,9 @@ export interface IMock<OriginalObject> {
    *
    * @param method - The name of the method to pre-program.
    */
-  method(
+  method<ReturnValue>(
     method: MethodOf<OriginalObject>,
-  ): IMethodChanger;
+  ): IMethodChanger<ReturnValue>;
 
   /**
    * Verify that all expectations from the `.expects()` calls.

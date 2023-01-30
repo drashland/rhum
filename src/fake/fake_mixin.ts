@@ -1,4 +1,4 @@
-import type { IFake } from "../interfaces.ts";
+import type { IFake, IMethodChanger } from "../interfaces.ts";
 import type { Constructor, MethodOf } from "../types.ts";
 import { FakeError } from "../errors.ts";
 
@@ -30,6 +30,14 @@ export function createFake<OriginalConstructor, OriginalObject>(
      */
     #original!: OriginalObject;
 
+    /**
+     * Map of pre-programmed methods defined by the user.
+     */
+    #pre_programmed_methods: Map<
+      MethodOf<OriginalObject>,
+      IMethodChanger<unknown>
+    > = new Map();
+
     ////////////////////////////////////////////////////////////////////////////
     // FILE MARKER - CONSTRUCTOR ///////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
@@ -57,7 +65,13 @@ export function createFake<OriginalConstructor, OriginalObject>(
      */
     public method<ReturnValueType>(
       methodName: MethodOf<OriginalObject>,
-    ): PreProgrammedMethod<OriginalObject, ReturnValueType> {
+    ): IMethodChanger<ReturnValueType> {
+      // If the method was already pre-programmed previously, then return it so
+      // the user can add more method setups to it
+      if (this.#pre_programmed_methods.has(methodName)) {
+        return this.#pre_programmed_methods.get(methodName)!;
+      }
+
       const methodConfiguration = new PreProgrammedMethod<
         OriginalObject,
         ReturnValueType
@@ -80,7 +94,13 @@ export function createFake<OriginalConstructor, OriginalObject>(
         writable: true,
       });
 
-      return methodConfiguration;
+      const methodChanger = methodConfiguration as unknown as IMethodChanger<
+        ReturnValueType
+      >;
+
+      this.#pre_programmed_methods.set(methodName, methodChanger);
+
+      return methodChanger;
     }
   }();
 }

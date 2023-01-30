@@ -177,7 +177,7 @@ Deno.test("Spy()", async (t) => {
         );
 
         // Fake's have working implementations, so we expect a real call
-        assertEquals(resource.methodThatGets(), {
+        assertEquals(resource.methodThatGets() as unknown, {
           stubbed: "return",
           value: "here",
         });
@@ -237,7 +237,7 @@ Deno.test("Spy()", async (t) => {
         );
 
         // Fake's have working implementations, so we expect a real call
-        assertEquals(resource.methodThatGets("param1", "param2"), {
+        assertEquals(resource.methodThatGets("param1", "param2") as unknown, {
           hello: "world",
         });
 
@@ -249,7 +249,7 @@ Deno.test("Spy()", async (t) => {
 
         // Also, you can call it again and do further verification. Since we are calling the same method again, the call count should be incremented by 1.
         assertEquals(
-          resource.methodThatGets("anotherParam1", "anotherParam2"),
+          resource.methodThatGets("anotherParam1", "anotherParam2") as unknown,
           { hello: "world" },
         );
         spyMethod.verify()
@@ -292,7 +292,7 @@ Deno.test("Spy()", async (t) => {
         );
 
         // Fake's have working implementations, so we expect a real call
-        assertEquals(fake.methodThatGets(), {
+        assertEquals(fake.methodThatGets() as unknown, {
           hello: "world",
         });
 
@@ -304,7 +304,7 @@ Deno.test("Spy()", async (t) => {
 
         // Also, you can call it again and do further verification. Since we are calling the same method again, the call count should be incremented by 1.
         assertEquals(
-          fake.methodThatGets(),
+          fake.methodThatGets() as unknown,
           { hello: "world" },
         );
         spyMethod.verify()
@@ -362,7 +362,7 @@ Deno.test("Spy()", async (t) => {
         );
 
         // Fake's have working implementations, so we expect a real call
-        assertEquals(fake.methodThatGets("param1", "param2"), {
+        assertEquals(fake.methodThatGets("param1", "param2") as unknown, {
           hello: "world",
         });
 
@@ -374,7 +374,7 @@ Deno.test("Spy()", async (t) => {
 
         // Also, you can call it again and do further verification. Since we are calling the same method again, the call count should be incremented by 1.
         assertEquals(
-          fake.methodThatGets("anotherParam1", "anotherParam2"),
+          fake.methodThatGets("anotherParam1", "anotherParam2") as unknown,
           { hello: "world" },
         );
         spyMethod.verify()
@@ -410,7 +410,7 @@ Deno.test("Spy()", async (t) => {
 
       // Since no return value was specified, the default "spy-stubbed" should
       // be used
-      assertEquals(spyHello(), "spy-stubbed");
+      assertEquals(spyHello() as unknown, "spy-stubbed");
 
       // Here we give `hello` a new return value. The return value must be of
       // the same return type.
@@ -454,7 +454,7 @@ Deno.test("Spy()", async (t) => {
       // Since no return value was specified, the default "spy-stubbed" should
       // be used
       assertEquals(
-        spyHello("doth mother know you weareth her drapes", true),
+        spyHello("doth mother know you weareth her drapes", true) as unknown,
         "spy-stubbed",
       );
 

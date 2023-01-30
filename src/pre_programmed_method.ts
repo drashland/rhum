@@ -1,7 +1,7 @@
-import type { IError } from "./interfaces.ts";
+import type { IError, IMethodChanger } from "./interfaces.ts";
 import type { MethodOf } from "./types.ts";
 
-class PreProgrammedMethodError extends Error {}
+type ReturnValueFunction<ReturnValue> = (...args: unknown[]) => ReturnValue;
 
 /**
  * Class that allows to be a "stand-in" for a method. For example, when used in
@@ -9,12 +9,18 @@ class PreProgrammedMethodError extends Error {}
  * methods (using this class), and have a system under test use the
  * pre-programmed methods.
  */
-export class PreProgrammedMethod<OriginalObject, ReturnValue> {
+export class PreProgrammedMethod<OriginalObject, ReturnValue>
+  implements IMethodChanger<ReturnValue> {
+  /**
+   * The original name of the method being pre-programmed.
+   */
   #method_name: MethodOf<OriginalObject>;
-  #will_throw = false;
-  #will_return = false;
-  #return?: ReturnValue;
-  #error?: IError;
+
+  /**
+   * The object containing the pre-programmed setup details. This object is what
+   * runs under the hood to provide the pre-programmed expectation.
+   */
+  #method_setup?: MethodSetup<OriginalObject>;
 
   //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - CONSTRUCTOR /////////////////////////////////////////////////
@@ -29,68 +35,134 @@ export class PreProgrammedMethod<OriginalObject, ReturnValue> {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // FILE MARKER - GETTERS / SETTERS  //////////////////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  get error(): void {
-    const typeSafeMethodName = String(this.#method_name);
-
-    if (!this.#will_throw) {
-      throw new PreProgrammedMethodError(
-        `Pre-programmed method "${typeSafeMethodName}" is not set up to throw an error.`,
-      );
-    }
-    if (this.#error === undefined) {
-      throw new PreProgrammedMethodError(
-        `Pre-programmed method "${typeSafeMethodName}" is set up to throw an error, but no error was provided.`,
-      );
-    }
-
-    throw this.#error;
-  }
-
-  get return(): ReturnValue {
-    if (this.#return === undefined) {
-      const typeSafeMethodName = String(this.#method_name);
-
-      throw new PreProgrammedMethodError(
-        `Pre-programmed method "${typeSafeMethodName}" does not have a return value.`,
-      );
-    }
-
-    return this.#return;
-  }
-
-  get will_return(): boolean {
-    return this.#will_return;
-  }
-
-  get will_throw(): boolean {
-    return this.#will_throw;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   // FILE MARKER - METHODS - PUBLIC  ///////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Pre-program this method to return the given value.
+  // public willCall(action: (...args: unknown[]) => ReturnValue): void {
+  //   this.#method_setup = new MethodSetupCallsCallback(
+  //     this.#method_name,
+  //     action,
+  //   );
+  // }
 
-   * @param returnValue The value that should be returned when this object is
-   * being used in place of an original method.
-   */
-  public willReturn(returnValue: ReturnValue): void {
-    this.#will_return = true;
-    this.#return = returnValue;
+  // public willReturn(action: (...args: unknown[]) => ReturnValue): void;
+
+  public willReturn(
+    returnValue: ReturnValue | ReturnValueFunction<ReturnValue>,
+  ): void {
+    if (typeof returnValue === "function") {
+      this.#method_setup = new MethodSetupCallsCallback(
+        this.#method_name,
+        returnValue as ReturnValueFunction<ReturnValue>,
+      );
+      return;
+    }
+
+    this.#method_setup = new MethodSetupReturnsStaticValue(
+      this.#method_name,
+      returnValue,
+    );
+  }
+
+  public willThrow(error: IError): void {
+    this.#method_setup = new MethodSetupThrowsError<OriginalObject>(
+      this.#method_name,
+      error,
+    );
   }
 
   /**
-   * Pre-program this method to throw the given error.
-   *
-   * @param error - The error to throw.
+   * Run this method.
+   * @param args
+   * @returns
    */
-  public willThrow(error: IError): void {
-    this.#will_throw = true;
-    this.#error = error;
+  public run(args?: unknown[]): unknown {
+    if (!this.#method_setup) {
+      throw new Error(
+        `Pre-programmed method "${
+          String(this.#method_name)
+        }" does not have a return value.`,
+      );
+    }
+    return this.#method_setup?.run(args);
+  }
+}
+
+enum MethodSetupExpectation {
+  ExecuteCallback,
+  ReturnStaticValue,
+  ThrowError,
+}
+
+/**
+ * Class to hold information about a specific pre-programmed method setup.
+ */
+abstract class MethodSetup<OriginalObject> {
+  readonly id: string;
+  protected expectation: MethodSetupExpectation;
+  protected method_name: string;
+
+  constructor(
+    methodName: MethodOf<OriginalObject>,
+    expectation: MethodSetupExpectation,
+  ) {
+    this.id = this.run.toString();
+    this.method_name = String(methodName); // Make the method name type-safe
+    this.expectation = expectation;
+  }
+
+  abstract run(args?: unknown): unknown;
+}
+
+class MethodSetupThrowsError<OriginalObject>
+  extends MethodSetup<OriginalObject> {
+  #error: IError;
+
+  constructor(
+    methodName: MethodOf<OriginalObject>,
+    returnValue: IError,
+  ) {
+    super(methodName, MethodSetupExpectation.ThrowError);
+    this.#error = returnValue;
+  }
+
+  run(): void {
+    throw this.#error;
+  }
+}
+
+class MethodSetupReturnsStaticValue<OriginalObject, ReturnValue>
+  extends MethodSetup<OriginalObject> {
+  #return_value: ReturnValue;
+
+  constructor(
+    methodName: MethodOf<OriginalObject>,
+    returnValue: ReturnValue,
+  ) {
+    super(methodName, MethodSetupExpectation.ReturnStaticValue);
+    this.#return_value = returnValue;
+  }
+
+  run(): ReturnValue {
+    return this.#return_value;
+  }
+}
+
+class MethodSetupCallsCallback<
+  OriginalObject,
+  Callback extends ((...args: unknown[]) => ReturnType<Callback>),
+> extends MethodSetup<OriginalObject> {
+  #callback: Callback;
+
+  constructor(
+    methodName: MethodOf<OriginalObject>,
+    callback: Callback,
+  ) {
+    super(methodName, MethodSetupExpectation.ReturnStaticValue);
+    this.#callback = callback;
+  }
+
+  run(args: unknown[]): ReturnType<Callback> {
+    return this.#callback(...args);
   }
 }
